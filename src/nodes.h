@@ -19,7 +19,7 @@ class main_node {
     std::vector< attribute_node * > attribute_list;
     main_node *next;
     std::vector<main_node *> table_list;
-    std::vector<main_node *> foreign_in;
+    std::vector<std::vector<main_node *> > foreign_in;
 };
 
 #endif // NODE_INCLUDED
