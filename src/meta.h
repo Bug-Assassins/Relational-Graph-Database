@@ -1,39 +1,31 @@
-#include"trie.h"
+#ifndef META_INCLUDED
+#define META_INCLUDED 1
+
+#include<string>
+#include<vector>
 
 class table;
+class attribute_node;
+
+#include "nodes.h"
+#include "trie.h"
 
 class meta_domain {
 
+  private:
+    int data_type;
+    int attr_length;
     std::string attribute_name;
     attribute_node *head;
-    trie *index;
+    trie * index;
+
+  public :
+    meta_domain(string attr_name)
+    {
+        attribute_name = attr_name;
+        head = NULL;
+    }
 
 };
 
-class foreign_key {
-
-    table *origin;
-    table *destination;
-    std::vector<attribute_node *> destination_domain;
-    std::vector<std::string> origin_name;
-
-};
-
-class table {
-
-    std::string name;
-    main_node *head;
-    int attribute_count;
-    std::vector< meta_domain * > normal;
-    std::vector< foreign_key * > foreign;
-    std::vector<int> prime_in;
-
-};
-
-
-class database {
-
-    std::vector<table *> tabs;
-
-};
-
+#endif // META_INCLUDED

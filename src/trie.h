@@ -1,9 +1,10 @@
-#include"nodes.h"
+#ifndef TRIE_INCLUDED
+#define TRIE_INCLUDED 1
+
+#include "nodes.h"
 #define MAX_SIZE 256
 
-using namespace std;
-
-class trie {
+class trie_node {
 
     char val;
     trie *child[MAX_SIZE];
@@ -11,3 +12,18 @@ class trie {
 
 };
 
+class trie{
+
+  private :
+    trie_node root;
+
+  public :
+    //Constructor to create a new trie
+    trie()
+    {
+
+    }
+
+}
+
+#endif //TRIE_INCLUDED
