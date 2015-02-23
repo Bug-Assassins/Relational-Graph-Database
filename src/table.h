@@ -17,7 +17,8 @@ class table {
     main_node *head; //Head to the main list of the table
     int attribute_count; //
     std::vector< meta_domain * > normal;
-    std::vector< foreign_key * > foreign;
+    //std::vector< foreign_key * > foreign;
+    vector<table *> foreign_out;
     std::vector<int> prime_in;
 
   public :
