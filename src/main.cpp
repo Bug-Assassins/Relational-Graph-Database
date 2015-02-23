@@ -1,5 +1,11 @@
 #define VERBOSE 1
 #include <cstdio>
+#include "database.h"
+#include "domain.h"
+#include "foreign_key.h"
+#include "nodes.h"
+#include "table.h"
+#include "trie.h"
 int main()
 {
     int choice;

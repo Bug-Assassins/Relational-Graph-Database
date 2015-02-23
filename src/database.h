@@ -1,18 +1,21 @@
 #ifndef DATABASE_INCLUDED
 #define DATABASE_INCLUDED 1
+
 #include<string>
 #include<vector>
 
+#include "table.h"
+
 class database {
 
-  private :
+  private:
     std::string name;
     std::vector<table *> tables;
 
-  public :
+  public:
 
     //Constructor that creates a new database with given name
-    database(string db_name)
+    database(std::string db_name)
     {
         name = db_name;
     }

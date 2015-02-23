@@ -3,8 +3,14 @@
 #include<string>
 #include<vector>
 
+class table;
+
+#include "table.h"
+#include "nodes.h"
+
 class foreign_key {
 
+  private:
     table *origin;
     table *destination;
     std::vector<attribute_node *> destination_domain;

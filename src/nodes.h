@@ -3,15 +3,59 @@
 
 #include<vector>
 #include<string>
+#include<cstdlib>
 
 class main_node;
 
 class attribute_node {
-  public:
+
+  private:
     std::string value;
-    std::vector< main_node * > nodes;
+    std::vector< main_node* > nodes;
     attribute_node *next;
 
+  public:
+
+  	//Constructor
+  	attribute_node(std::string val)
+  	{
+  		value = val;
+  		next = NULL;
+  	}
+
+  	//Getter and Setter for value of attribute node
+  	void set_value(std::string val)
+  	{
+  		value = val;
+  	}
+
+  	std::string get_value()
+  	{
+  		return value;
+  	}
+
+  	//Getter and Setter for next pointer
+  	void set_next(attribute_node &n)
+  	{
+  		next = &n;
+  	}
+
+  	attribute_node* get_next()
+  	{
+  		return next;
+  	}
+
+  	//Function to added details of connected record
+  	void connect_main_record(main_node &node)
+  	{
+  		nodes.push_back(&node);
+  	}
+
+  	//Function to get number of connected records
+  	int get_num_records()
+  	{
+  		return nodes.size();
+  	}
 };
 
 class main_node {

@@ -7,7 +7,7 @@
 class trie_node {
 
     char val;
-    trie *child[MAX_SIZE];
+    trie_node *child[MAX_SIZE];
     attribute_node *node;
 
 };
@@ -24,6 +24,6 @@ class trie{
 
     }
 
-}
+};
 
 #endif //TRIE_INCLUDED
