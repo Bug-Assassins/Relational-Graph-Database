@@ -7,9 +7,43 @@
 
 class trie_node {
 
-    char val;
-    trie_node *child[MAX_SIZE];
-    attribute_node *node;
+    private :
+        char val;
+        trie_node *child[MAX_SIZE];
+        attribute_node *node;
+    public :
+        //Getter and Setter for val
+        char get_val()
+        {
+            return val;
+        }
+
+        void set_val(char c)
+        {
+            val = c;
+        }
+
+        //Getter and Setter for node
+        attribute_node *get_node()
+        {
+            return node;
+        }
+
+        void set_node(attribute_node *ptr)
+        {
+            node = ptr;
+        }
+
+        //Getter and Setter for child
+        trie_node *get_child(int index)
+        {
+            return child[index];
+        }
+
+        void set_child(int index, trie_node *ptr)
+        {
+            child[index] = ptr;
+        }
 
 };
 
@@ -20,39 +54,45 @@ class trie{
 
   public :
 
-        attribute_node *get_node(string key)
+        attribute_node *insert_node(std::string key)
         {
             int level;
             int length = key.length() - 1;
             int index;
-            trie_node *node_crawl = root;
-            for(level = 0; level < length; level++)
+            trie_node *temp , *node_crawl;
+            node_crawl = &root;
+
+            for(level = 0; level <= length; level++)
             {
                 index = key[level];
-                if(!node_crawl->child[index])
+                temp = node_crawl->get_child(index);
+                if(!temp)
                 {
                     break;
                 }
-
-                node_crawl = node_crawl->child[index];
+                node_crawl = temp;
             }
 
-            while(level < length)
+            while(level <= length)
             {
-                node_crawl->child[index] = new trie_node();
-                node_crawl = node_crawl->child[index];
-                node_crawl->val = key[level++];
+                temp = new trie_node();
+                node_crawl->set_child(index, temp);
+                node_crawl = temp;
+                node_crawl->set_val(key[level++]);
                 index = key[level];
             }
 
-            if(node_crawl->node)
+            attribute_node *node = node_crawl->get_node();
+            if(node)
             {
-                return node_crawl->node;
+                return node;
             }
 
             else
             {
-                return node_crawl->node = new attribute_node();
+                node = new attribute_node(key);
+                node_crawl->set_node(node);
+                return node;
             }
         }
 

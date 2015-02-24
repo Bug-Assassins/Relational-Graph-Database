@@ -29,8 +29,13 @@ class domain {
     {
         attribute_name = attr_name;
         data_type = type;
-
+        index = new trie();
         head = NULL;
+    }
+
+    trie *get_index()
+    {
+        return index;
     }
 };
 
