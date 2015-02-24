@@ -74,7 +74,7 @@ int main()
 
             case 0:
                 printf("Exiting cleanly!\n");
-                delete main_database;
+                main_database.clear();
                 break;
 
             default:
