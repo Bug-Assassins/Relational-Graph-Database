@@ -39,6 +39,10 @@ class attribute_node {
     {
         next = &n;
     }
+    void set_next(attribute_node* n)
+    {
+        next = n;
+    }
 
     attribute_node* get_next()
     {
@@ -49,6 +53,10 @@ class attribute_node {
     void connect_main_record(main_node &node)
     {
         nodes.push_back(&node);
+    }
+    void connect_main_record(main_node *node)
+    {
+        nodes.push_back(node);
     }
 
     //Function to get number of connected records
@@ -78,7 +86,10 @@ class main_node {
     {
         next = &next_node;
     }
-
+    void set_next(main_node* next_node)
+    {
+        next = next_node;
+    }
     main_node* get_next()
     {
         return next;
@@ -89,14 +100,15 @@ class main_node {
     {
         attribute_list.push_back(&attr);
     }
+    void add_attribute(attribute_node* attr)
+    {
+        attribute_list.push_back(attr);
+    }
 
     int attribute_count()
     {
         return attribute_list.size();
     }
-
-    
-
 };
 
 #endif // NODE_INCLUDED

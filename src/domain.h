@@ -17,7 +17,7 @@ class domain {
     int attr_length;
     std::string attribute_name;
     attribute_node *head;
-    trie index;
+    trie *index;
 
   public:
 
@@ -48,14 +48,14 @@ class domain {
     //Function to get trie Index
     trie get_index()
     {
-        return index;
+        return *index;
     }
 
     //Function to add new value to domain
-    attribute_node *add_new_value(std::string new_val)
+    void *add_get_new_value(std::string new_val, main_node* main)
     {
         //Add the new value to trie for indexing
-        attribute_node* new_node = index.insert_node(new_val);
+        attribute_node* new_node = index->insert_node(new_val);
 
         //Add the new node to domain
         if(head == NULL)
@@ -64,15 +64,18 @@ class domain {
         }
         else
         {
-            new_node.set_next(*head);
-            head = &new_node;
+            new_node->set_next(head);
+            head = new_node;
         }
+
+        new_node->connect_main_record(main);
+        main->add_attribute(new_node);
     }
 
     //Function to search for an attribute value in domain
     attribute_node* get_attr_node(std::string val)
     {
-        return index.query(val);
+        //return index->query(val);
     }
 };
 
