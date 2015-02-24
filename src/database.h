@@ -26,6 +26,18 @@ class database {
         tables.push_back(tab);
     }
 
+    table *get_tables_index(int i)
+    {
+        if (i < tables.size())
+            return tables[i];
+        else
+            return NULL;
+    }
+    int get_tables_size()
+    {
+        return tables.size();
+    }
+
     //Function to deallocate the database
     void clear()
     {

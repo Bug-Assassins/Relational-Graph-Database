@@ -65,6 +65,24 @@ class table {
         }
     }
 
+    std::string get_table_name()
+    {
+        return name;
+    }
+
+    int get_attribute_count()
+    {
+        return attribute_count;
+    }
+    domain *get_normal_index(int i)
+    {
+        if (i < normal.size())
+            return normal[i];
+        else
+            return NULL;
+    }
+    
+
     //Function to deallocate memory occupied by the table
     void clear()
     {

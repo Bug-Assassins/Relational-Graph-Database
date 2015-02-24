@@ -16,7 +16,7 @@ int create_table(database *main_database)
     table *temp_table;
 
     if (VERBOSE)
-        printf("Enter the table name\n");
+        printf("Enter the table name:");
     
     scanf("%s", temp_name);
 
@@ -30,7 +30,7 @@ int create_table(database *main_database)
     for (i = 0; i < attribute_count; i++)
     {
         if (VERBOSE)
-            printf("Enter the attribute name, type, length\n 1: INTEGER\n2: STRING\n3: FLOAT\n");
+            printf("Enter the attribute name, type, length\n1: INTEGER\n2: STRING\n3: FLOAT\n");
 
         scanf("%s %d %d", temp_name, &type, &length);
 
@@ -41,13 +41,45 @@ int create_table(database *main_database)
     return 0;
 }
 
+
+table *print_table(database *main_database)
+{
+    table *temp_table;
+    int i, index, att_count;
+
+    printf("Enter the table you want\n");
+    for (i = 0; i < main_database->get_tables_size(); i++)
+    {
+        printf("%d : %s\n", i + 1, main_database->get_tables_index(i)->get_table_name().c_str());   
+    }
+    scanf("%d", &index);
+    
+    temp_table = main_database->get_tables_index(index - 1);
+    att_count = temp_table->get_attribute_count();
+    
+    for (i = 0; i < att_count; i++)
+    {
+        printf ("%s\t%d\t%d\n", temp_table->get_normal_index(i)->get_attribute_name().c_str(),
+                                temp_table->get_normal_index(i)->get_data_type(),
+                                temp_table->get_normal_index(i)->get_attr_length());
+    }
+    return temp_table;
+}
+int insert_to_table(database *main_database)
+{
+    table *temp_table;
+    temp_table = print_table(main_database);
+
+    std::vector<std::string> values(temp_table->get_attribute_count());
+}
+
 int main()
 {
     int choice;
     char name[100];
 
     if (VERBOSE)
-        printf("Enter name of database");
+        printf("Enter name of database:");
 
     scanf("%s", name);
 
@@ -60,6 +92,8 @@ int main()
             printf("Enter your choice :\n");
             printf("1) Create a table\n");
             printf("2) Insert to table\n");
+            printf("3) Describe table\n");
+            printf("0) Exit\n");
         }
         scanf("%d", &choice);
 
@@ -70,7 +104,15 @@ int main()
                 break;
 
             case 2:
+                insert_to_table(main_database);
                 break;
+
+            case 3:
+                print_table(main_database);
+                break;
+
+            case 4:
+
 
             case 0:
                 printf("Exiting cleanly!\n");

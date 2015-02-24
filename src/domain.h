@@ -45,6 +45,20 @@ class domain {
         return attr_length;
     }
 
+    std::string get_attribute_name()
+    {
+        return attribute_name;
+    }
+    int get_data_type()
+    {
+        return data_type;
+    }
+    int get_attr_length()
+    {
+        return attr_length;
+    }
+
+
     //Function to get trie Index
     trie *get_index()
     {
