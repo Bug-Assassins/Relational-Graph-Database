@@ -46,9 +46,9 @@ class domain {
     }
 
     //Function to get trie Index
-    trie get_index()
+    trie *get_index()
     {
-        return *index;
+        return index;
     }
 
     //Function to add new value to domain
