@@ -18,7 +18,7 @@ class table {
     std::vector< domain * > normal;
     //std::vector< foreign_key * > foreign;
     //std::vector<table *> foreign_out;
-    std::vector<int> prime_in;
+    //std::vector<int> prime_in;
 
   public:
     //Constructor that creates a table with given name
@@ -34,6 +34,25 @@ class table {
     {
         attribute_count++;
         normal.push_back(&dom);
+    }
+    void add_attribute(domain* dom)
+    {
+        attribute_count++;
+        normal.push_back(dom);
+    }
+
+    //Function that adds a new record to table
+    void add_new_record(std::vector<std::string > values)
+    {
+        for(int i = 0; i < values.length(); i++)
+        {
+            if(normal[i]->get_attribute_length() < values[i].length())
+            {
+                //Logic when Given value is larger than the specified length of attribute
+                abort();
+            }
+            
+        }
     }
 
 };
