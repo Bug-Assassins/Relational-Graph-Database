@@ -52,10 +52,10 @@ class domain {
     }
 
     //Function to add new value to domain
-    void *add_get_new_value(std::string new_val, main_node* main)
+    void add_get_new_value(std::string new_val, main_node* main)
     {
         //Add the new value to trie for indexing
-        attribute_node* new_node = index->insert_node(new_val);
+        attribute_node* new_node = index->get_node(new_val, false);
 
         //Add the new node to domain
         if(head == NULL)
