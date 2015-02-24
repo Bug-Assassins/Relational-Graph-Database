@@ -64,6 +64,14 @@ class attribute_node {
     {
         return nodes.size();
     }
+
+    //Function to clear the node
+    void clear()
+    {
+        value.clear();
+        nodes.clear();
+    }
+
 };
 
 class main_node {
@@ -95,7 +103,7 @@ class main_node {
         return next;
     }
 
-    //Function to retr
+    //Function to add attribute to the main node
     void add_attribute(attribute_node &attr)
     {
         attribute_list.push_back(&attr);
@@ -105,9 +113,16 @@ class main_node {
         attribute_list.push_back(attr);
     }
 
+    //Function to return number of attributes
     int attribute_count()
     {
         return attribute_list.size();
+    }
+
+    //Function to deallocate memory
+    void clear()
+    {
+        attribute_list.clear();
     }
 };
 

@@ -65,6 +65,28 @@ class table {
         }
     }
 
+    //Function to deallocate memory occupied by the table
+    void clear()
+    {
+        name.clear();
+        for(int i = 0; i < normal.size(); i++)
+        {
+            normal[i]->clear();
+        }
+        normal.clear();
+        primary_keys.clear();
+
+        main_node *temp ;
+
+        while(head != NULL)
+        {
+            temp = head->get_next();
+            head->clear();
+            delete head;
+            head = temp;
+        }
+    }
+
 };
 
 #endif // TABLE_INCLUDED

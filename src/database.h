@@ -25,6 +25,16 @@ class database {
     {
         tables.push_back(&tab);
     }
+
+    //Function to deallocate the database
+    void clear()
+    {
+        name.clear();
+        for(int i = 0; i < tables.size(); i++)
+        {
+            tables.clear();
+        }
+    }
 };
 
 #endif // DATABASE_INCLUDED

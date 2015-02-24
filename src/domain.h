@@ -77,6 +77,23 @@ class domain {
     {
         //return index->query(val);
     }
+
+    //Function to deallocate the whole domain
+    void clear()
+    {
+        attribute_name.clear();
+        attribute_node* temp = head;
+
+        while(head != NULL)
+        {
+            temp = head->get_next();
+            head->clear();
+            delete head;
+            head = temp;
+        }
+        //index->clear();
+        delete index;
+    }
 };
 
 #endif // META_INCLUDED
