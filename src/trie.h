@@ -50,14 +50,10 @@ class trie_node {
 class trie{
 
   private:
-    trie_node root;
+        trie_node root;
 
   public:
 
-        attribute_node *insert_node(std::string key)
-        {
-            return NULL;
-        }
         attribute_node *get_node(std::string key, bool exists)
         {
             int level;
