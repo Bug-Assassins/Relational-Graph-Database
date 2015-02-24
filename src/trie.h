@@ -7,11 +7,11 @@
 
 class trie_node {
 
-    private :
+    private:
         char val;
         trie_node *child[MAX_SIZE];
         attribute_node *node;
-    public :
+    public:
         //Getter and Setter for val
         char get_val()
         {
@@ -49,12 +49,12 @@ class trie_node {
 
 class trie{
 
-  private :
-    trie_node root;
+  private:
+        trie_node root;
 
-  public :
+  public:
 
-        attribute_node *insert_node(std::string key)
+        attribute_node *get_node(std::string key, bool exists)
         {
             int level;
             int length = key.length() - 1;
@@ -68,10 +68,31 @@ class trie{
                 temp = node_crawl->get_child(index);
                 if(!temp)
                 {
-                    break;
+                    if(!exists)
+                    {
+                        return insert_node(node_crawl, key, level, length);
+                    }
+                    return NULL;
                 }
                 node_crawl = temp;
             }
+
+            attribute_node *node =  node_crawl->get_node();
+
+            if(!node && !exists)
+            {
+                node = new attribute_node(key);
+                node_crawl->set_node(node);
+            }
+
+            return node;
+
+        }
+
+        attribute_node *insert_node(trie_node *node_crawl, std::string key, int level, int length)
+        {
+            int index = key[level];
+            trie_node *temp;
 
             while(level <= length)
             {
@@ -82,18 +103,11 @@ class trie{
                 index = key[level];
             }
 
-            attribute_node *node = node_crawl->get_node();
-            if(node)
-            {
-                return node;
-            }
+            attribute_node *node;
+            node = new attribute_node(key);
+            node_crawl->set_node(node);
+            return node;
 
-            else
-            {
-                node = new attribute_node(key);
-                node_crawl->set_node(node);
-                return node;
-            }
         }
 
 };

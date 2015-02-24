@@ -21,9 +21,9 @@ class database {
     }
 
     //Function that adds a table to the database
-    void add_table(table &tab)
+    void add_table(table *tab)
     {
-        tables.push_back(&tab);
+        tables.push_back(tab);
     }
 
     //Function to deallocate the database
