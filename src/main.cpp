@@ -8,7 +8,7 @@
 #include "table.h"
 #include "trie.h"
 
-int create_table()
+int create_table(database *main_database)
 {
     char temp_name[100];
     int attribute_count, i, type, length;
@@ -37,6 +37,7 @@ int create_table()
         temp_domain = new domain(std::string(temp_name), type, length);
         temp_table->add_attribute(temp_domain);
     }
+    main_database->add_table(temp_table);
     return 0;
 }
 
@@ -50,9 +51,9 @@ int main()
 
     scanf("%s", name);
 
-    database * main_database = new database(std::string(name));
+    database *main_database = new database(std::string(name));
 
-    while (0)
+    while (1)
     {
         if (VERBOSE)
         {
@@ -65,7 +66,7 @@ int main()
         switch (choice)
         {
             case 1:
-                create_table();
+                create_table(main_database);
                 break;
 
             case 2:
@@ -80,6 +81,8 @@ int main()
                 printf("Not supported\n");
                 break;
         }
+        if (choice == 0)
+            break;
     }
 
     return 0;
