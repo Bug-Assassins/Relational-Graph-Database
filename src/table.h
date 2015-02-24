@@ -26,16 +26,15 @@ class table {
     {
         name = table_name;
         attribute_count = 0;
+        head = NULL;
     }
 
     //Function that adds an attribute to the table
-    void add_normal_attribute(domain &dom)
+    void add_attribute(domain &dom)
     {
         attribute_count++;
         normal.push_back(&dom);
     }
-
-    
 
 };
 

@@ -59,11 +59,43 @@ class attribute_node {
 };
 
 class main_node {
+
   public:
     std::vector< attribute_node * > attribute_list;
     main_node *next;
-    std::vector<main_node *> table_list;
-    std::vector<std::vector<main_node *> > foreign_in;
+    //std::vector<main_node *> table_list;
+    //std::vector<std::vector<main_node *> > foreign_in;
+
+  public:
+  	//constructor
+  	main_node()
+  	{
+  		next = NULL;
+  	}
+
+  	//Getter and Setter for next node
+  	void set_next(main_node &next_node)
+  	{
+  		next = &next_node;
+  	}
+
+  	main_node* get_next()
+  	{
+  		return next;
+  	}
+
+  	void add_attribute(attribute_node &attr)
+  	{
+  		attribute_list.push_back(&attr);
+  	}
+
+  	int attribute_count()
+  	{
+  		return attribute_list.size();
+  	}
+
+  	
+
 };
 
 #endif // NODE_INCLUDED
