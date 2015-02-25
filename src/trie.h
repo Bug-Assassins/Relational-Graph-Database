@@ -50,9 +50,13 @@ class trie_node {
 class trie{
 
   private:
-        trie_node root;
+        trie_node *root;
 
   public:
+        trie()
+        {
+            root = new trie_node();
+        }
 
         attribute_node *get_node(std::string key, bool exists)
         {
@@ -60,7 +64,7 @@ class trie{
             int length = key.length() - 1;
             int index;
             trie_node *temp , *node_crawl;
-            node_crawl = &root;
+            node_crawl = root;
 
             for(level = 0; level <= length; level++)
             {
@@ -108,6 +112,23 @@ class trie{
             node_crawl->set_node(node);
             return node;
 
+        }
+
+        void clear()
+        {
+            clear(root);
+        }
+
+        void clear(trie_node *root)
+        {
+            if(root != NULL)
+            {
+                for(int i = 0; i < MAX_SIZE; i++)
+                {
+                    clear(root->get_child(i));
+                }
+            }
+            delete root;
         }
 
 };

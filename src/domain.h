@@ -105,7 +105,7 @@ class domain {
             delete head;
             head = temp;
         }
-        //index->clear();
+        index->clear();
         delete index;
     }
 };
