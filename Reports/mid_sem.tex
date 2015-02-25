@@ -249,7 +249,7 @@ As of now we have been able to partially implement the proposed graph like stora
 \section{Implementation}
 We have implemented the functionalities to create a table, insert records to it and index the records for faster retrieval. As of now we have only considered String data type.
 \subsection{Indexing}
-Trie is the optimal indexing methodology that returns that maps a string to it's corresponding node in the graph. The algorithmic complexity of inserting and querying a string in trie is $\mathcal{O} \left( d\right)$ where, $d$ is the length of the string mapped. The data structure can be further optimized in terms of storage requirements by using a compressed trie. However, for time bound remains optimal.
+Trie is the optimal indexing methodology that maps a string to it's corresponding node in the graph. The algorithmic complexity of inserting and querying a string in trie is $\mathcal{O} \left( d\right)$ where, $d$ is the length of the string mapped. The data structure can be further optimized in terms of storage requirements by using a compressed trie. However, for time bound remains optimal.
 \par
 The \emph{trie} class in the source code provides all the properties and functions required to index string data.
 \subsection{Code Structure}
@@ -263,7 +263,7 @@ The Code is divided into multiple files for ease of development. Each file provi
  \item \textbf{Others} - Other classes such as primary and foreign key are also there however they are currently not been used.
 \end{enumerate}
 \section{Results}
-The Results of out study can be divided into two sections - Storage and Time. We have performed both theoretical and well as practical memory bound calculations. \\
+The Results of our study can be divided into two sections - Storage and Time. We have performed both theoretical as well as practical memory bound calculations. \\
 \subsection{Theoretical Calculations}
 Each of the record in the graph storage has following extra data :
 \begin{itemize}
@@ -296,7 +296,7 @@ $n$ = Number of tuples in a table, \\
 $rs$ = Theoretical size of each tuple in a table \\
 
 \par
-Using equation ~\ref{grsize} and ~\ref{rdbmssize} we can conclude that given a particular table (Fixed number of attributes) on a particular system (Fixed Pointer Size) the Space complexity of both the engines is same i.e., $\mathcal{O}\left( n\right)$ where, $n$ is the number of tuples in the table. However, for absolute measurement we can equate the two equation to obtain a break-even point after which the graph storage engine is more efficient than the traditional relation model. 
+Using equation ~\ref{grsize} and ~\ref{rdbmssize} we can conclude that given a particular table (Fixed number of attributes) on a particular system (Fixed Pointer Size) the Space complexity of both the engines is same i.e., $\mathcal{O}\left( n\right)$ where, $n$ is the number of tuples in the table. However, for absolute measurement we can equate the two equation to obtain a break-even point after which the graph storage engine is more efficient than the traditional relational model. 
 \begin{center}
   \begin{math}
     (n * x * rs) + (n * ptr * (3 * attr + 1)) < n * rs
@@ -317,10 +317,10 @@ Assuming a typical record size to be 400 bytes, number of attributes to be 5, po
   x < 0.68
  \end{math}
 \end{center}
-which means that if at-least 32\% of values in a table are repeated then the graph storage engine occupies less space than the relational databases. In a real-life database there numerous duplicate entries and thus the proposed storage model may perform better.
+which means that if at-least 32\% of values in a table are repeated then the graph storage engine occupies less space than the relational databases. In a real-life database there are numerous duplicate entries and thus the proposed storage model may perform better.
 
 \subsection{Practical Observation}
-We created an equivalent table in both a traditional RDBMS and our graph storage. We measured the size occupied by both the models. We have plotted several graphs. All this testing was done using a single table with 4 attributes and size of each attribute to be 80 bytes. Numbers of records are increasing along X axis, while space occupied by the model is increasing along Y axis.
+We created an equivalent table in both traditional RDBMS and our graph storage. We measured the size occupied by both the models. We have plotted several graphs. All this testing was done using a single table with 4 attributes and size of each attribute to be 80 bytes. Numbers of records are increasing along X axis, while space occupied by the model is increasing along Y axis.
 \begin{enumerate}
  \item \textbf{100 Records} - Number of records was varied between 1 to 100. Observations were made after every record.
  \begin{figure}[H]
@@ -358,7 +358,7 @@ We created an equivalent table in both a traditional RDBMS and our graph storage
 \par
 It is clearly evident from these plots that traditional RDBMS increases their storage space in steps. In the long run the graph model performs better.
 \par
-However, Several factors were not accounted while making these observation - which makes these observations a little less reliable. We intend to perform a more vigorous analysis of the storage requirement in future.
+However, Several factors were not accounted while making these observations - which makes these observations a little less reliable. We intend to perform a more vigorous analysis of the storage requirement in future.
 
 \pagebreak
 
