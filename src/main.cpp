@@ -1,5 +1,6 @@
 #define VERBOSE 1
 #include <cstdio>
+#include <cstring>
 #include <iostream>
 #include "database.h"
 #include "domain.h"
@@ -35,7 +36,7 @@ int create_table(database *main_database)
         scanf("%s %d %d", temp_name, &type, &length);
 
         temp_domain = new domain(std::string(temp_name), type, length);
-        temp_table->add_to_size(sizeof(*temp_domain));
+        temp_table->add_to_size(sizeof(*temp_domain) + strlen(temp_name) - sizeof(std::string));
         temp_table->add_attribute(temp_domain);
     }
 

@@ -21,9 +21,9 @@ class domain {
 
   public:
 
-    static const int INTEGER = 1;
+   /* static const int INTEGER = 1;
     static const int STRING = 2;
-    static const int FLOAT = 3;
+    static const int FLOAT = 3;*/
 
     //Constructor for a new domain
     domain(std::string attr_name, int type, int length)
@@ -83,7 +83,7 @@ class domain {
         {
             new_node->set_next(head);
             head = new_node;
-            node_size += sizeof(*head);
+            node_size += sizeof(*head) + new_val.length() - sizeof(std::string);
         }
 
         new_node->connect_main_record(main);
