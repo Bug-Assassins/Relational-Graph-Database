@@ -49,7 +49,7 @@ int create_table(database *main_database)
     for (i = 0; i < pkey_span; i++)
     {
         scanf("%d", &temp_int);
-        temp_table->add_primary_key_index(temp_int);
+        temp_table->add_primary_key_index(temp_int - 1);
     }
 
     main_database->add_table(temp_table);
@@ -62,30 +62,56 @@ table *print_table(database *main_database)
     table *temp_table;
     int i, index, att_count;
 
-    printf("Enter the table you want\n");
-    for (i = 0; i < main_database->get_tables_size(); i++)
+    if (VERBOSE)
     {
-        printf("%d : %s\n", i + 1, main_database->get_tables_index(i)->get_table_name().c_str());   
+        printf("Enter the table you want\n");
+        for (i = 0; i < main_database->get_tables_size(); i++)
+        {
+            printf("%d : %s\n", i + 1, main_database->get_tables_index(i)->get_table_name().c_str());   
+        }
     }
     scanf("%d", &index);
     
     temp_table = main_database->get_tables_index(index - 1);
     att_count = temp_table->get_attribute_count();
     
-    for (i = 0; i < att_count; i++)
+    if (VERBOSE)
     {
-        printf ("%s\t%d\t%d\n", temp_table->get_normal_index(i)->get_attribute_name().c_str(),
-                                temp_table->get_normal_index(i)->get_data_type(),
-                                temp_table->get_normal_index(i)->get_attr_length());
+        for (i = 0; i < att_count; i++)
+        {
+            printf ("%s\t%d\t%d\n", temp_table->get_normal_index(i)->get_attribute_name().c_str(),
+                                    temp_table->get_normal_index(i)->get_data_type(),
+                                    temp_table->get_normal_index(i)->get_attr_length());
+        }
     }
+
     return temp_table;
 }
+
 int insert_to_table(database *main_database)
 {
+    int index;
+    char temp_char_arr[100];
     table *temp_table;
     temp_table = print_table(main_database);
 
     std::vector<std::string> values(temp_table->get_attribute_count());
+
+    if (VERBOSE)
+    {
+        printf("Enter the index of the column and the value. Enter 0 as the index to finish entering info\n");
+    }
+
+    while (1)
+    {
+        scanf("%d", &index);
+        if (index == 0)
+            break;
+        scanf("%s", temp_char_arr);
+        values[index - 1].assign(temp_char_arr);
+    }
+    temp_table->add_new_record(values);
+    values.clear();
 }
 
 int main()
@@ -125,9 +151,6 @@ int main()
             case 3:
                 print_table(main_database);
                 break;
-
-            case 4:
-
 
             case 0:
                 printf("Exiting cleanly!\n");
