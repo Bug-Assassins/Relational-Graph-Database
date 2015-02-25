@@ -12,3 +12,7 @@ Reports/mid_sem.log
 Reports/mid_sem.lot
 Reports/mid_sem.out
 Reports/mid_sem.toc
+Reports/mid_sem.tex.backup
+theory/calc
+*~
+*.o
