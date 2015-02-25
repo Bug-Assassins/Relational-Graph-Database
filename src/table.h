@@ -91,7 +91,7 @@ class table {
     {
         return head;
     }
-    
+
 
     //Function to deallocate memory occupied by the table
     void clear()
@@ -100,6 +100,7 @@ class table {
         for(int i = 0; i < normal.size(); i++)
         {
             normal[i]->clear();
+            delete normal[i];
         }
         normal.clear();
         primary_keys.clear();
