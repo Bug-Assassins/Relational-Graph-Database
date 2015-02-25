@@ -183,7 +183,7 @@ Date: \today
 	\textbf{ \huge Abstract}
 \end{center}
 \vspace{1cm}
-Relational Database Management Systems has been there for quite a few decades. They are still the most popular means of storing huge amount of data on disk. Relational databases are efficient in most cases however in certain types of queries (Join) they fail to compute the result efficiently. In recent times a quite a bit of research has been done on Graph Databases - which seems like  a promising solution to the bottleneck. Many implementation of such databases have come up - Google's Cayley, Neo4j, etc. However even these graph database suffer from several overhead.
+Relational Database Management System has been there for quite a few decades. Relational databases are still the most popular means of storing huge amount of data on disk. They are efficient in most cases however in certain types of queries like Join they fail to compute the results efficiently. In recent times, quite a bit of research has been done on Graph Databases - which seems like a promising solution to the bottleneck. Many implementations of such databases have come up - Google's Cayley, Neo4j, etc. However even these graph databases suffer from several overheads.
 \par
 This project aims at exploring the various ways of using a graph-like storage model for traditional Relational Databases.
 \par
@@ -197,21 +197,23 @@ This project aims at exploring the various ways of using a graph-like storage mo
 \setcounter{page}{1}
 \pagenumbering{arabic}
 
-\chapter{Introduction}
-In computing, a graph database is a database that uses graph structures for semantic queries with nodes, edges, and properties to represent and store data. A graph database is any storage system that provides index-free adjacency. This means that every element contains a direct pointer to its adjacent elements and no index lookups are necessary.
+\chapter{Literature Review}
+As the name suggests, graph database model uses graph structures for semantic queries with nodes, edges, and properties to represent and store data. A graph database storage system provides index-free adjacency. This means that every element contains a direct pointer to its adjacent elements and no index lookups are necessary.
 \section{Motivation}
-Graph Databases seems like a promising model to solve all the problems the exist with the current relational databases. They provide an optimal may to compute the equivalent of the join query in a relational database. However, Graph databases have their own overheads and drawbacks. Sometimes it is very difficult or even impossible to contruct the equivalent relational database from a graph database. Moreover graph databases don't use SQL and as such it is very difficult for the programmers to realize the query they want to perform. \\
+Graph Databases seem like a promising model to solve all the problems that exist with the current relational databases. They provide an optimal way to compute the equivalent of the join query in a relational database. Recently there has been increased interest in graphs to represent social networks, web site link structures, and others. Within the field of biology itself, there are many uses for graphs, including metabolic networks, protein-protein interaction networks, chemical structure graphs, gene clusters, and genetic maps. Graphs truly are one of the most useful structures for modeling objects and interactions. However, Graph databases have their own overheads and drawbacks. Sometimes it is very difficult or even impossible to contruct the equivalent relational database from a graph database. Moreover, graph databases don't use SQL and as such it is very difficult for the programmers to realize the query they want to perform. \\
+\par
+Owing to these reasons, the use of graph databases is currently limited. We were motivated to resolve this problem by taking a middle path between graph and relational databases. We wanted to explore the various ways to optimize the query execution time as well as the storage of the currently popular relational databases. We also wanted to eliminate some sort of data redundancy in a typical relational database system.
 \begin{figure}[h]
  \begin{center}
-  \includegraphics[width=0.7\textwidth]{pics/graph.png}
+  \includegraphics[width=\textwidth]{pics/graph.png}
   \caption{A Graph Database}
  \end{center}
 \end{figure}
-\\
-Owing to these reasons the use of graph database is currently limited. We were motivated to resolve this problem by taking a middle path between graph and relational databases. We wanted to explore the various way to optimize the query execution time as well as the storage of the currently popular relational databases. We also wanted to eliminate all the redundancy in a typical relational database.
-
 
 \pagebreak
+
+
+
 \bibliographystyle{ieeetr}
 \bibliography{biblio}
 \addcontentsline{toc}{chapter}{Bibliography}
