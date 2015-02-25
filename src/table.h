@@ -17,6 +17,7 @@ class table {
     std::string name; //Name of the Table
     main_node *head; //Head to the main list of the table
     int attribute_count; //
+    size_t total_size;
     std::vector< domain * > normal;
     //std::vector< foreign_key * > foreign;
     //std::vector<table *> foreign_out;
@@ -61,10 +62,12 @@ class table {
                 //Logic when Given value is larger than the specified length of attribute
                 abort();
             }
-            normal[i]->add_get_new_value(values[i], new_main);
+            add_to_size(normal[i]->add_get_new_value(values[i], new_main));
         }
+
         new_main->set_next(head);
         head = new_main;
+        add_to_size(sizeof(*head));
     }
 
     std::string get_table_name()
@@ -114,6 +117,16 @@ class table {
             delete head;
             head = temp;
         }
+    }
+
+    void add_to_size(size_t add)
+    {
+        total_size += add;
+    }
+
+    size_t get_size()
+    {
+        return total_size;
     }
 
 };

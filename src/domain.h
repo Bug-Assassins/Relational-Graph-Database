@@ -66,24 +66,29 @@ class domain {
     }
 
     //Function to add new value to domain
-    void add_get_new_value(std::string new_val, main_node* main)
+    size_t add_get_new_value(std::string new_val, main_node* main)
     {
+        bool exists = false;
+        size_t node_size = sizeof(main);
+
         //Add the new value to trie for indexing
-        attribute_node* new_node = index->get_node(new_val, false);
+        attribute_node* new_node = index->get_node(new_val, exists);
 
         //Add the new node to domain
         if(head == NULL)
         {
             head = new_node;
         }
-        else
+        else if(!exists)
         {
             new_node->set_next(head);
             head = new_node;
+            node_size += sizeof(*head);
         }
 
         new_node->connect_main_record(main);
         main->add_attribute(new_node);
+        return node_size;
     }
 
     //Function to search for an attribute value in domain

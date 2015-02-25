@@ -58,7 +58,7 @@ class trie{
             root = new trie_node();
         }
 
-        attribute_node *get_node(std::string key, bool exists)
+        attribute_node *get_node(std::string key, bool &exists)
         {
             int level;
             int length = key.length() - 1;
@@ -87,6 +87,10 @@ class trie{
             {
                 node = new attribute_node(key);
                 node_crawl->set_node(node);
+            }
+            else
+            {
+                exists = true;
             }
 
             return node;

@@ -35,6 +35,7 @@ int create_table(database *main_database)
         scanf("%s %d %d", temp_name, &type, &length);
 
         temp_domain = new domain(std::string(temp_name), type, length);
+        temp_table->add_to_size(sizeof(*temp_domain));
         temp_table->add_attribute(temp_domain);
     }
 
@@ -52,6 +53,7 @@ int create_table(database *main_database)
         temp_table->add_primary_key_index(temp_int - 1);
     }
 
+    temp_table->add_to_size(sizeof(*temp_table));
     main_database->add_table(temp_table);
     return 0;
 }
@@ -112,6 +114,7 @@ int insert_to_table(database *main_database)
     }
     temp_table->add_new_record(values);
     values.clear();
+    printf("%lu\n", temp_table->get_size());
 }
 
 int print_table(database *main_database)
