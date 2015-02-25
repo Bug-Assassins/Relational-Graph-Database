@@ -3,3 +3,12 @@ src/test.cpp
 src/*.o
 src/test
 src/main
+Reports/mid_sem.pdf
+Reports/mid_sem.aux
+Reports/mid_sem.bbl
+Reports/mid_sem.blg
+Reports/mid_sem.lof
+Reports/mid_sem.log
+Reports/mid_sem.lot
+Reports/mid_sem.out
+Reports/mid_sem.toc
