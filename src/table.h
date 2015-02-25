@@ -81,6 +81,11 @@ class table {
         else
             return NULL;
     }
+    int add_primary_key_index(int i)
+    {
+        primary_keys.push_back(i);
+    }
+
     
 
     //Function to deallocate memory occupied by the table

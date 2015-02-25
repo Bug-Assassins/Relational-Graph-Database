@@ -11,7 +11,7 @@
 int create_table(database *main_database)
 {
     char temp_name[100];
-    int attribute_count, i, type, length;
+    int attribute_count, i, type, length, pkey_span, temp_int;
     domain *temp_domain;
     table *temp_table;
 
@@ -37,6 +37,21 @@ int create_table(database *main_database)
         temp_domain = new domain(std::string(temp_name), type, length);
         temp_table->add_attribute(temp_domain);
     }
+
+    if (VERBOSE)
+        printf("Enter the number of columns in primary key:");
+
+    scanf("%d", &pkey_span);
+
+    if (VERBOSE)
+        printf("Enter the indices of %d primary key columns\n", pkey_span);
+
+    for (i = 0; i < pkey_span; i++)
+    {
+        scanf("%d", &temp_int);
+        temp_table->add_primary_key_index(temp_int);
+    }
+
     main_database->add_table(temp_table);
     return 0;
 }
