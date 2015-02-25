@@ -44,8 +44,9 @@ class database {
         name.clear();
         for(int i = 0; i < tables.size(); i++)
         {
-            tables.clear();
+            tables[i]->clear();
         }
+        tables.clear();
     }
 };
 

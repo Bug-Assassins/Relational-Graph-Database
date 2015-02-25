@@ -17,7 +17,7 @@ int create_table(database *main_database)
 
     if (VERBOSE)
         printf("Enter the table name:");
-    
+
     scanf("%s", temp_name);
 
     temp_table = new table(std::string(temp_name));
@@ -67,14 +67,14 @@ table *print_table_details(database *main_database)
         printf("Enter the table you want\n");
         for (i = 0; i < main_database->get_tables_size(); i++)
         {
-            printf("%d : %s\n", i + 1, main_database->get_tables_index(i)->get_table_name().c_str());   
+            printf("%d : %s\n", i + 1, main_database->get_tables_index(i)->get_table_name().c_str());
         }
     }
     scanf("%d", &index);
-    
+
     temp_table = main_database->get_tables_index(index - 1);
     att_count = temp_table->get_attribute_count();
-    
+
     if (VERBOSE)
     {
         for (i = 0; i < att_count; i++)
@@ -119,7 +119,7 @@ int print_table(database *main_database)
     int attribute_count, i;
     table *temp_table;
     main_node *temp_main_node;
-    
+
     temp_table = print_table_details(main_database);
     temp_main_node = temp_table->get_main_node_head();
     attribute_count = temp_table->get_attribute_count();
@@ -181,6 +181,7 @@ int main()
             case 0:
                 printf("Exiting cleanly!\n");
                 main_database->clear();
+                delete main_database;
                 break;
 
             default:
