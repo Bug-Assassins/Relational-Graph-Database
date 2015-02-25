@@ -127,8 +127,9 @@ class trie{
                 {
                     clear(root->get_child(i));
                 }
+
+                delete root;
             }
-            delete root;
         }
 
 };
