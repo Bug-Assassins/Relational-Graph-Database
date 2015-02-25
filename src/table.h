@@ -63,6 +63,8 @@ class table {
             }
             normal[i]->add_get_new_value(values[i], new_main);
         }
+        new_main->set_next(head);
+        head = new_main;
     }
 
     std::string get_table_name()
@@ -85,7 +87,10 @@ class table {
     {
         primary_keys.push_back(i);
     }
-
+    main_node *get_main_node_head()
+    {
+        return head;
+    }
     
 
     //Function to deallocate memory occupied by the table

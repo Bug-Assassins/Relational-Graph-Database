@@ -57,7 +57,7 @@ int create_table(database *main_database)
 }
 
 
-table *print_table(database *main_database)
+table *print_table_details(database *main_database)
 {
     table *temp_table;
     int i, index, att_count;
@@ -93,7 +93,7 @@ int insert_to_table(database *main_database)
     int index;
     char temp_char_arr[100];
     table *temp_table;
-    temp_table = print_table(main_database);
+    temp_table = print_table_details(main_database);
 
     std::vector<std::string> values(temp_table->get_attribute_count());
 
@@ -112,6 +112,27 @@ int insert_to_table(database *main_database)
     }
     temp_table->add_new_record(values);
     values.clear();
+}
+
+int print_table(database *main_database)
+{
+    int attribute_count, i;
+    table *temp_table;
+    main_node *temp_main_node;
+    
+    temp_table = print_table_details(main_database);
+    temp_main_node = temp_table->get_main_node_head();
+    attribute_count = temp_table->get_attribute_count();
+
+    while (temp_main_node != NULL)
+    {
+        for (i = 0; i < attribute_count; i++)
+        {
+            printf("%s\t",temp_main_node->attribute_list[i]->get_value().c_str());
+        }
+        printf("\n");
+        temp_main_node = temp_main_node->get_next();
+    }
 }
 
 int main()
@@ -134,6 +155,7 @@ int main()
             printf("1) Create a table\n");
             printf("2) Insert to table\n");
             printf("3) Describe table\n");
+            printf("4) Print a table\n");
             printf("0) Exit\n");
         }
         scanf("%d", &choice);
@@ -149,6 +171,10 @@ int main()
                 break;
 
             case 3:
+                print_table_details(main_database);
+                break;
+
+            case 4:
                 print_table(main_database);
                 break;
 
