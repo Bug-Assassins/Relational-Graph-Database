@@ -34,10 +34,11 @@ class table {
     }
 
     //Function that adds an attribute to the table
-    void add_attribute(domain* dom)
+    void add_attribute(domain* dom, std::string name)
     {
         attribute_count++;
         normal.push_back(dom);
+        attribute_names.push_back(name);
     }
 
     //Function to add primary key to the table
@@ -65,7 +66,10 @@ class table {
         head = new_main;
         add_to_size(sizeof(*head));
     }
-
+    std::string get_attribute_name(int index)
+    {
+        return attribute_names[index];
+    }
     std::string get_table_name()
     {
         return name;

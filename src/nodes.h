@@ -74,7 +74,7 @@ class attribute_node {
 
 class main_node {
 
-  public:
+  private:
     std::vector< attribute_node * > attribute_list;
     main_node *next;
     //std::vector<main_node *> table_list;
@@ -95,6 +95,10 @@ class main_node {
     main_node* get_next()
     {
         return next;
+    }
+    attribute_node *get_attribute_list_index(int i)
+    {
+        return attribute_list[i];
     }
 
     //Function to add attribute to the main node

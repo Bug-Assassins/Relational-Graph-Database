@@ -26,10 +26,8 @@ class domain {
     static const int FLOAT = 3;
 
     //Constructor for a new domain
-    //To be modified
-    domain(std::string attr_name, int type, int length)
+    domain(int type, int length)
     {
-        //attribute_name = attr_name;
         data_type = type;
         attr_length = length;
         index = new trie();
@@ -45,13 +43,6 @@ class domain {
     {
         return attr_length;
     }
-
-    /*
-    std::string get_attribute_name()
-    {
-        return attribute_name;
-    }
-    */
 
     int get_data_type()
     {
@@ -94,12 +85,6 @@ class domain {
         new_node->connect_main_record(main);
         main->add_attribute(new_node);
         return node_size;
-    }
-
-    //Function to search for an attribute value in domain
-    attribute_node* get_attr_node(std::string val)
-    {
-        //return index->query(val);
     }
 
     //Function to deallocate the whole domain

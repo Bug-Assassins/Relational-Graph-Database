@@ -1,4 +1,4 @@
-#define VERBOSE 0
+#define VERBOSE 1
 #include <cstdio>
 #include <cstring>
 #include <iostream>
@@ -11,8 +11,9 @@
 
 int create_table(database *main_database)
 {
+    std::vector<std::string>names;
     char temp_name[100];
-    int attribute_count, i, type, length, pkey_span, temp_int;
+    int attribute_count, i, type, length, pkey_span, temp_int, fk_count;
     domain *temp_domain;
     table *temp_table;
 
@@ -28,6 +29,11 @@ int create_table(database *main_database)
 
     scanf("%d", &attribute_count);
 
+    if (VERBOSE)
+        printf("Enter the number of foreign keys:\n"); // Foreign keys will be accepted first
+
+    scanf("%d", &fk_count);
+
     for (i = 0; i < attribute_count; i++)
     {
         if (VERBOSE)
@@ -35,9 +41,16 @@ int create_table(database *main_database)
 
         scanf("%s %d %d", temp_name, &type, &length);
 
-        temp_domain = new domain(std::string(temp_name), type, length);
+        if (i < fk_count)
+        {
+
+        }
+        else
+        {
+            temp_domain = new domain(type, length);
+        }
         temp_table->add_to_size(sizeof(*temp_domain) + strlen(temp_name));
-        temp_table->add_attribute(temp_domain);
+        temp_table->add_attribute(temp_domain, std::string(temp_name));
     }
 
     if (VERBOSE)
@@ -82,10 +95,10 @@ table *print_table_details(database *main_database)
     {
         for (i = 0; i < att_count; i++)
         {
-            /*
-            printf ("%s\t%d\t%d\n", temp_table->get_normal_index(i)->get_attribute_name().c_str(),
+        
+            printf ("%s\t%d\t%d\n", temp_table->get_attribute_name(i).c_str(),
                                     temp_table->get_normal_index(i)->get_data_type(),
-                                    temp_table->get_normal_index(i)->get_attr_length());*/
+                                    temp_table->get_normal_index(i)->get_attr_length());
         }
     }
 
@@ -133,7 +146,7 @@ int print_table(database *main_database)
     {
         for (i = 0; i < attribute_count; i++)
         {
-            printf("%s\t",temp_main_node->attribute_list[i]->get_value().c_str());
+            printf("%s\t",temp_main_node->get_attribute_list_index(i)->get_value().c_str());
         }
         printf("\n");
         temp_main_node = temp_main_node->get_next();
