@@ -11,7 +11,7 @@ class attribute_node {
 
   private:
     std::string value;
-    std::vector< main_node* > nodes;
+    std::vector< std::vector< main_node* > > nodes;
     attribute_node *next;
 
   public:
@@ -35,10 +35,6 @@ class attribute_node {
     }
 
     //Getter and Setter for next pointer
-    void set_next(attribute_node &n)
-    {
-        next = &n;
-    }
     void set_next(attribute_node* n)
     {
         next = n;
@@ -50,25 +46,27 @@ class attribute_node {
     }
 
     //Function to added details of connected record
-    void connect_main_record(main_node &node)
-    {
-        nodes.push_back(&node);
-    }
     void connect_main_record(main_node *node)
     {
-        nodes.push_back(node);
+        //To be modified
+        //nodes.push_back(node);
     }
 
     //Function to get number of connected records
     int get_num_records()
     {
-        return nodes.size();
+        //To be modified
+        //return nodes.size();
     }
 
     //Function to clear the node
     void clear()
     {
         value.clear();
+        for(int i = 0; i < nodes.size(); i++)
+        {
+            nodes[i].clear();
+        }
         nodes.clear();
     }
 
@@ -90,10 +88,6 @@ class main_node {
     }
 
     //Getter and Setter for next node
-    void set_next(main_node &next_node)
-    {
-        next = &next_node;
-    }
     void set_next(main_node* next_node)
     {
         next = next_node;
@@ -104,10 +98,6 @@ class main_node {
     }
 
     //Function to add attribute to the main node
-    void add_attribute(attribute_node &attr)
-    {
-        attribute_list.push_back(&attr);
-    }
     void add_attribute(attribute_node* attr)
     {
         attribute_list.push_back(attr);

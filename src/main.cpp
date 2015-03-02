@@ -1,4 +1,4 @@
-#define VERBOSE 1
+#define VERBOSE 0
 #include <cstdio>
 #include <cstring>
 #include <iostream>
@@ -36,7 +36,7 @@ int create_table(database *main_database)
         scanf("%s %d %d", temp_name, &type, &length);
 
         temp_domain = new domain(std::string(temp_name), type, length);
-        temp_table->add_to_size(sizeof(*temp_domain) + strlen(temp_name) - sizeof(std::string));
+        temp_table->add_to_size(sizeof(*temp_domain) + strlen(temp_name));
         temp_table->add_attribute(temp_domain);
     }
 
@@ -82,9 +82,10 @@ table *print_table_details(database *main_database)
     {
         for (i = 0; i < att_count; i++)
         {
+            /*
             printf ("%s\t%d\t%d\n", temp_table->get_normal_index(i)->get_attribute_name().c_str(),
                                     temp_table->get_normal_index(i)->get_data_type(),
-                                    temp_table->get_normal_index(i)->get_attr_length());
+                                    temp_table->get_normal_index(i)->get_attr_length());*/
         }
     }
 
@@ -183,7 +184,7 @@ int main()
                 break;
 
             case 0:
-                printf("Exiting cleanly!\n");
+                //printf("Exiting cleanly!\n");
                 main_database->clear();
                 delete main_database;
                 break;

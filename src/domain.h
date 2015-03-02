@@ -15,20 +15,21 @@ class domain {
   private:
     int data_type;
     int attr_length;
-    std::string attribute_name;
+    //std::string attribute_name;
     attribute_node *head;
     trie *index;
 
   public:
 
-   /* static const int INTEGER = 1;
+    static const int INTEGER = 1;
     static const int STRING = 2;
-    static const int FLOAT = 3;*/
+    static const int FLOAT = 3;
 
     //Constructor for a new domain
+    //To be modified
     domain(std::string attr_name, int type, int length)
     {
-        attribute_name = attr_name;
+        //attribute_name = attr_name;
         data_type = type;
         attr_length = length;
         index = new trie();
@@ -45,10 +46,13 @@ class domain {
         return attr_length;
     }
 
+    /*
     std::string get_attribute_name()
     {
         return attribute_name;
     }
+    */
+
     int get_data_type()
     {
         return data_type;
@@ -78,6 +82,7 @@ class domain {
         if(head == NULL)
         {
             head = new_node;
+            node_size += sizeof(*head) + new_val.length() - sizeof(std::string);
         }
         else if(!exists)
         {
@@ -100,7 +105,7 @@ class domain {
     //Function to deallocate the whole domain
     void clear()
     {
-        attribute_name.clear();
+        //attribute_name.clear();
         attribute_node* temp = head;
 
         while(head != NULL)

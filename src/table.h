@@ -16,9 +16,10 @@ class table {
   private:
     std::string name; //Name of the Table
     main_node *head; //Head to the main list of the table
-    int attribute_count; //
+    int attribute_count; //Number of attributes
     size_t total_size;
     std::vector< domain * > normal;
+    std::vector< std::string > attribute_names;
     //std::vector< foreign_key * > foreign;
     //std::vector<table *> foreign_out;
     std::vector<int> primary_keys;
@@ -33,11 +34,6 @@ class table {
     }
 
     //Function that adds an attribute to the table
-    void add_attribute(domain &dom)
-    {
-        attribute_count++;
-        normal.push_back(&dom);
-    }
     void add_attribute(domain* dom)
     {
         attribute_count++;
