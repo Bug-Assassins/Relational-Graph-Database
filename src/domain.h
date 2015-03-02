@@ -16,6 +16,7 @@ class domain {
     int data_type;
     int attr_length;
     //std::string attribute_name;
+    vector<table *>table_list;
     attribute_node *head;
     trie *index;
 

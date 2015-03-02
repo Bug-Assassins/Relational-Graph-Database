@@ -43,7 +43,8 @@ int create_table(database *main_database)
 
         if (i < fk_count)
         {
-
+            scanf("%d", &table_index, &col_index);
+            //temp_domain = main_database->get_table_index(table_index - 1)->get_normal_index(col_index - 1)->
         }
         else
         {
