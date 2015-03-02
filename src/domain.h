@@ -9,6 +9,7 @@ class attribute_node;
 
 #include "nodes.h"
 #include "trie.h"
+#include "table.h"
 
 class domain {
 
@@ -35,25 +36,17 @@ class domain {
         head = NULL;
     }
 
-    //Fucntion to get and set length of attribute
-    void set_attribute_length(int len)
-    {
-        attr_length = len;
-    }
-    int get_attribute_length()
-    {
-        return attr_length;
-    }
-
-    int get_data_type()
-    {
-        return data_type;
-    }
+    //Fucntion to get length of attribute
     int get_attr_length()
     {
         return attr_length;
     }
 
+    //Function to get and set data type
+    int get_data_type()
+    {
+        return data_type;
+    }
 
     //Function to get trie Index
     trie *get_index()
@@ -103,6 +96,12 @@ class domain {
         }
         index->clear();
         delete index;
+    }
+
+    //Function to include this domain in a new table
+    void add_to_table(table* tab)
+    {
+        table_list.push_back(tab);
     }
 };
 

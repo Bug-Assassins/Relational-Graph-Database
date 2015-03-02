@@ -45,18 +45,17 @@ class attribute_node {
         return next;
     }
 
-    //Function to added details of connected record
-    void connect_main_record(main_node *node)
+    //Function to add details of connected record of a given table
+    //Index number follows from the domain class
+    void connect_main_record(main_node *node, int tab_index)
     {
-        //To be modified
-        //nodes.push_back(node);
+        nodes[tab_index].push_back(node);
     }
 
     //Function to get number of connected records
-    int get_num_records()
+    int get_num_records(int tab_index)
     {
-        //To be modified
-        //return nodes.size();
+        return nodes[tab_index].size();
     }
 
     //Function to clear the node
