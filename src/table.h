@@ -23,7 +23,8 @@ class table {
     std::vector< std::string > attribute_names;
     //std::vector< foreign_key * > foreign;
     //std::vector<table *> foreign_out;
-    std::vector<int> primary_keys;
+    std::vector< int > primary_keys;
+    std::vector< std::pair< table *, std::vector< int > > > foreign_key;
 
   public:
     //Constructor that creates a table with given name
@@ -32,6 +33,17 @@ class table {
         name = table_name;
         attribute_count = 0;
         head = NULL;
+    }
+
+    int get_primary_key_size()
+    {
+        return primary_keys.size();
+    }
+
+    void add_foreign_key(table *temp_table, std::vector< int > &fk_list)
+    {
+        std::pair <table *, std::vector< int > > temp_pair = std::make_pair(temp_table, fk_list);
+        foreign_key.push_back(temp_pair);
     }
 
     //Function that adds an attribute to the table

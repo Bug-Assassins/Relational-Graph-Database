@@ -4,77 +4,11 @@
 #include <iostream>
 #include "database.h"
 #include "domain.h"
-#include "foreign_key.h"
 #include "nodes.h"
 #include "table.h"
 #include "trie.h"
 
-int create_table(database *main_database)
-{
-    std::vector< std::string > names;
-    char temp_name[100];
-    int attribute_count, i, type, length, pkey_span, temp_int, fk_count, table_index, col_index;
-    domain *temp_domain;
-    table *temp_table;
-
-    if (VERBOSE)
-        printf("Enter the table name:");
-
-    scanf("%s", temp_name);
-
-    temp_table = new table(std::string(temp_name));
-
-    if (VERBOSE)
-        printf("Enter the number of attributes:");
-
-    scanf("%d", &attribute_count);
-
-    if (VERBOSE)
-        printf("Enter the number of foreign keys:\n"); // Foreign keys will be accepted first
-
-    scanf("%d", &fk_count);
-
-    for (i = 0; i < attribute_count; i++)
-    {
-        if (VERBOSE)
-            printf("Enter the attribute name, type, length\n1: INTEGER\n2: STRING\n3: FLOAT\n");
-
-        scanf("%s %d %d", temp_name, &type, &length);
-
-        if (i < fk_count)
-        {
-            scanf("%d %d", &table_index, &col_index);
-            //temp_domain = main_database->get_table_index(table_index - 1)->get_normal_index(col_index - 1)->
-        }
-        else
-        {
-            temp_domain = new domain(type, length);
-        }
-        temp_table->add_to_size(sizeof(*temp_domain) + strlen(temp_name));
-        temp_table->add_attribute(temp_domain, std::string(temp_name));
-    }
-
-    if (VERBOSE)
-        printf("Enter the number of columns in primary key:");
-
-    scanf("%d", &pkey_span);
-
-    if (VERBOSE)
-        printf("Enter the indices of %d primary key columns\n", pkey_span);
-
-    for (i = 0; i < pkey_span; i++)
-    {
-        scanf("%d", &temp_int);
-        temp_table->add_primary_key_index(temp_int - 1);
-    }
-
-    temp_table->add_to_size(sizeof(*temp_table));
-    main_database->add_table(temp_table);
-    return 0;
-}
-
-
-table *print_table_details(database *main_database)
+int print_table_details(database *main_database)
 {
     table *temp_table;
     int i, index, att_count;
@@ -103,7 +37,78 @@ table *print_table_details(database *main_database)
         }
     }
 
-    return temp_table;
+    return index - 1;
+}
+
+int create_table(database *main_database)
+{
+    std::vector< std::string > names;
+    std::vector< int > fk_list;
+    char temp_name[100];
+    int attribute_count, i, j, type, length, pkey_span, temp_int, fk_count, table_index;
+    domain *temp_domain;
+    table *temp_table, *temp_table2;
+
+    if (VERBOSE)
+        printf("Enter the table name:");
+
+    scanf("%s", temp_name);
+
+    temp_table = new table(std::string(temp_name));
+
+    if (VERBOSE)
+        printf("Enter the number of attributes:");
+
+    scanf("%d", &attribute_count);
+
+    for (i = 0; i < attribute_count; i++)
+    {
+        if (VERBOSE)
+            printf("Enter the attribute name, type, length\n1: INTEGER\n2: STRING\n3: FLOAT\n");
+
+        scanf("%s %d %d", temp_name, &type, &length);
+
+        temp_domain = new domain(type, length);
+        temp_table->add_to_size(sizeof(*temp_domain) + strlen(temp_name));
+        temp_table->add_attribute(temp_domain, std::string(temp_name));
+    }
+
+    if (VERBOSE)
+        printf("Enter the number of columns in primary key:");
+
+    scanf("%d", &pkey_span);
+
+    if (VERBOSE)
+        printf("Enter the indices of %d primary key columns\n", pkey_span);
+
+    for (i = 0; i < pkey_span; i++)
+    {
+        scanf("%d", &temp_int);
+        temp_table->add_primary_key_index(temp_int - 1);
+    }
+
+    if (VERBOSE)
+        printf("Enter the number of table the foreign key spans:");
+
+    scanf("%d", &fk_count);
+
+    for (i = 0; i < fk_count; i++)
+    {
+        table_index = print_table_details(main_database);
+        fk_list.clear();
+        
+        temp_table2 =  main_database->get_tables_index(table_index);
+        for (j = 0; j <  temp_table2->get_primary_key_size(); j++)
+        {
+            scanf("%d", &temp_int);
+            fk_list.push_back(temp_int);
+        }
+        temp_table->add_foreign_key(temp_table2, fk_list);
+    }
+
+    temp_table->add_to_size(sizeof(*temp_table));
+    main_database->add_table(temp_table);
+    return 0;
 }
 
 int insert_to_table(database *main_database)
@@ -111,7 +116,7 @@ int insert_to_table(database *main_database)
     int index;
     char temp_char_arr[100];
     table *temp_table;
-    temp_table = print_table_details(main_database);
+    temp_table = main_database->get_tables_index(print_table_details(main_database));
 
     std::vector< std::string > values(temp_table->get_attribute_count());
 
@@ -139,7 +144,7 @@ int print_table(database *main_database)
     table *temp_table;
     main_node *temp_main_node;
 
-    temp_table = print_table_details(main_database);
+    temp_table = main_database->get_tables_index(print_table_details(main_database));
     temp_main_node = temp_table->get_main_node_head();
     attribute_count = temp_table->get_attribute_count();
 
