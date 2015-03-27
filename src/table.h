@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstdlib>
 #include <cassert>
+#include <climits>
 
 class domain;
 class foreign_node;
@@ -48,13 +49,38 @@ class table {
         primary_keys.push_back(attr_pos);
     }
 
+    int check_for_primary(std::vector< std::string > &values)
+    {
+        int i, col_index, node_count = INT_MAX, null_keys = 0;
+
+        for(i = 0; i < primary_keys.size(); i++)
+        {
+            col_index = primary_keys[i];
+            node_count = std::min(normal[i]->get_num_of_nodes(values[col_index], this), node_count);
+            if(!node_count)
+            {
+                null_keys++;
+                if(values[col_index].empty())
+                    return 1;
+            }
+        }
+
+        if(null_keys == primary_keys.size())
+        {
+            return 0;
+        }
+
+
+
+    }
+
     //Function that adds a new record to table
-    void add_new_record(std::vector<std::string > values)
+    void add_new_record(std::vector<std::string > &values)
     {
         main_node* new_main = new main_node();
         for(int i = 0; i < values.size(); i++)
         {
-            if(normal[i]->get_attribute_length() < values[i].size())
+            if(normal[i]->get_attr_length() < values[i].size())
             {
                 //Logic when Given value is larger than the specified length of attribute
                 abort();

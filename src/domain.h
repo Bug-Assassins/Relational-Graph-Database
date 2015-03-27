@@ -17,7 +17,7 @@ class domain {
     int data_type;
     int attr_length;
     //std::string attribute_name;
-    vector<table *>table_list;
+    std::vector<table *> table_list;
     attribute_node *head;
     trie *index;
 
@@ -54,6 +54,17 @@ class domain {
         return index;
     }
 
+    int get_table_index(table *tab)
+    {
+        for(int i = 0; i < table_list.size(); i++)
+        {
+            if(table_list[i] == tab)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
     //Function to add new value to domain
     size_t add_get_new_value(std::string new_val, main_node* main)
     {
@@ -76,9 +87,14 @@ class domain {
             node_size += sizeof(*head) + new_val.length() - sizeof(std::string);
         }
 
-        new_node->connect_main_record(main);
+        //new_node->connect_main_record(main);
         main->add_attribute(new_node);
         return node_size;
+    }
+
+    int get_num_of_nodes(std::string value, table *tab)
+    {
+        return 0;
     }
 
     //Function to deallocate the whole domain

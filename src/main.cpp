@@ -13,7 +13,7 @@ int create_table(database *main_database)
 {
     std::vector<std::string>names;
     char temp_name[100];
-    int attribute_count, i, type, length, pkey_span, temp_int, fk_count;
+    int attribute_count, i, type, length, pkey_span, temp_int, fk_count, table_index, col_index;
     domain *temp_domain;
     table *temp_table;
 
@@ -43,7 +43,7 @@ int create_table(database *main_database)
 
         if (i < fk_count)
         {
-            scanf("%d", &table_index, &col_index);
+            scanf("%d %d", &table_index, &col_index);
             //temp_domain = main_database->get_table_index(table_index - 1)->get_normal_index(col_index - 1)->
         }
         else
@@ -96,7 +96,7 @@ table *print_table_details(database *main_database)
     {
         for (i = 0; i < att_count; i++)
         {
-        
+
             printf ("%s\t%d\t%d\n", temp_table->get_attribute_name(i).c_str(),
                                     temp_table->get_normal_index(i)->get_data_type(),
                                     temp_table->get_normal_index(i)->get_attr_length());
