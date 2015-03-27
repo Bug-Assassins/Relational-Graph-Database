@@ -61,28 +61,48 @@ class table {
         primary_keys.push_back(attr_pos);
     }
 
-    int check_for_primary(std::vector< std::string > &values)
+    main_node* check_for_primary(std::vector< std::string > &values)
     {
-        int i, col_index, node_count = INT_MAX, null_keys = 0;
+        int i, j, col_index, node_count = INT_MAX, index;
+        std::vector< main_node * > fetch_nodes, min_nodes;
 
         for(i = 0; i < primary_keys.size(); i++)
         {
             col_index = primary_keys[i];
-            node_count = std::min(normal[i]->get_num_of_nodes(values[col_index], this), node_count);
-            if(!node_count)
+            normal[i]->get_main_nodes(values[col_index], this, fetch_nodes);
+
+            if(!fetch_nodes.size())
             {
-                null_keys++;
-                if(values[col_index].empty())
-                    return 1;
+                return NULL;
+            }
+
+            if(node_count > fetch_nodes.size())
+            {
+                node_count = fetch_nodes.size();
+                min_nodes = fetch_nodes;
+                index = i;
+            }
+
+        }
+
+        for(i = 0; i < min_nodes.size(); i++)
+        {
+            for(j = 0; j < primary_keys.size(); j++)
+            {
+                col_index = primary_keys[i];
+                if(j != index && values[col_index] == min_nodes[i]->get_attribute_list_index(col_index)->get_value())
+                {
+                    break;
+                }
+            }
+
+            if(j > primary_keys.size())
+            {
+                return min_nodes[i];
             }
         }
 
-        if(null_keys == primary_keys.size())
-        {
-            return 0;
-        }
-
-
+        return NULL;
 
     }
 

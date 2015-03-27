@@ -3,10 +3,6 @@
 #include <cstring>
 #include <iostream>
 #include "database.h"
-#include "domain.h"
-#include "nodes.h"
-#include "table.h"
-#include "trie.h"
 
 int print_table_details(database *main_database)
 {
@@ -96,7 +92,7 @@ int create_table(database *main_database)
     {
         table_index = print_table_details(main_database);
         fk_list.clear();
-        
+
         temp_table2 =  main_database->get_tables_index(table_index);
         for (j = 0; j <  temp_table2->get_primary_key_size(); j++)
         {

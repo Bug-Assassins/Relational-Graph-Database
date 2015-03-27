@@ -9,7 +9,7 @@ class attribute_node;
 
 #include "nodes.h"
 #include "trie.h"
-#include "table.h"
+//#include "table.h"
 
 class domain {
 
@@ -92,9 +92,9 @@ class domain {
         return node_size;
     }
 
-    int get_num_of_nodes(std::string value, table *tab)
+    void get_main_nodes(std::string &value, table *tab, std::vector<main_node *> &main_nodes)
     {
-        return 0;
+        return;
     }
 
     //Function to deallocate the whole domain
