@@ -11,7 +11,7 @@
 
 int create_table(database *main_database)
 {
-    std::vector<std::string>names;
+    std::vector< std::string > names;
     char temp_name[100];
     int attribute_count, i, type, length, pkey_span, temp_int, fk_count, table_index, col_index;
     domain *temp_domain;
@@ -113,7 +113,7 @@ int insert_to_table(database *main_database)
     table *temp_table;
     temp_table = print_table_details(main_database);
 
-    std::vector<std::string> values(temp_table->get_attribute_count());
+    std::vector< std::string > values(temp_table->get_attribute_count());
 
     if (VERBOSE)
     {
