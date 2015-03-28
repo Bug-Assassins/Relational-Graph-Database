@@ -91,7 +91,7 @@ class table {
             for(j = 0; j < primary_keys.size(); j++)
             {
                 col_index = primary_keys[j];
-                if(j != index && values[j] != min_nodes[i]->get_attribute_list_index(col_index)->get_value())
+                if(j != index && values[j].compare(min_nodes[i]->get_attribute_list_index(col_index)->get_value()) != 0)
                 {
                     break;
                 }
@@ -134,21 +134,39 @@ class table {
     }
 
     //Function that adds a new record to table
-    bool add_new_record(std::vector< std::string > &values)
+    int add_new_record(std::vector< std::string > &values)
     {
         std::vector< std::string > prime(primary_keys.size());
-        for(int i = 0; i < primary_keys.size(); i++)
+        int i;
+
+        for(i = 0; i < primary_keys.size(); i++)
+        {
+            if(!values[primary_keys[i]].empty())
+            {
+                break;
+            }
+        }
+
+        if(i == primary_keys.size())
+        {
+            return -1;
+        }
+
+        for(i = 0; i < primary_keys.size(); i++)
         {
             prime[i].assign(values[primary_keys[i]]);
         }
+
         if(check_for_primary(prime))
         {
             prime.clear();
-            return false;
+            return 0;
         }
+
         prime.clear();
         main_node* new_main = new main_node();
-        for(int i = 0; i < values.size(); i++)
+
+        for(i = 0; i < values.size(); i++)
         {
             if(normal[i]->get_attr_length() < values[i].size())
             {
@@ -161,7 +179,7 @@ class table {
         new_main->set_next(head);
         head = new_main;
         add_to_size(sizeof(*head));
-        return true;
+        return 1;
     }
     std::string get_attribute_name(int index)
     {
