@@ -65,6 +65,7 @@ int create_table(database *main_database)
         scanf("%s %d %d", temp_name, &type, &length);
 
         temp_domain = new domain(type, length);
+        temp_domain->insert_table_pointer(temp_table);
         temp_table->add_to_size(sizeof(*temp_domain) + strlen(temp_name));
         temp_table->add_attribute(temp_domain, std::string(temp_name));
     }
@@ -75,7 +76,7 @@ int create_table(database *main_database)
     scanf("%d", &pkey_span);
 
     if (VERBOSE)
-        printf("Enter the indices of %d primary key columns\n", pkey_span);
+        printf("Enter the indices of %d primary key column(s)\n", pkey_span);
 
     for (i = 0; i < pkey_span; i++)
     {
@@ -111,6 +112,7 @@ int insert_to_table(database *main_database)
 {
     int index;
     char temp_char_arr[100];
+    bool success;
     table *temp_table;
     temp_table = main_database->get_tables_index(print_table_details(main_database));
 
@@ -129,7 +131,15 @@ int insert_to_table(database *main_database)
         scanf("%s", temp_char_arr);
         values[index - 1].assign(temp_char_arr);
     }
-    temp_table->add_new_record(values);
+    success = temp_table->add_new_record(values);
+    if(success)
+    {
+        printf("1 Row Inserted\n");
+    }
+    else
+    {
+        printf("Primary Key already exists\n");
+    }
     values.clear();
     printf("%lu\n", temp_table->get_size());
 }
@@ -199,7 +209,7 @@ int main()
                 break;
 
             case 0:
-                //printf("Exiting cleanly!\n");
+                printf("Exiting cleanly!\n");
                 main_database->clear();
                 delete main_database;
                 break;

@@ -11,16 +11,17 @@ class attribute_node {
 
   private:
     std::string value;
-    std::vector< std::vector< main_node* > > nodes;
+    std::vector< std::vector< main_node * > > nodes;
     attribute_node *next;
 
   public:
 
     //Constructor
-    attribute_node(std::string val)
+    attribute_node(std::string val, int num_tables)
     {
         value = val;
         next = NULL;
+        nodes.resize(num_tables);
     }
 
     //Getter and Setter for value of attribute node
@@ -58,6 +59,10 @@ class attribute_node {
         return nodes[tab_index].size();
     }
 
+    std::vector< main_node * > *get_record_list(int tab_index)
+    {
+        return &nodes[tab_index];
+    }
     //Function to clear the node
     void clear()
     {

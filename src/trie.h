@@ -58,7 +58,7 @@ class trie{
             root = new trie_node();
         }
 
-        attribute_node *get_node(std::string key, bool &exists)
+        attribute_node *get_node(std::string key, bool &exists, int num_tables)
         {
             int level;
             int length = key.length() - 1;
@@ -74,7 +74,7 @@ class trie{
                 {
                     if(!exists)
                     {
-                        return insert_node(node_crawl, key, level, length);
+                        return insert_node(node_crawl, key, level, length, num_tables);
                     }
                     return NULL;
                 }
@@ -85,7 +85,7 @@ class trie{
 
             if(!node && !exists)
             {
-                node = new attribute_node(key);
+                node = new attribute_node(key, num_tables);
                 node_crawl->set_node(node);
             }
             else
@@ -97,7 +97,7 @@ class trie{
 
         }
 
-        attribute_node *insert_node(trie_node *node_crawl, std::string key, int level, int length)
+        attribute_node *insert_node(trie_node *node_crawl, std::string key, int level, int length, int num_tables)
         {
             int index = key[level];
             trie_node *temp;
@@ -112,7 +112,7 @@ class trie{
             }
 
             attribute_node *node;
-            node = new attribute_node(key);
+            node = new attribute_node(key, num_tables);
             node_crawl->set_node(node);
             return node;
 

@@ -61,25 +61,26 @@ class table {
         primary_keys.push_back(attr_pos);
     }
 
+    //Function to return a main node having the given primary key
     main_node* check_for_primary(std::vector< std::string > &values)
     {
         int i, j, col_index, node_count = INT_MAX, index;
-        std::vector< main_node * > fetch_nodes, min_nodes;
+        std::vector< main_node * > *fetch_nodes, min_nodes;
 
         for(i = 0; i < primary_keys.size(); i++)
         {
             col_index = primary_keys[i];
-            normal[i]->get_main_nodes(values[col_index], this, fetch_nodes);
+            fetch_nodes = normal[i]->get_main_nodes(values[col_index], this);
 
-            if(!fetch_nodes.size())
+            if(!fetch_nodes || !fetch_nodes->size())
             {
                 return NULL;
             }
 
-            if(node_count > fetch_nodes.size())
+            if(node_count > fetch_nodes->size())
             {
-                node_count = fetch_nodes.size();
-                min_nodes = fetch_nodes;
+                node_count = fetch_nodes->size();
+                min_nodes = *fetch_nodes;
                 index = i;
             }
 
@@ -90,13 +91,13 @@ class table {
             for(j = 0; j < primary_keys.size(); j++)
             {
                 col_index = primary_keys[i];
-                if(j != index && values[col_index] == min_nodes[i]->get_attribute_list_index(col_index)->get_value())
+                if(j != index && values[col_index] != min_nodes[i]->get_attribute_list_index(col_index)->get_value())
                 {
                     break;
                 }
             }
 
-            if(j > primary_keys.size())
+            if(j == primary_keys.size())
             {
                 return min_nodes[i];
             }
@@ -107,8 +108,13 @@ class table {
     }
 
     //Function that adds a new record to table
-    void add_new_record(std::vector<std::string > &values)
+    bool add_new_record(std::vector< std::string > values)
     {
+        if(check_for_primary(values))
+        {
+            return false;
+        }
+
         main_node* new_main = new main_node();
         for(int i = 0; i < values.size(); i++)
         {
@@ -117,12 +123,13 @@ class table {
                 //Logic when Given value is larger than the specified length of attribute
                 abort();
             }
-            add_to_size(normal[i]->add_get_new_value(values[i], new_main));
+            add_to_size(normal[i]->add_get_new_value(values[i], new_main, this));
         }
 
         new_main->set_next(head);
         head = new_main;
         add_to_size(sizeof(*head));
+        return true;
     }
     std::string get_attribute_name(int index)
     {

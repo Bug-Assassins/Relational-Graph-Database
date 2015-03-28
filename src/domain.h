@@ -9,14 +9,13 @@ class attribute_node;
 
 #include "nodes.h"
 #include "trie.h"
-//#include "table.h"
+
 
 class domain {
 
   private:
     int data_type;
     int attr_length;
-    //std::string attribute_name;
     std::vector<table *> table_list;
     attribute_node *head;
     trie *index;
@@ -54,6 +53,11 @@ class domain {
         return index;
     }
 
+    void insert_table_pointer(table *tab)
+    {
+        table_list.push_back(tab);
+    }
+
     int get_table_index(table *tab)
     {
         for(int i = 0; i < table_list.size(); i++)
@@ -66,13 +70,14 @@ class domain {
         return -1;
     }
     //Function to add new value to domain
-    size_t add_get_new_value(std::string new_val, main_node* main)
+    size_t add_get_new_value(std::string new_val, main_node *node, table *tab)
     {
+        //printf("%s\n", new_val.c_str());
         bool exists = false;
-        size_t node_size = sizeof(main);
+        size_t node_size = sizeof(node);
 
         //Add the new value to trie for indexing
-        attribute_node* new_node = index->get_node(new_val, exists);
+        attribute_node* new_node = index->get_node(new_val, exists, table_list.size());
 
         //Add the new node to domain
         if(head == NULL)
@@ -86,21 +91,29 @@ class domain {
             head = new_node;
             node_size += sizeof(*head) + new_val.length() - sizeof(std::string);
         }
-
-        //new_node->connect_main_record(main);
-        main->add_attribute(new_node);
+        new_node->connect_main_record(node, get_table_index(tab));
+        node->add_attribute(new_node);
         return node_size;
     }
 
-    void get_main_nodes(std::string &value, table *tab, std::vector<main_node *> &main_nodes)
+    // Function to get the list of main nodes connected to a specific attribute node which belong to the given table.
+    std::vector< main_node * >  *get_main_nodes(std::string &value, table *tab)
     {
-        return;
+        bool exists = false;
+        attribute_node *node = index->get_node(value, exists, table_list.size());
+
+        if(!exists)
+        {
+            return NULL;
+        }
+
+        return node->get_record_list(get_table_index(tab));
+
     }
 
     //Function to deallocate the whole domain
     void clear()
     {
-        //attribute_name.clear();
         attribute_node* temp = head;
 
         while(head != NULL)
