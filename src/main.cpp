@@ -38,7 +38,6 @@ int print_table_details(database *main_database)
 
 int create_table(database *main_database)
 {
-    std::vector< std::string > names;
     std::vector< int > fk_list;
     char temp_name[100];
     int attribute_count, i, j, type, length, pkey_span, temp_int, fk_count, table_index;
@@ -110,7 +109,7 @@ int create_table(database *main_database)
         printf("\n");
         */
     }
-
+    fk_list.clear();
     temp_table->add_to_size(sizeof(*temp_table));
     main_database->add_table(temp_table);
     return 0;

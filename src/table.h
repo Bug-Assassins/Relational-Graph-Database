@@ -242,6 +242,13 @@ class table {
             delete head;
             head = temp;
         }
+        attribute_names.clear();
+        for (int i = 0; i < foreign_key.size(); i++)
+        {
+            foreign_key[i].second.clear();
+        }
+        foreign_key.clear();
+        primary_keys.clear();
     }
 
     void add_to_size(size_t add)
