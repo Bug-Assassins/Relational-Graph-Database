@@ -41,7 +41,6 @@ int create_table(database *main_database)
     std::vector< int > fk_list;
     char temp_name[100];
     int attribute_count, i, j, type, length, pkey_span, temp_int, fk_count, table_index;
-    domain *temp_domain;
     table *temp_table, *temp_table2;
 
     if (VERBOSE)
@@ -63,10 +62,7 @@ int create_table(database *main_database)
 
         scanf("%s %d %d", temp_name, &type, &length);
 
-        temp_domain = new domain(type, length);
-        temp_domain->insert_table_pointer(temp_table);
-        temp_table->add_to_size(sizeof(*temp_domain) + strlen(temp_name));
-        temp_table->add_attribute(temp_domain, std::string(temp_name));
+        temp_table->add_attribute(type, length, std::string(temp_name));
     }
 
     if (VERBOSE)
