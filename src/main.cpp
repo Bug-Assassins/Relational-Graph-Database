@@ -98,9 +98,17 @@ int create_table(database *main_database)
         for (j = 0; j <  temp_table2->get_primary_key_size(); j++)
         {
             scanf("%d", &temp_int);
-            fk_list.push_back(temp_int);
+            fk_list.push_back(temp_int - 1);
         }
         temp_table->add_foreign_key(temp_table2, fk_list);
+        /*
+        printf("PRINTING FK INFO\n");
+        for (j = 0; j < fk_list.size(); j++)
+        {
+            printf("%d ", fk_list[j]);
+        }
+        printf("\n");
+        */
     }
 
     temp_table->add_to_size(sizeof(*temp_table));
