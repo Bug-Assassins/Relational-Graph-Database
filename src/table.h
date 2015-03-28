@@ -70,7 +70,7 @@ class table {
         for(i = 0; i < primary_keys.size(); i++)
         {
             col_index = primary_keys[i];
-            fetch_nodes = normal[i]->get_main_nodes(values[col_index], this);
+            fetch_nodes = normal[col_index]->get_main_nodes(values[i], this);
 
             if(!fetch_nodes || !fetch_nodes->size())
             {
@@ -90,8 +90,8 @@ class table {
         {
             for(j = 0; j < primary_keys.size(); j++)
             {
-                col_index = primary_keys[i];
-                if(j != index && values[col_index] != min_nodes[i]->get_attribute_list_index(col_index)->get_value())
+                col_index = primary_keys[j];
+                if(j != index && values[j] != min_nodes[i]->get_attribute_list_index(col_index)->get_value())
                 {
                     break;
                 }
@@ -108,13 +108,19 @@ class table {
     }
 
     //Function that adds a new record to table
-    bool add_new_record(std::vector< std::string > values)
+    bool add_new_record(std::vector< std::string > &values)
     {
-        if(check_for_primary(values))
+        std::vector< std::string > prime(primary_keys.size());
+        for(int i = 0; i < primary_keys.size(); i++)
         {
+            prime[i].assign(values[primary_keys[i]]);
+        }
+        if(check_for_primary(prime))
+        {
+            prime.clear();
             return false;
         }
-
+        prime.clear();
         main_node* new_main = new main_node();
         for(int i = 0; i < values.size(); i++)
         {

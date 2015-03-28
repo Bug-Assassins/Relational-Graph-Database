@@ -1,5 +1,6 @@
 src/a.out
 src/test.cpp
+src/test.txt
 src/*.o
 src/test
 src/main
