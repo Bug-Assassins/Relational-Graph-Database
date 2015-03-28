@@ -110,9 +110,8 @@ int create_table(database *main_database)
 
 int insert_to_table(database *main_database)
 {
-    int index;
+    int index, success;
     char temp_char_arr[100];
-    bool success;
     table *temp_table;
     temp_table = main_database->get_tables_index(print_table_details(main_database));
 
@@ -131,10 +130,15 @@ int insert_to_table(database *main_database)
         scanf("%s", temp_char_arr);
         values[index - 1].assign(temp_char_arr);
     }
+
     success = temp_table->add_new_record(values);
-    if(success)
+    if(success == 1)
     {
         printf("1 Row Inserted\n");
+    }
+    else if(success == -1)
+    {
+        printf("NULL Primary Key not allowed\n");
     }
     else
     {
