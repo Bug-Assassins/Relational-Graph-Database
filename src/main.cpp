@@ -140,9 +140,13 @@ int insert_to_table(database *main_database)
     {
         printf("NULL Primary Key not allowed\n");
     }
-    else
+    else if (success == 0)
     {
         printf("Primary Key already exists\n");
+    }
+    else if (success == -2)
+    {
+        printf("Integrity Violation\n");
     }
     values.clear();
     printf("%lu\n", temp_table->get_size());
