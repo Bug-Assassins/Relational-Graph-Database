@@ -81,8 +81,7 @@ class main_node {
   private:
     std::vector< attribute_node * > attribute_list;
     main_node *next;
-    //std::vector<main_node *> table_list;
-    //std::vector<std::vector<main_node *> > foreign_in;
+    std::vector< main_node * > parent_table_list;
 
   public:
     //constructor
@@ -111,6 +110,10 @@ class main_node {
         attribute_list.push_back(attr);
     }
 
+    void add_foreign_key_link(main_node *fk)
+    {
+        parent_table_list.push_back(fk);
+    }
     //Function to return number of attributes
     int attribute_count()
     {

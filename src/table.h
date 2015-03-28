@@ -107,6 +107,32 @@ class table {
 
     }
 
+    // Function to add foreign key links
+    int add_foreign_key_links(std::vector< std::string > &values, main_node *new_main_node)
+    {
+        std::vector< std::string > temp_values;
+        table *temp_table;
+        main_node *temp_main_node;
+        int i, j;
+
+        for (i = 0; i < foreign_key.size(); i++)
+        {
+            temp_table = foreign_key[i].first;
+            for (j = 0; j < foreign_key[i].second.size(); j++)
+            {
+                temp_values.push_back(values[foreign_key[i].second[j]]);
+            }
+
+            temp_main_node = check_for_primary(temp_values);
+            if (temp_main_node == NULL)
+            {
+                temp_values.clear();
+                return 1;
+            }
+            new_main_node->add_foreign_key_link(temp_main_node);
+        }
+    }
+
     //Function that adds a new record to table
     bool add_new_record(std::vector< std::string > &values)
     {
