@@ -121,9 +121,10 @@ class table {
             for (j = 0; j < foreign_key[i].second.size(); j++)
             {
                 temp_values.push_back(values[foreign_key[i].second[j]]);
+                printf("%s\n", temp_values[j].c_str());
             }
 
-            temp_main_node = check_for_primary(temp_values);
+            temp_main_node = temp_table->check_for_primary(temp_values);
             if (temp_main_node == NULL)
             {
                 temp_values.clear();
