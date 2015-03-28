@@ -124,6 +124,7 @@ class main_node {
     void clear()
     {
         attribute_list.clear();
+        parent_table_list.clear();
     }
 };
 

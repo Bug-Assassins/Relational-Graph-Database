@@ -131,6 +131,7 @@ class table {
             }
             new_main_node->add_foreign_key_link(temp_main_node);
         }
+        return 0;
     }
 
     //Function that adds a new record to table
@@ -138,6 +139,14 @@ class table {
     {
         std::vector< std::string > prime(primary_keys.size());
         int i;
+
+        main_node* new_main = new main_node();
+        if (add_foreign_key_links(values, new_main) == 1)
+        {
+            new_main->clear();
+            delete new_main;
+            return -2;
+        }
 
         for(i = 0; i < primary_keys.size(); i++)
         {
@@ -149,6 +158,8 @@ class table {
 
         if(i == primary_keys.size())
         {
+            new_main->clear();
+            delete new_main;
             return -1;
         }
 
@@ -159,12 +170,13 @@ class table {
 
         if(check_for_primary(prime))
         {
+            new_main->clear();
+            delete new_main;   
             prime.clear();
             return 0;
         }
 
         prime.clear();
-        main_node* new_main = new main_node();
 
         for(i = 0; i < values.size(); i++)
         {
