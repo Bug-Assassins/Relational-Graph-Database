@@ -53,9 +53,10 @@ class domain {
         return index;
     }
 
-    void insert_table_pointer(table *tab)
+    int insert_table_pointer(table *tab)
     {
         table_list.push_back(tab);
+        return (table_list.size() - 1);
     }
 
     int get_table_index(table *tab)
@@ -97,7 +98,7 @@ class domain {
     }
 
     // Function to get the list of main nodes connected to a specific attribute node which belong to the given table.
-    std::vector< main_node * >  *get_main_nodes(std::string &value, table *tab)
+    std::vector< main_node * >  *get_main_nodes(std::string &value, int table_index)
     {
         bool exists = true;
         attribute_node *node = index->get_node(value, exists, table_list.size());
@@ -107,7 +108,7 @@ class domain {
             return NULL;
         }
 
-        return node->get_record_list(get_table_index(tab));
+        return node->get_record_list(table_index);
 
     }
 
@@ -128,9 +129,11 @@ class domain {
     }
 
     //Function to include this domain in a new table
-    void add_to_table(table* tab)
+    //Returns the index of the table attached
+    int add_to_table(table* tab)
     {
         table_list.push_back(tab);
+        return (table_list.size() - 1);
     }
 };
 

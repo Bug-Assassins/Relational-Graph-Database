@@ -21,6 +21,7 @@ class table {
     size_t total_size;
     std::vector< domain * > normal;
     std::vector< std::string > attribute_names;
+    std::vector< int > index_in_domain;
     //std::vector< foreign_key * > foreign;
     //std::vector<table *> foreign_out;
     std::vector< int > primary_keys;
@@ -47,11 +48,24 @@ class table {
     }
 
     //Function that adds an attribute to the table
-    void add_attribute(domain* dom, std::string name)
+    void add_attribute(int type, int length, std::string name)
     {
+        int tab_index;
+        domain *temp_domain;
+
+        temp_domain = new domain(type, length);
+        tab_index = temp_domain->insert_table_pointer(this);
+        add_to_size(sizeof(*temp_domain) + name.length());
         attribute_count++;
-        normal.push_back(dom);
+        normal.push_back(temp_domain);
         attribute_names.push_back(name);
+        index_in_domain.push_back(tab_index);
+    }
+
+    //Function to find all the main_nodes with a certain attribute value
+    std::vector< main_node * >  *get_records_with_val(int attribute_index, std::string &value)
+    {
+        return normal[attribute_index]->get_main_nodes(value, index_in_domain[attribute_index]);
     }
 
     //Function to add primary key to the table
@@ -70,12 +84,12 @@ class table {
         for(i = 0; i < primary_keys.size(); i++)
         {
             col_index = primary_keys[i];
-            fetch_nodes = normal[col_index]->get_main_nodes(values[i], this);
+            fetch_nodes = normal[col_index]->get_main_nodes(values[i], index_in_domain[col_index]);
 
             if(!fetch_nodes || !fetch_nodes->size())
             {
                 return NULL;
-            }
+            }   
 
             if(node_count > fetch_nodes->size())
             {
