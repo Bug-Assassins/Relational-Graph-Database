@@ -99,10 +99,10 @@ class domain {
     // Function to get the list of main nodes connected to a specific attribute node which belong to the given table.
     std::vector< main_node * >  *get_main_nodes(std::string &value, table *tab)
     {
-        bool exists = false;
+        bool exists = true;
         attribute_node *node = index->get_node(value, exists, table_list.size());
 
-        if(!exists)
+        if(!node)
         {
             return NULL;
         }
