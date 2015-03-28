@@ -127,14 +127,6 @@ class domain {
         index->clear();
         delete index;
     }
-
-    //Function to include this domain in a new table
-    //Returns the index of the table attached
-    int add_to_table(table* tab)
-    {
-        table_list.push_back(tab);
-        return (table_list.size() - 1);
-    }
 };
 
 #endif // META_INCLUDED
