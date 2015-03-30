@@ -266,14 +266,20 @@ class table {
 
     //Function to compare all given values of a record with attributes are returns result
     bool compare_record(main_node *record, std::vector< int > &attributes, std::vector< std::string > &values,
-                                                        std::vector< int > &ops, std::vector< bool > &join_ops)
+                                                std::vector< int > &ops, std::vector< bool > &join_ops, int skip)
     {
+        /*
+            Skip was added to avoid extra string comparison when it is certain that condition in the given
+            position will evaluate to true
+        */
+
         int i;
         bool temp_result, final_result;
 
         for(i = 0; i < attributes.size(); i++)
         {
-            temp_result = compare_attribute(record, attributes[i], values[i], ops[i]);
+            if(attributes[i] == skip) temp_result = true;
+            else temp_result = compare_attribute(record, attributes[i], values[i], ops[i]);
             if(i == 0) final_result = temp_result;
             else if(join_ops[i]) final_result &= temp_result;
             else final_result |= temp_result;
@@ -281,6 +287,14 @@ class table {
 
         return final_result;
     }
+
+    //Overloaded Function to compare all given values with attributes without skipping
+    bool compare_record(main_node *record, std::vector< int > &attributes, std::vector< std::string > &values,
+                                                        std::vector< int > &ops, std::vector< bool > &join_ops)
+    {
+        return compare_record(record, attributes, values, ops, join_ops, -1);
+    }
+
 
     std::string get_attribute_name(int index)
     {
@@ -296,6 +310,7 @@ class table {
     {
         return attribute_count;
     }
+
     domain *get_normal_index(int i)
     {
         if (i < normal.size())
@@ -303,15 +318,16 @@ class table {
         else
             return NULL;
     }
+
     int add_primary_key_index(int i)
     {
         primary_keys.push_back(i);
     }
+
     main_node *get_main_node_head()
     {
         return head;
     }
-
 
     //Function to deallocate memory occupied by the table
     void clear()

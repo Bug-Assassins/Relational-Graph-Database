@@ -2,7 +2,9 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
+
 #include "database.h"
+#include "select.h"
 
 int print_table_details(database *main_database)
 {
@@ -174,6 +176,31 @@ int print_table(database *main_database)
         printf("\n");
         temp_main_node = temp_main_node->get_next();
     }
+}
+
+void print_record_list(table &tab, std::vector< main_node *> &record_list, std::vector< int > &attributes)
+{
+    int i;
+
+    //Printing the heading of each column
+    for(i = 0; i < attributes.size(); i++)
+    {
+        printf("%s\t", tab.get_attribute_name(attributes[i]).c_str());
+    }
+    printf("\n");
+
+    //Printing the Actual Records
+    for(i = 0; i < record_list.size(); i++)
+    {
+        for(i = 0; i < attributes.size(); i++)
+        {
+            printf("%s\t", record_list[i]->get_attribute_list_index(attributes[i])->get_value().c_str());
+        }
+        printf("\n");
+    }
+
+    printf("------------------------------------------------------");
+    return;
 }
 
 int main()
