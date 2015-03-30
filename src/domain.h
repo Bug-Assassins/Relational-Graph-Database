@@ -1,8 +1,8 @@
 #ifndef META_INCLUDED
 #define META_INCLUDED 1
 
-#include<string>
-#include<vector>
+#include <string>
+#include <vector>
 
 class table;
 class attribute_node;

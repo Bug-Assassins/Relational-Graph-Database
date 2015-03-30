@@ -9,8 +9,59 @@
 class domain;
 class foreign_node;
 class main_node;
+class domain;
 
 #include "domain.h"
+
+bool compare_values(std::string &left, std::string &right, int op, int data_type)
+{
+    /*
+        Function to compare 2 strings using given operator and data type and returns final result
+        0 -> =
+        1 -> <=
+        2 -> >=
+        3 -> !=
+        4 -> >
+        5 -> <
+    */
+
+    if(data_type == domain::INTEGER)
+    {
+        int l, r;
+        sscanf(left.c_str(), "%d", &l);
+        sscanf(right.c_str(), "%d", &r);
+
+        if(l == r && op < 3) return true; // Values Equal
+        else if(l < r && (op == 1 || op == 3 || op == 5)) return true; //Values Less Than
+        else if(l > r && (op == 2 || op == 3 || op == 4)) return true; //Values Greater Than
+        else return false;
+    }
+    else if(data_type == domain::FLOAT)
+    {
+        float l, r;
+        sscanf(left.c_str(), "%f", &l);
+        sscanf(right.c_str(), "%f", &r);
+
+        if(l == r && op < 3) return true; // Values Equal
+        else if(l < r && (op == 1 || op == 3 || op == 5)) return true; //Values Less Than
+        else if(l > r && (op == 2 || op == 3 || op == 4)) return true; //Values Greater Than
+        else return false;
+    }
+    else if(data_type == domain::STRING)
+    {
+        int res = left.compare(right);
+
+        if(res == 0 && op < 3) return true; //Values Equal
+        else if(res < 0 && (op == 1 || op == 3 || op == 5)) return true; //Values Less Than
+        else if(res > 0 && (op == 2 || op == 3 || op == 4)) return true; //Values Greater Than
+        else return false;
+    }
+    else
+    {
+        printf("Wrong Data Type Passed to Compare Function\nAborting\n");
+        abort();
+    }
+}
 
 class table {
 
@@ -205,10 +256,37 @@ class table {
         add_to_size(sizeof(*head));
         return 1;
     }
+
+    //Function that compares a particular attribute value of a record and returns result
+    bool compare_attribute(main_node *record, int attribute_index, std::string &value, int op)
+    {
+        std::string attr_val = record->get_attribute_list_index(attribute_index)->get_value();
+        return compare_values(attr_val, value, op, normal[attribute_index]->get_data_type());
+    }
+
+    //Function to compare all given values of a record with attributes are returns result
+    bool compare_record(main_node *record, std::vector< int > &attributes, std::vector< std::string > &values,
+                                                        std::vector< int > &ops, std::vector< bool > &join_ops)
+    {
+        int i;
+        bool temp_result, final_result;
+
+        for(i = 0; i < attributes.size(); i++)
+        {
+            temp_result = compare_attribute(record, attributes[i], values[i], ops[i]);
+            if(i == 0) final_result = temp_result;
+            else if(join_ops[i]) final_result &= temp_result;
+            else final_result |= temp_result;
+        }
+
+        return final_result;
+    }
+
     std::string get_attribute_name(int index)
     {
         return attribute_names[index];
     }
+
     std::string get_table_name()
     {
         return name;
