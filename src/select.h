@@ -9,7 +9,7 @@ class table;
 #include "table.h"
 
 //Function to select record from the table
-std::vector< main_node * > select(table &tab, std::vector< int > &attributes, std::vector< std::string > &values, std::vector< int > &ops, std::vector< bool > &join_ops)
+std::vector< main_node * > select_single_table(table *tab, std::vector< int > &attributes, std::vector< std::string > &values, std::vector< int > &ops, std::vector< bool > &join_ops)
 {
     /*
         tab = Table on which select operation has to be performed
@@ -28,7 +28,7 @@ std::vector< main_node * > select(table &tab, std::vector< int > &attributes, st
         //Searching for only EQUAL operators
         if(ops[i] == 0)
         {
-            main_node_list = tab.get_records_with_val(attributes[i], values[i]);
+            main_node_list = tab->get_records_with_val(attributes[i], values[i]);
             node_count = main_node_list->size();
 
             if(node_count < min_node_count)
@@ -46,10 +46,10 @@ std::vector< main_node * > select(table &tab, std::vector< int > &attributes, st
             This signifies that there was no EQUAL operator in the ops.
             Brute Force is the only way to get all nodes
         */
-        head = tab.get_main_node_head();
+        head = tab->get_main_node_head();
         while (head != NULL)
         {
-            if(tab.compare_record(head, attributes, values, ops, join_ops))
+            if(tab->compare_record(head, attributes, values, ops, join_ops))
             {
                 result.push_back(head);
             }
@@ -64,7 +64,7 @@ std::vector< main_node * > select(table &tab, std::vector< int > &attributes, st
     for(i = 0; i < min_main_node_list->size(); i++)
     {
         // To avoid extra string comparison skip min_index
-        if(tab.compare_record((*min_main_node_list)[i], attributes, values, ops, join_ops, min_index))
+        if(tab->compare_record((*min_main_node_list)[i], attributes, values, ops, join_ops,  min_index))
         {
             result.push_back((*min_main_node_list)[i]);
         }
@@ -72,6 +72,37 @@ std::vector< main_node * > select(table &tab, std::vector< int > &attributes, st
 
     //Returning Shortlisted main-nodes that match record
     return result;
+}
+
+class condition {
+
+  public:
+    int table_index;
+    int attribute_index;
+    int op;
+};
+class value_condition : public condition {
+
+  public:
+    std::string value;
+};
+class column_condition : public condition {
+
+  public:
+    int dest_table;
+};
+
+std::vector< std::vector< main_node * > > join_query(std::vector< table * > &table_list, std::vector< condition * > &conditions, std::vector< bool > &join_ops)
+{
+    int i, min_index;
+
+    for(i = 0; i < conditions.size(); i++)
+    {
+        if(conditions[i]->op == 0)
+        {
+
+        }
+    }
 }
 
 #endif // SELECT_INCLUDED
