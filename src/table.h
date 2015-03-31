@@ -68,7 +68,7 @@ class table {
   private:
     std::string name; //Name of the Table
     main_node *head; //Head to the main list of the table
-    int attribute_count; //Number of attributes
+    int attribute_count, record_count; //Number of attributes
     size_t total_size;
     std::vector< domain * > normal;
     std::vector< std::string > attribute_names;
@@ -84,6 +84,7 @@ class table {
     {
         name = table_name;
         attribute_count = 0;
+        record_count = 0;
         head = NULL;
     }
 
@@ -254,6 +255,7 @@ class table {
         new_main->set_next(head);
         head = new_main;
         add_to_size(sizeof(*head));
+        record_count++;
         return 1;
     }
 
@@ -366,6 +368,11 @@ class table {
     size_t get_size()
     {
         return total_size;
+    }
+
+    int get_num_records()
+    {
+        return record_count;
     }
 
 };
