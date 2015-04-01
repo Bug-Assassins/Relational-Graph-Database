@@ -1,4 +1,6 @@
 #define VERBOSE 1
+#define DEBUG 1
+
 #include <cstdio>
 #include <cstring>
 #include <iostream>

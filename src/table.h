@@ -114,6 +114,40 @@ class table {
         index_in_domain.push_back(tab_index);
     }
 
+    //Function to return the index in primary_key list
+    int get_primary_attribute(int i)
+    {
+        if(i >= 0 && i < primary_keys.size())
+        {
+            printf("Wrong Primary Key Attribute Index Requested!\nAborting!!");
+            abort();
+        }
+        return primary_keys[i];
+    }
+
+    //Function to return attribute index in parent table given index here
+    int get_parent_table_index(table *parent, int idx)
+    {
+        int i, j;
+
+        for(i = 0; i < foreign_key.size(); i++)
+        {
+            if(foreign_key[i].first == parent)
+            {
+                for(j = 0; j < foreign_key[i].second.size(); j++)
+                {
+                    if(foreign_key[i].second[j] == idx)
+                    {
+                        return parent->get_primary_attribute(j);
+                    }
+                }
+
+                printf("Passed an attribute index which is foreign key span!!\nAborting!!\n");
+                abort();
+            }
+        }
+    }
+
     //Function to find all the main_nodes with a certain attribute value
     std::vector< main_node * >  *get_records_with_val(int attribute_index, std::string &value)
     {
