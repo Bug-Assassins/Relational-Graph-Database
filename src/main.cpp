@@ -37,6 +37,30 @@ int print_table_details(database *main_database)
 
     return index - 1;
 }
+void print_record_list(table *tab, std::vector< main_node *> &record_list, std::vector< int > &attributes)
+{
+    int i;
+
+    //Printing the heading of each column
+    for(i = 0; i < attributes.size(); i++)
+    {
+        printf("%s\t", tab.get_attribute_name(attributes[i]).c_str());
+    }
+    printf("\n");
+
+    //Printing the Actual Records
+    for(i = 0; i < record_list.size(); i++)
+    {
+        for(i = 0; i < attributes.size(); i++)
+        {
+            printf("%s\t", record_list[i]->get_attribute_list_index(attributes[i])->get_value().c_str());
+        }
+        printf("\n");
+    }
+
+    printf("------------------------------------------------------");
+    return;
+}
 
 int create_table(database *main_database)
 {
@@ -187,6 +211,8 @@ void select_one_table(database *main_database)
     std::vector< int >ops;
     std::vector< bool >join_ops;
 
+    std::vector< main_node * > result;
+
     int col_count, temp_int, expr_count, op, join_operator;
     char rhs[100];
     std::string temp_string;
@@ -222,7 +248,7 @@ void select_one_table(database *main_database)
         }
 
         scanf("%d", &l_index);
-        attributes.push_back(l_index);
+        attributes.push_back(l_index - 1);
 
         if (VERBOSE)
             printf("Enter the operator index that you want\n")
@@ -245,34 +271,11 @@ void select_one_table(database *main_database)
             scanf("%d", &join_operator);
             join_ops.push_back(join_operator);   
         }
-
     }
+    result = select_single_table(selected_table, attributes, values, ops, join_ops);
+    print_record_list(selected_table, result, col_list);
 }
 
-void print_record_list(table &tab, std::vector< main_node *> &record_list, std::vector< int > &attributes)
-{
-    int i;
-
-    //Printing the heading of each column
-    for(i = 0; i < attributes.size(); i++)
-    {
-        printf("%s\t", tab.get_attribute_name(attributes[i]).c_str());
-    }
-    printf("\n");
-
-    //Printing the Actual Records
-    for(i = 0; i < record_list.size(); i++)
-    {
-        for(i = 0; i < attributes.size(); i++)
-        {
-            printf("%s\t", record_list[i]->get_attribute_list_index(attributes[i])->get_value().c_str());
-        }
-        printf("\n");
-    }
-
-    printf("------------------------------------------------------");
-    return;
-}
 
 int main()
 {
