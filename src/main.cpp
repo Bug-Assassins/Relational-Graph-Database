@@ -1,5 +1,6 @@
 #define VERBOSE 1
 #define DEBUG 1
+#define DEBUG_SELECT 1
 
 #include <cstdio>
 #include <cstring>
@@ -41,7 +42,7 @@ int print_table_details(database *main_database)
 }
 void print_record_list(table *tab, std::vector< main_node *> &record_list, std::vector< int > &attributes)
 {
-    int i;
+    int i, j;
 
     //Printing the heading of each column
     for(i = 0; i < attributes.size(); i++)
@@ -50,17 +51,21 @@ void print_record_list(table *tab, std::vector< main_node *> &record_list, std::
     }
     printf("\n");
 
+    if(VERBOSE)
+        printf("Record List Print Size = %d attributes = %d\n", (int) record_list.size(), (int) attributes.size());
+    
+
     //Printing the Actual Records
     for(i = 0; i < record_list.size(); i++)
     {
-        for(i = 0; i < attributes.size(); i++)
+        for(j = 0; j < attributes.size(); j++)
         {
-            printf("%s\t", record_list[i]->get_attribute_list_index(attributes[i])->get_value().c_str());
+            printf("%s\t", record_list[i]->get_attribute_list_index(attributes[j])->get_value().c_str());
         }
         printf("\n");
     }
 
-    printf("------------------------------------------------------");
+    printf("--------------------------------------------------------------------------\n\n");
     return;
 }
 
@@ -207,7 +212,6 @@ int print_table(database *main_database)
 void select_one_table(database *main_database)
 {
     std::vector< int > col_list;
-
     std::vector< int > attributes;
     std::vector< std::string > values;
     std::vector< int > ops;

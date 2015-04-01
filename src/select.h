@@ -23,8 +23,9 @@ std::vector< main_node * > select_single_table(table *tab, std::vector< int > &a
     main_node *head;
     std::vector< main_node * > *main_node_list, *min_main_node_list, result;
 
-    #ifdef DEBUG
+    #ifdef DEBUG_SELECT
         printf("Selecting from table %s. %d conditions\n", tab->get_table_name().c_str(), (int) attributes.size());
+        fflush(stdout);
     #endif
 
     for(i = 0; i < attributes.size(); i++)
@@ -32,9 +33,10 @@ std::vector< main_node * > select_single_table(table *tab, std::vector< int > &a
         //Searching for only EQUAL operators
         if(ops[i] == 0)
         {
-            #ifdef DEBUG
-                printf("Found an Equal Operator Condition");
-            #endif
+            #ifdef DEBUG_SELECT
+                printf("Found an Equal Operator Condition at %d", i);
+                fflush(stdout);
+            #endif // DEBUG
 
             main_node_list = tab->get_records_with_val(attributes[i], values[i]);
             node_count = main_node_list->size();
@@ -47,6 +49,11 @@ std::vector< main_node * > select_single_table(table *tab, std::vector< int > &a
             }
         }
     }
+
+    #ifdef DEBUG_SELECT
+        printf("min_index = %d count = %d\n", min_index, min_node_count);
+        fflush(stdout);
+    #endif // DEBUG
 
     if(min_index == -1)
     {
@@ -77,6 +84,11 @@ std::vector< main_node * > select_single_table(table *tab, std::vector< int > &a
             result.push_back((*min_main_node_list)[i]);
         }
     }
+
+    #ifdef DEBUG_SELECT
+        printf("Number of records selected = %d\n", (int) result.size());
+        fflush(stdout);
+    #endif //DEBUG
 
     //Returning Shortlisted main-nodes that match record
     return result;

@@ -59,6 +59,7 @@ bool compare_values(std::string &left, std::string &right, int op, int data_type
     else
     {
         printf("Wrong Data Type Passed to Compare Function\nAborting\n");
+        fflush(stdout);
         abort();
     }
 }
@@ -117,9 +118,10 @@ class table {
     //Function to return the index in primary_key list
     int get_primary_attribute(int i)
     {
-        if(i >= 0 && i < primary_keys.size())
+        if(i < 0 || i > primary_keys.size())
         {
             printf("Wrong Primary Key Attribute Index Requested!\nAborting!!");
+            fflush(stdout);
             abort();
         }
         return primary_keys[i];
@@ -143,6 +145,7 @@ class table {
                 }
 
                 printf("Passed an attribute index which is foreign key span!!\nAborting!!\n");
+                fflush(stdout);
                 abort();
             }
         }

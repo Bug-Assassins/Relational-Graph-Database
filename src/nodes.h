@@ -101,12 +101,20 @@ class main_node {
     {
         next = next_node;
     }
+
     main_node* get_next()
     {
         return next;
     }
+    
     attribute_node *get_attribute_list_index(int i)
     {
+        if(i < 0 || i > attribute_list.size())
+        {
+            printf("Passed attribute index %d do not exist !!\nAborting!!", i);
+            fflush(stdout);
+            abort();
+        }
         return attribute_list[i];
     }
 
