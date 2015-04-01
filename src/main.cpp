@@ -44,7 +44,7 @@ void print_record_list(table *tab, std::vector< main_node *> &record_list, std::
     //Printing the heading of each column
     for(i = 0; i < attributes.size(); i++)
     {
-        printf("%s\t", tab.get_attribute_name(attributes[i]).c_str());
+        printf("%s\t", tab->get_attribute_name(attributes[i]).c_str());
     }
     printf("\n");
 
@@ -213,7 +213,7 @@ void select_one_table(database *main_database)
 
     std::vector< main_node * > result;
 
-    int col_count, temp_int, expr_count, op, join_operator;
+    int col_count, temp_int, expr_count, op, join_operator, i, l_index;
     char rhs[100];
     std::string temp_string;
 
@@ -251,7 +251,7 @@ void select_one_table(database *main_database)
         attributes.push_back(l_index - 1);
 
         if (VERBOSE)
-            printf("Enter the operator index that you want\n")
+            printf("Enter the operator index that you want\n");
 
         scanf("%d", &op);
         ops.push_back(op);
@@ -261,7 +261,7 @@ void select_one_table(database *main_database)
 
         scanf("%s", rhs);
         temp_string.assign(rhs);
-        rhs.push_back(temp_string)
+        values.push_back(temp_string);
 
         if (i != expr_count - 1)
         {
