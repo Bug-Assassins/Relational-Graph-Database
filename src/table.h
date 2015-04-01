@@ -175,7 +175,7 @@ class table {
             if(!fetch_nodes || !fetch_nodes->size())
             {
                 return NULL;
-            }   
+            }
 
             if(node_count > fetch_nodes->size())
             {
@@ -283,7 +283,7 @@ class table {
                 //Logic when Given value is larger than the specified length of attribute
                 abort();
             }
-            add_to_size(normal[i]->add_get_new_value(values[i], new_main, this));
+            add_to_size(normal[i]->add_get_new_value(values[i], new_main, index_in_domain[i]));
         }
 
         new_main->set_next(head);
@@ -331,6 +331,24 @@ class table {
         return compare_record(record, attributes, values, ops, join_ops, -1);
     }
 
+    void update(std::vector< main_node * > &nodes,  std::vector< int > &index, std::vector< std::string > &values)
+    {
+        int i, j;
+        attribute_node *old_node;
+        for(i = 0; i < nodes.size(); i++)
+        {
+            for(j = 0; j < index.size(); j++)
+            {
+                old_node = nodes[i]->get_attribute_list_index(index[j]);
+                if(values[j].compare(old_node->get_value()))
+                {
+                    old_node->delete_edge(nodes[i], index_in_domain[index[j]]);
+                    attribute_node *new_attribute_node = normal[index[j]]->add_new_attribute(values[j], nodes[i], index_in_domain[index[j]]);
+                    nodes[i]->update_attribute(index[j], new_attribute_node);
+                }
+            }
+        }
+    }
 
     std::string get_attribute_name(int index)
     {

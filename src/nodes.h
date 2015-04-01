@@ -4,6 +4,7 @@
 #include<vector>
 #include<string>
 #include<cstdlib>
+#include<algorithm>
 
 class main_node;
 
@@ -63,6 +64,11 @@ class attribute_node {
     {
         return &nodes[tab_index];
     }
+
+    void delete_edge(main_node *tab_node, int index)
+    {
+        nodes[index].erase(std::remove(nodes[index].begin(), nodes[index].end(), tab_node), nodes[index].end());
+    }
     //Function to clear the node
     void clear()
     {
@@ -108,6 +114,11 @@ class main_node {
     void add_attribute(attribute_node* attr)
     {
         attribute_list.push_back(attr);
+    }
+
+    void update_attribute(int index, attribute_node *value)
+    {
+        attribute_list[index] = value;
     }
 
     void add_foreign_key_link(main_node *fk)
