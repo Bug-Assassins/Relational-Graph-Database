@@ -4,6 +4,7 @@ src/test.txt
 src/*.o
 src/test
 src/main
+src/main.exe
 Reports/mid_sem.pdf
 Reports/mid_sem.aux
 Reports/mid_sem.bbl

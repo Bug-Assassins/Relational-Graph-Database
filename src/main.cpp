@@ -44,7 +44,7 @@ void print_record_list(table *tab, std::vector< main_node *> &record_list, std::
     //Printing the heading of each column
     for(i = 0; i < attributes.size(); i++)
     {
-        printf("%s\t", tab.get_attribute_name(attributes[i]).c_str());
+        printf("%s\t", tab->get_attribute_name(attributes[i]).c_str());
     }
     printf("\n");
 
@@ -204,27 +204,27 @@ int print_table(database *main_database)
 //table &tab, std::vector< int > &attributes, std::vector< std::string > &values, std::vector< int > &ops, std::vector< bool > &join_ops
 void select_one_table(database *main_database)
 {
-    std::vector< int >col_list;
+    std::vector< int > col_list;
 
-    std::vector< int >attributes;
-    std::vector< std::string >values;
-    std::vector< int >ops;
-    std::vector< bool >join_ops;
+    std::vector< int > attributes;
+    std::vector< std::string > values;
+    std::vector< int > ops;
+    std::vector< bool > join_ops;
 
     std::vector< main_node * > result;
 
-    int col_count, temp_int, expr_count, op, join_operator;
+    int col_count, temp_int, expr_count, op, join_operator, i, l_index;
     char rhs[100];
     std::string temp_string;
 
     int table_index = print_table_details(main_database);
     table *selected_table = main_database->get_tables_index(table_index);
-    
+
     if (VERBOSE)
         printf("Enter the number of columns you want to select:");
-    
+
     scanf("%d", &col_count);
-    
+
     if (VERBOSE)
         printf("Enter the indexes of the columns\n");
 
@@ -251,7 +251,7 @@ void select_one_table(database *main_database)
         attributes.push_back(l_index - 1);
 
         if (VERBOSE)
-            printf("Enter the operator index that you want\n")
+            printf("Enter the operator index that you want\n");
 
         scanf("%d", &op);
         ops.push_back(op);
@@ -261,7 +261,7 @@ void select_one_table(database *main_database)
 
         scanf("%s", rhs);
         temp_string.assign(rhs);
-        rhs.push_back(temp_string)
+        values.push_back(temp_string);
 
         if (i != expr_count - 1)
         {
@@ -269,7 +269,7 @@ void select_one_table(database *main_database)
                 printf("AND(1) / OR(0) ? :");
 
             scanf("%d", &join_operator);
-            join_ops.push_back(join_operator);   
+            join_ops.push_back(join_operator);
         }
     }
     result = select_single_table(selected_table, attributes, values, ops, join_ops);
