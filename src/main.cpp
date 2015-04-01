@@ -177,6 +177,77 @@ int print_table(database *main_database)
         temp_main_node = temp_main_node->get_next();
     }
 }
+//table &tab, std::vector< int > &attributes, std::vector< std::string > &values, std::vector< int > &ops, std::vector< bool > &join_ops
+void select_one_table(database *main_database)
+{
+    std::vector< int >col_list;
+
+    std::vector< int >attributes;
+    std::vector< std::string >values;
+    std::vector< int >ops;
+    std::vector< bool >join_ops;
+
+    int col_count, temp_int, expr_count, op, join_operator;
+    char rhs[100];
+    std::string temp_string;
+
+    int table_index = print_table_details(main_database);
+    table *selected_table = main_database->get_tables_index(table_index);
+    
+    if (VERBOSE)
+        printf("Enter the number of columns you want to select:");
+    
+    scanf("%d", &col_count);
+    
+    if (VERBOSE)
+        printf("Enter the indexes of the columns\n");
+
+    for (i = 0; i < col_count; i++)
+    {
+        scanf("%d", &temp_int);
+        col_list.push_back(temp_int - 1);
+    }
+
+    if (VERBOSE)
+        printf("Enter the number of expressions\n");
+
+    scanf("%d", &expr_count);
+
+    for (i = 0; i < expr_count; i++)
+    {
+        if (VERBOSE)
+        {
+            printf("Enter the %d expression\n", i + 1);
+            printf("Enter the LHS col index\n");
+        }
+
+        scanf("%d", &l_index);
+        attributes.push_back(l_index);
+
+        if (VERBOSE)
+            printf("Enter the operator index that you want\n")
+
+        scanf("%d", &op);
+        ops.push_back(op);
+
+        if (VERBOSE)
+            printf("Enter the value of RHS:");
+
+        scanf("%s", rhs);
+        temp_string.assign(rhs);
+        rhs.push_back(temp_string)
+
+        if (i != expr_count - 1)
+        {
+            if (VERBOSE)
+                printf("AND(1) / OR(0) ? :");
+
+            scanf("%d", &join_operator);
+            join_ops.push_back(join_operator);   
+        }
+
+    }
+}
 
 void print_record_list(table &tab, std::vector< main_node *> &record_list, std::vector< int > &attributes)
 {
@@ -224,6 +295,7 @@ int main()
             printf("2) Insert to table\n");
             printf("3) Describe table\n");
             printf("4) Print a table\n");
+            printf("5) Select from single table\n");
             printf("0) Exit\n");
         }
         scanf("%d", &choice);
@@ -244,6 +316,10 @@ int main()
 
             case 4:
                 print_table(main_database);
+                break;
+
+            case 5:
+                select_one_table(main_database);
                 break;
 
             case 0:
