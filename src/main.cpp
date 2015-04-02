@@ -65,7 +65,7 @@ void print_record_list(table *tab, std::vector< main_node *> &record_list, std::
         printf("\n");
     }
 
-    printf("--------------------------------------------------------------------------\n\n");
+    printf("---------------------------------------------------------------------------------------------\n\n");
     return;
 }
 
@@ -278,7 +278,7 @@ void select_one_table(database *main_database)
             join_ops.push_back(join_operator);
         }
     }
-    result = select_single_table(selected_table, attributes, values, ops, join_ops);
+    result = select_single_table(selected_table, attributes, values, ops);
     print_record_list(selected_table, result, col_list);
 }
 

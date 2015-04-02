@@ -9,7 +9,7 @@ class table;
 #include "table.h"
 
 //Function to select record from the table
-std::vector< main_node * > select_single_table(table *tab, std::vector< int > &attributes, std::vector< std::string > &values, std::vector< int > &ops, std::vector< bool > &join_ops)
+std::vector< main_node * > select_single_table(table *tab, std::vector< int > &attributes, std::vector< std::string > &values, std::vector< int > &ops)
 {
     /*
         tab = Table on which select operation has to be performed
@@ -64,7 +64,7 @@ std::vector< main_node * > select_single_table(table *tab, std::vector< int > &a
         head = tab->get_main_node_head();
         while (head != NULL)
         {
-            if(tab->compare_record(head, attributes, values, ops, join_ops))
+            if(tab->compare_record(head, attributes, values, ops))
             {
                 result.push_back(head);
             }
@@ -79,7 +79,7 @@ std::vector< main_node * > select_single_table(table *tab, std::vector< int > &a
     for(i = 0; i < min_main_node_list->size(); i++)
     {
         // To avoid extra string comparison skip min_index
-        if(tab->compare_record((*min_main_node_list)[i], attributes, values, ops, join_ops,  min_index))
+        if(tab->compare_record((*min_main_node_list)[i], attributes, values, ops,  min_index))
         {
             result.push_back((*min_main_node_list)[i]);
         }

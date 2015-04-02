@@ -305,7 +305,7 @@ class table {
 
     //Function to compare all given values of a record with attributes are returns result
     bool compare_record(main_node *record, std::vector< int > &attributes, std::vector< std::string > &values,
-                                                std::vector< int > &ops, std::vector< bool > &join_ops, int skip)
+                                                std::vector< int > &ops, int skip)
     {
         /*
             Skip was added to avoid extra string comparison when it is certain that condition in the given
@@ -313,25 +313,23 @@ class table {
         */
 
         int i;
-        bool temp_result, final_result;
 
         for(i = 0; i < attributes.size(); i++)
         {
-            if(attributes[i] == skip) temp_result = true;
-            else temp_result = compare_attribute(record, attributes[i], values[i], ops[i]);
-            if(i == 0) final_result = temp_result;
-            else if(join_ops[i]) final_result &= temp_result;
-            else final_result |= temp_result;
+            if((attributes[i] != skip) && (!compare_attribute(record, attributes[i], values[i], ops[i])))
+            {
+                return false;
+            }
         }
 
-        return final_result;
+        return true;
     }
 
     //Overloaded Function to compare all given values with attributes without skipping
     bool compare_record(main_node *record, std::vector< int > &attributes, std::vector< std::string > &values,
-                                                        std::vector< int > &ops, std::vector< bool > &join_ops)
+                                                        std::vector< int > &ops)
     {
-        return compare_record(record, attributes, values, ops, join_ops, -1);
+        return compare_record(record, attributes, values, ops, -1);
     }
 
     void update(std::vector< main_node * > &nodes,  std::vector< int > &index, std::vector< std::string > &values)
