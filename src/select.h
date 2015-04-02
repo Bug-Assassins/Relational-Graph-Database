@@ -2,21 +2,22 @@
 #define SELECT_INCLUDED 1
 #include <string>
 #include <vector>
+#include <set>
 #include <climits>
 
 class table;
 
 #include "table.h"
 
-//Function to select record from the table
-std::vector< main_node * > select_single_table(table *tab, std::vector< int > &attributes, std::vector< std::string > &values, std::vector< int > &ops)
+//Function to select record from the table given that all logical operators used are AND
+std::vector< main_node * > select_via_and(table *tab, std::vector< value_expression > &expression_list)
 {
     /*
         tab = Table on which select operation has to be performed
         attributes = indexes of attributes whose values has been specified (size = n)
         values = Values with which attribute values has to be matched (size = n)
         ops = Operator which has to be using which comparing values (size = n)
-        join_ops = Logical Operators used to join comparisons (true = AND, false = OR) (size = n - 1)
+        All Logical Operators involved is assumed to be AND
     */
 
     int i, j, node_count, min_index = -1, min_node_count = INT_MAX;
@@ -24,21 +25,22 @@ std::vector< main_node * > select_single_table(table *tab, std::vector< int > &a
     std::vector< main_node * > *main_node_list, *min_main_node_list, result;
 
     #ifdef DEBUG_SELECT
-        printf("Selecting from table %s. %d conditions\n", tab->get_table_name().c_str(), (int) attributes.size());
+        printf("Selecting from table %s. %d conditions\n", tab->get_table_name().c_str(),
+                                                                    (int) expression_list.size());
         fflush(stdout);
     #endif
 
-    for(i = 0; i < attributes.size(); i++)
+    for(i = 0; i < expression_list.size(); i++)
     {
         //Searching for only EQUAL operators
-        if(ops[i] == 0)
+        if(expression_list[i].op == 0)
         {
             #ifdef DEBUG_SELECT
                 printf("Found an Equal Operator Condition at %d", i);
                 fflush(stdout);
             #endif // DEBUG
 
-            main_node_list = tab->get_records_with_val(attributes[i], values[i]);
+            main_node_list = tab->get_records_with_val(expression_list[i].attribute, expression_list[i].value);
             node_count = main_node_list->size();
 
             if(node_count < min_node_count)
@@ -64,7 +66,7 @@ std::vector< main_node * > select_single_table(table *tab, std::vector< int > &a
         head = tab->get_main_node_head();
         while (head != NULL)
         {
-            if(tab->compare_record(head, attributes, values, ops))
+            if(tab->compare_record(head, expression_list))
             {
                 result.push_back(head);
             }
@@ -79,7 +81,7 @@ std::vector< main_node * > select_single_table(table *tab, std::vector< int > &a
     for(i = 0; i < min_main_node_list->size(); i++)
     {
         // To avoid extra string comparison skip min_index
-        if(tab->compare_record((*min_main_node_list)[i], attributes, values, ops,  min_index))
+        if(tab->compare_record((*min_main_node_list)[i], expression_list,  min_index))
         {
             result.push_back((*min_main_node_list)[i]);
         }
@@ -91,6 +93,32 @@ std::vector< main_node * > select_single_table(table *tab, std::vector< int > &a
     #endif //DEBUG
 
     //Returning Shortlisted main-nodes that match record
+    return result;
+}
+
+//Function that executes a generic select query on a single table
+std::set< main_node * > select_single_table(table *tab, std::vector< std::vector< value_expression > > &expression_vec)
+{
+    /*
+        tab = Table on which select operation has to be performed
+        This function accepts a vector of vector.
+        The inner vectors are all joined by AND operators only.
+        The other vectors is formed by union
+    */
+
+    int i;
+    std::set< main_node * > result;
+    std::vector< main_node * > temp_result;
+
+    for(i = 0; i < expression_vec.size(); i++)
+    {
+        //Finding the result of the first total AND vector
+        temp_result = select_via_and(tab, expression_vec[i]);
+
+        //Taking union of the current result as well as old result
+        result.insert(temp_result.begin(), temp_result.end());
+    }
+
     return result;
 }
 

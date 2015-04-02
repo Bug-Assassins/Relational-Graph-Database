@@ -40,9 +40,10 @@ int print_table_details(database *main_database)
 
     return index - 1;
 }
-void print_record_list(table *tab, std::vector< main_node *> &record_list, std::vector< int > &attributes)
+void print_record_list(table *tab, std::set< main_node *> &record_list, std::vector< int > &attributes)
 {
     int i, j;
+    std::set< main_node * >::iterator it;
 
     //Printing the heading of each column
     for(i = 0; i < attributes.size(); i++)
@@ -56,11 +57,11 @@ void print_record_list(table *tab, std::vector< main_node *> &record_list, std::
 
 
     //Printing the Actual Records
-    for(i = 0; i < record_list.size(); i++)
+    for(it = record_list.begin(); it != record_list.end(); it++)
     {
         for(j = 0; j < attributes.size(); j++)
         {
-            printf("%s\t", record_list[i]->get_attribute_list_index(attributes[j])->get_value().c_str());
+            printf("%s\t", (*it)->get_attribute_list_index(attributes[j])->get_value().c_str());
         }
         printf("\n");
     }
@@ -211,50 +212,33 @@ int print_table(database *main_database)
 //table &tab, std::vector< int > &attributes, std::vector< std::string > &values, std::vector< int > &ops, std::vector< bool > &join_ops
 void select_or_update(database *main_database, bool update)
 {
-    std::vector< int > col_list;
-    std::vector< int > attributes;
+    std::vector< int > col_list, attributes, ops;
+    std::vector< value_expression > expression;
     std::vector< std::string > values;
-    std::vector< std::string > update_values;
-    std::vector< int > ops;
-    std::vector< bool > join_ops;
+    std::vector < std::vector< value_expression > > expression_vec;
 
-    std::vector< main_node * > result;
+    std::set< main_node * > result;
 
     int col_count, temp_int, expr_count, op, join_operator, i, l_index;
     char rhs[100];
     std::string temp_string;
+    value_expression temp_exp;
 
     int table_index = print_table_details(main_database);
     table *selected_table = main_database->get_tables_index(table_index);
 
     if (VERBOSE)
-    {
-        if(update)
-            printf("Enter the number of columns you want to update:");
-        else
-            printf("Enter the number of columns you want to select:");
-    }
+        printf("Enter the number of columns you want to select:");
 
     scanf("%d", &col_count);
 
     if (VERBOSE)
-    {
-        printf("Enter the indexes of the columns");
-        if(update)
-            printf(" and corresponding new values:\n");
-        printf("\n");
-    }
+        printf("Enter the indexes of the columns\n");
 
     for (i = 0; i < col_count; i++)
     {
         scanf("%d", &temp_int);
         col_list.push_back(temp_int - 1);
-        if(update)
-        {
-            scanf("%s", rhs);
-            temp_string.assign(rhs);
-            update_values.push_back(temp_string);
-        }
     }
 
     if (VERBOSE)
@@ -270,21 +254,22 @@ void select_or_update(database *main_database, bool update)
             printf("Enter the LHS col index\n");
         }
 
-        scanf("%d", &l_index);
-        attributes.push_back(l_index - 1);
+        scanf("%d", &temp_exp.attribute);
+        temp_exp.attribute--;
 
         if (VERBOSE)
             printf("Enter the operator index that you want\n");
 
-        scanf("%d", &op);
-        ops.push_back(op);
+        scanf("%d", &temp_exp.op);
+        temp_exp.op--;
 
         if (VERBOSE)
             printf("Enter the value of RHS:");
 
         scanf("%s", rhs);
-        temp_string.assign(rhs);
-        values.push_back(temp_string);
+        temp_exp.value.assign(rhs);
+
+        expression.push_back(temp_exp);
 
         if (i != expr_count - 1)
         {
@@ -292,20 +277,21 @@ void select_or_update(database *main_database, bool update)
                 printf("AND(1) / OR(0) ? :");
 
             scanf("%d", &join_operator);
-            join_ops.push_back(join_operator);
+            if(join_operator == 0)
+            {
+                expression_vec.push_back(expression);
+                expression.clear();
+            }
+        }
+        else
+        {
+            expression_vec.push_back(expression);
+            expression.clear();
         }
     }
-    result = select_single_table(selected_table, attributes, values, ops);
-    if(update)
-    {
-        selected_table->update(result, col_list, update_values);
-    }
-    else
-    {
-        print_record_list(selected_table, result, col_list);
-    }
+    result = select_single_table(selected_table, expression_vec);
+    print_record_list(selected_table, result, col_list);
 }
-
 
 int main()
 {
