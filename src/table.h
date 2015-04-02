@@ -1,11 +1,6 @@
 #ifndef TABLE_INCLUDED
 #define TABLE_INCLUDED 1
-#include <string>
-#include <set>
-#include <vector>
-#include <cstdlib>
-#include <cassert>
-#include <climits>
+
 
 class domain;
 class foreign_node;

@@ -1,9 +1,5 @@
 #ifndef SELECT_INCLUDED
 #define SELECT_INCLUDED 1
-#include <string>
-#include <vector>
-#include <set>
-#include <climits>
 
 class table;
 

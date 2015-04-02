@@ -3,8 +3,6 @@
 #define DEBUG_SELECT 0
 
 #include <cstdio>
-#include <cstring>
-#include <iostream>
 
 #include "database.h"
 #include "select.h"

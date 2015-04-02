@@ -1,9 +1,6 @@
 #ifndef DATABASE_INCLUDED
 #define DATABASE_INCLUDED 1
 
-#include<string>
-#include<vector>
-
 #include "table.h"
 
 class database {
