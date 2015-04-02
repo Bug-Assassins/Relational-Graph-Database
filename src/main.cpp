@@ -1,6 +1,6 @@
 #define VERBOSE 1
 #define DEBUG 1
-#define DEBUG_SELECT 1
+#define DEBUG_SELECT 0
 
 #include <cstdio>
 #include <cstring>
@@ -51,9 +51,9 @@ void print_record_list(table *tab, std::vector< main_node *> &record_list, std::
     }
     printf("\n");
 
-    if(VERBOSE)
-        printf("Record List Print Size = %d attributes = %d\n", (int) record_list.size(), (int) attributes.size());
-    
+   // if(VERBOSE)
+      //  printf("Record List Print Size = %d attributes = %d\n", (int) record_list.size(), (int) attributes.size());
+
 
     //Printing the Actual Records
     for(i = 0; i < record_list.size(); i++)
@@ -65,7 +65,7 @@ void print_record_list(table *tab, std::vector< main_node *> &record_list, std::
         printf("\n");
     }
 
-    printf("---------------------------------------------------------------------------------------------\n\n");
+    printf("------------------------------------------------------------------------------------\n\n");
     return;
 }
 
@@ -209,11 +209,12 @@ int print_table(database *main_database)
     }
 }
 //table &tab, std::vector< int > &attributes, std::vector< std::string > &values, std::vector< int > &ops, std::vector< bool > &join_ops
-void select_one_table(database *main_database)
+void select_or_update(database *main_database, bool update)
 {
     std::vector< int > col_list;
     std::vector< int > attributes;
     std::vector< std::string > values;
+    std::vector< std::string > update_values;
     std::vector< int > ops;
     std::vector< bool > join_ops;
 
@@ -227,17 +228,33 @@ void select_one_table(database *main_database)
     table *selected_table = main_database->get_tables_index(table_index);
 
     if (VERBOSE)
-        printf("Enter the number of columns you want to select:");
+    {
+        if(update)
+            printf("Enter the number of columns you want to update:");
+        else
+            printf("Enter the number of columns you want to select:");
+    }
 
     scanf("%d", &col_count);
 
     if (VERBOSE)
-        printf("Enter the indexes of the columns\n");
+    {
+        printf("Enter the indexes of the columns");
+        if(update)
+            printf(" and corresponding new values:\n");
+        printf("\n");
+    }
 
     for (i = 0; i < col_count; i++)
     {
         scanf("%d", &temp_int);
         col_list.push_back(temp_int - 1);
+        if(update)
+        {
+            scanf("%s", rhs);
+            temp_string.assign(rhs);
+            update_values.push_back(temp_string);
+        }
     }
 
     if (VERBOSE)
@@ -279,7 +296,14 @@ void select_one_table(database *main_database)
         }
     }
     result = select_single_table(selected_table, attributes, values, ops);
-    print_record_list(selected_table, result, col_list);
+    if(update)
+    {
+        selected_table->update(result, col_list, update_values);
+    }
+    else
+    {
+        print_record_list(selected_table, result, col_list);
+    }
 }
 
 
@@ -305,6 +329,7 @@ int main()
             printf("3) Describe table\n");
             printf("4) Print a table\n");
             printf("5) Select from single table\n");
+            printf("6) Update a table\n");
             printf("0) Exit\n");
         }
         scanf("%d", &choice);
@@ -328,7 +353,11 @@ int main()
                 break;
 
             case 5:
-                select_one_table(main_database);
+                select_or_update(main_database, false);
+                break;
+
+            case 6:
+                select_or_update(main_database, true);
                 break;
 
             case 0:
