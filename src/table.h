@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <cassert>
 #include <climits>
+#include <set>
 
 class domain;
 class foreign_node;
@@ -433,6 +434,10 @@ class table {
     {
         return record_count;
     }
+
+    //Function Definition in table
+    std::vector< main_node * > select_via_and(std::vector< value_expression > &expression_list);
+    std::set< main_node * > select_single_table(std::vector< std::vector< value_expression > > &expression_vec)
 
 };
 

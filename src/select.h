@@ -10,7 +10,7 @@ class table;
 #include "table.h"
 
 //Function to select record from the table given that all logical operators used are AND
-std::vector< main_node * > select_via_and(table *tab, std::vector< value_expression > &expression_list)
+std::vector< main_node * > select_via_and(std::vector< value_expression > &expression_list)
 {
     /*
         tab = Table on which select operation has to be performed
@@ -25,7 +25,7 @@ std::vector< main_node * > select_via_and(table *tab, std::vector< value_express
     std::vector< main_node * > *main_node_list, *min_main_node_list, result;
 
     #ifdef DEBUG_SELECT
-        printf("Selecting from table %s. %d conditions\n", tab->get_table_name().c_str(),
+        printf("Selecting from table %s. %d conditions\n", get_table_name().c_str(),
                                                                     (int) expression_list.size());
         fflush(stdout);
     #endif
@@ -40,7 +40,7 @@ std::vector< main_node * > select_via_and(table *tab, std::vector< value_express
                 fflush(stdout);
             #endif // DEBUG
 
-            main_node_list = tab->get_records_with_val(expression_list[i].attribute, expression_list[i].value);
+            main_node_list = get_records_with_val(expression_list[i].attribute, expression_list[i].value);
             node_count = main_node_list->size();
 
             if(node_count < min_node_count)
@@ -63,10 +63,10 @@ std::vector< main_node * > select_via_and(table *tab, std::vector< value_express
             This signifies that there was no EQUAL operator in the ops.
             Brute Force is the only way to get all nodes
         */
-        head = tab->get_main_node_head();
+        head = get_main_node_head();
         while (head != NULL)
         {
-            if(tab->compare_record(head, expression_list))
+            if(compare_record(head, expression_list))
             {
                 result.push_back(head);
             }
@@ -81,7 +81,7 @@ std::vector< main_node * > select_via_and(table *tab, std::vector< value_express
     for(i = 0; i < min_main_node_list->size(); i++)
     {
         // To avoid extra string comparison skip min_index
-        if(tab->compare_record((*min_main_node_list)[i], expression_list,  min_index))
+        if(compare_record((*min_main_node_list)[i], expression_list,  min_index))
         {
             result.push_back((*min_main_node_list)[i]);
         }
@@ -97,7 +97,7 @@ std::vector< main_node * > select_via_and(table *tab, std::vector< value_express
 }
 
 //Function that executes a generic select query on a single table
-std::set< main_node * > select_single_table(table *tab, std::vector< std::vector< value_expression > > &expression_vec)
+std::set< main_node * > select_single_table(std::vector< std::vector< value_expression > > &expression_vec)
 {
     /*
         tab = Table on which select operation has to be performed
@@ -113,7 +113,7 @@ std::set< main_node * > select_single_table(table *tab, std::vector< std::vector
     for(i = 0; i < expression_vec.size(); i++)
     {
         //Finding the result of the first total AND vector
-        temp_result = select_via_and(tab, expression_vec[i]);
+        temp_result = select_via_and(expression_vec[i]);
 
         //Taking union of the current result as well as old result
         result.insert(temp_result.begin(), temp_result.end());
