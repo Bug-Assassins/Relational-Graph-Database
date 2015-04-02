@@ -64,6 +64,12 @@ bool compare_values(std::string &left, std::string &right, int op, int data_type
     }
 }
 
+struct value_expression{
+    int attribute;
+    int op;
+    std::string value;
+};
+
 class table {
 
   private:
@@ -297,26 +303,26 @@ class table {
     }
 
     //Function that compares a particular attribute value of a record and returns result
-    bool compare_attribute(main_node *record, int attribute_index, std::string &value, int op)
+    bool compare_attribute(main_node *record, value_expression expr)
     {
-        std::string attr_val = record->get_attribute_list_index(attribute_index)->get_value();
-        return compare_values(attr_val, value, op, normal[attribute_index]->get_data_type());
+        std::string attr_val = record->get_attribute_list_index(expr.attribute)->get_value();
+        return compare_values(attr_val, expr.value, expr.op, normal[expr.attribute]->get_data_type());
     }
 
     //Function to compare all given values of a record with attributes are returns result
-    bool compare_record(main_node *record, std::vector< int > &attributes, std::vector< std::string > &values,
-                                                std::vector< int > &ops, int skip)
+    bool compare_record(main_node *record, std::vector< value_expression > &expr, int skip)
     {
         /*
             Skip was added to avoid extra string comparison when it is certain that condition in the given
-            position will evaluate to true
+            position will evaluate to true. All Logical operatos assumed to be true. Shortcircuiting
+            expressions also implemented
         */
 
         int i;
 
-        for(i = 0; i < attributes.size(); i++)
+        for(i = 0; i < expr.size(); i++)
         {
-            if((attributes[i] != skip) && (!compare_attribute(record, attributes[i], values[i], ops[i])))
+            if((expr[i].attribute != skip) && (!compare_attribute(record, expr[i])))
             {
                 return false;
             }
@@ -326,10 +332,9 @@ class table {
     }
 
     //Overloaded Function to compare all given values with attributes without skipping
-    bool compare_record(main_node *record, std::vector< int > &attributes, std::vector< std::string > &values,
-                                                        std::vector< int > &ops)
+    bool compare_record(main_node *record, std::vector< value_expression > &expr)
     {
-        return compare_record(record, attributes, values, ops, -1);
+        return compare_record(record, expr, -1);
     }
 
     void update(std::vector< main_node * > &nodes,  std::vector< int > &index, std::vector< std::string > &values)
@@ -344,7 +349,8 @@ class table {
                 if(values[j].compare(old_node->get_value()))
                 {
                     old_node->delete_edge(nodes[i], index_in_domain[index[j]]);
-                    attribute_node *new_attribute_node = normal[index[j]]->add_new_attribute(values[j], nodes[i], index_in_domain[index[j]]);
+                    attribute_node *new_attribute_node = normal[index[j]]->add_new_attribute(values[j],
+                                                                    nodes[i], index_in_domain[index[j]]);
                     nodes[i]->update_attribute(index[j], new_attribute_node);
                 }
             }
