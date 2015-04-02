@@ -302,7 +302,7 @@ void select_or_update(database *main_database, bool update)
             expression.clear();
         }
     }
-    result = select_single_table(selected_table, expression_vec);
+    result = selected_table->select_single_table(expression_vec);
     if(update)
     {
         selected_table->update(result, col_list, update_values);

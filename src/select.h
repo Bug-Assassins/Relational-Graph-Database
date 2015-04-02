@@ -6,7 +6,7 @@ class table;
 #include "table.h"
 
 //Function to select record from the table given that all logical operators used are AND
-std::vector< main_node * > select_via_and(std::vector< value_expression > &expression_list)
+std::vector< main_node * > table::select_via_and(std::vector< value_expression > &expression_list)
 {
     /*
         tab = Table on which select operation has to be performed
@@ -93,7 +93,7 @@ std::vector< main_node * > select_via_and(std::vector< value_expression > &expre
 }
 
 //Function that executes a generic select query on a single table
-std::set< main_node * > select_single_table(std::vector< std::vector< value_expression > > &expression_vec)
+std::set< main_node * > table::select_single_table(std::vector< std::vector< value_expression > > &expression_vec)
 {
     /*
         tab = Table on which select operation has to be performed

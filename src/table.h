@@ -432,7 +432,7 @@ class table {
 
     //Function Definition in table
     std::vector< main_node * > select_via_and(std::vector< value_expression > &expression_list);
-    std::set< main_node * > select_single_table(std::vector< std::vector< value_expression > > &expression_vec)
+    std::set< main_node * > select_single_table(std::vector< std::vector< value_expression > > &expression_vec);
 
 };
 
