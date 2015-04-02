@@ -1,11 +1,5 @@
 #ifndef TABLE_INCLUDED
 #define TABLE_INCLUDED 1
-#include <string>
-#include <vector>
-#include <cstdlib>
-#include <cassert>
-#include <climits>
-#include <set>
 
 class domain;
 class foreign_node;
@@ -338,21 +332,22 @@ class table {
         return compare_record(record, expr, -1);
     }
 
-    void update(std::vector< main_node * > &nodes,  std::vector< int > &index, std::vector< std::string > &values)
+    void update(std::set< main_node * > &nodes,  std::vector< int > &index, std::vector< std::string > &values)
     {
-        int i, j;
+        std::set< main_node * >::iterator it;
+        int j;
         attribute_node *old_node;
-        for(i = 0; i < nodes.size(); i++)
+        for(it = nodes.begin(); it != nodes.end(); it++)
         {
             for(j = 0; j < index.size(); j++)
             {
-                old_node = nodes[i]->get_attribute_list_index(index[j]);
+                old_node = (*it)->get_attribute_list_index(index[j]);
                 if(values[j].compare(old_node->get_value()))
                 {
-                    old_node->delete_edge(nodes[i], index_in_domain[index[j]]);
+                    old_node->delete_edge((*it), index_in_domain[index[j]]);
                     attribute_node *new_attribute_node = normal[index[j]]->add_new_attribute(values[j],
-                                                                    nodes[i], index_in_domain[index[j]]);
-                    nodes[i]->update_attribute(index[j], new_attribute_node);
+                                                                    (*it), index_in_domain[index[j]]);
+                    (*it)->update_attribute(index[j], new_attribute_node);
                 }
             }
         }

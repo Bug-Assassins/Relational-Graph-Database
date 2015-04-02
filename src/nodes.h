@@ -1,10 +1,13 @@
 #ifndef NODE_INCLUDED
 #define NODE_INCLUDED 1
 
-#include<vector>
-#include<string>
-#include<cstdlib>
-#include<algorithm>
+#include <vector>
+#include <set>
+#include <string>
+#include <cstdlib>
+#include <cassert>
+#include <climits>
+#include <algorithm>
 
 class main_node;
 
@@ -106,7 +109,7 @@ class main_node {
     {
         return next;
     }
-    
+
     attribute_node *get_attribute_list_index(int i)
     {
         if(i < 0 || i > attribute_list.size())

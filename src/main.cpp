@@ -3,8 +3,6 @@
 #define DEBUG_SELECT 0
 
 #include <cstdio>
-#include <cstring>
-#include <iostream>
 
 #include "database.h"
 #include "select.h"
@@ -214,7 +212,7 @@ void select_or_update(database *main_database, bool update)
 {
     std::vector< int > col_list, attributes, ops;
     std::vector< value_expression > expression;
-    std::vector< std::string > values;
+    std::vector< std::string > values, update_values;
     std::vector < std::vector< value_expression > > expression_vec;
 
     std::set< main_node * > result;
@@ -228,17 +226,32 @@ void select_or_update(database *main_database, bool update)
     table *selected_table = main_database->get_tables_index(table_index);
 
     if (VERBOSE)
-        printf("Enter the number of columns you want to select:");
+    {
+        if(update)
+            printf("Enter the number of columns you want to update:");
+        else
+            printf("Enter the number of columns you want to select:");
+    }
 
     scanf("%d", &col_count);
 
     if (VERBOSE)
-        printf("Enter the indexes of the columns\n");
+    {
+        printf("Enter the indexes of the columns");
+        if(update)
+            printf(" and their corresponding values:\n");
+    }
 
     for (i = 0; i < col_count; i++)
     {
         scanf("%d", &temp_int);
         col_list.push_back(temp_int - 1);
+        if(update)
+        {
+            scanf("%s", rhs);
+            temp_string.assign(rhs);
+            update_values.push_back(temp_string);
+        }
     }
 
     if (VERBOSE)
@@ -290,7 +303,14 @@ void select_or_update(database *main_database, bool update)
         }
     }
     result = select_single_table(selected_table, expression_vec);
-    print_record_list(selected_table, result, col_list);
+    if(update)
+    {
+        selected_table->update(result, col_list, update_values);
+    }
+    else
+    {
+        print_record_list(selected_table, result, col_list);
+    }
 }
 
 int main()
