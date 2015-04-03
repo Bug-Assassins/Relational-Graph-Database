@@ -121,6 +121,10 @@ class main_node {
     {
         return next;
     }
+    main_node *get_parent_node(int fk_index)
+    {
+        return parent_table_list[fk_index];
+    }
 
     //Function to return the corresponding connected attribute node
     attribute_node *get_attribute_list_index(int attribute_index)
