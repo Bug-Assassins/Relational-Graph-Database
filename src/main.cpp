@@ -207,9 +207,16 @@ int print_table(database *main_database)
         temp_main_node = temp_main_node->get_next();
     }
 }
-//table &tab, std::vector< int > &attributes, std::vector< std::string > &values, std::vector< int > &ops, std::vector< bool > &join_ops
-void select_or_update(database *main_database, bool update)
+
+void query(database *main_database, int check)
 {
+
+    /*Conditions on check
+        0 : select
+        1 : update
+        2 : delete
+    */
+
     std::vector< int > col_list, attributes, ops;
     std::vector< value_expression > expression;
     std::vector< std::string > values, update_values;
@@ -225,32 +232,35 @@ void select_or_update(database *main_database, bool update)
     int table_index = print_table_details(main_database);
     table *selected_table = main_database->get_tables_index(table_index);
 
-    if (VERBOSE)
+    if(check < 2)
     {
-        if(update)
-            printf("Enter the number of columns you want to update:");
-        else
-            printf("Enter the number of columns you want to select:");
-    }
-
-    scanf("%d", &col_count);
-
-    if (VERBOSE)
-    {
-        printf("Enter the indexes of the columns");
-        if(update)
-            printf(" and their corresponding values:\n");
-    }
-
-    for (i = 0; i < col_count; i++)
-    {
-        scanf("%d", &temp_int);
-        col_list.push_back(temp_int - 1);
-        if(update)
+        if (VERBOSE)
         {
-            scanf("%s", rhs);
-            temp_string.assign(rhs);
-            update_values.push_back(temp_string);
+            if(check == 1)
+                printf("Enter the number of columns you want to update:");
+            else if(check == 0)
+                printf("Enter the number of columns you want to select:");
+        }
+
+        scanf("%d", &col_count);
+
+        if (VERBOSE)
+        {
+            printf("Enter the indexes of the columns");
+            if(check == 1)
+                printf(" and their corresponding values:\n");
+        }
+
+        for (i = 0; i < col_count; i++)
+        {
+            scanf("%d", &temp_int);
+            col_list.push_back(temp_int - 1);
+            if(check == 1)
+            {
+                scanf("%s", rhs);
+                temp_string.assign(rhs);
+                update_values.push_back(temp_string);
+            }
         }
     }
 
@@ -303,13 +313,17 @@ void select_or_update(database *main_database, bool update)
         }
     }
     result = selected_table->select_single_table(expression_vec);
-    if(update)
+    if(check == 0)
+    {
+        print_record_list(selected_table, result, col_list);
+    }
+    else if(check == 1)
     {
         selected_table->update(result, col_list, update_values);
     }
-    else
+    else if(check == 2)
     {
-        print_record_list(selected_table, result, col_list);
+        selected_table->del(result);
     }
 }
 
@@ -336,6 +350,7 @@ int main()
             printf("4) Print a table\n");
             printf("5) Select from single table\n");
             printf("6) Update a table\n");
+            printf("7) Delete from a table\n");
             printf("0) Exit\n");
         }
         scanf("%d", &choice);
@@ -359,11 +374,15 @@ int main()
                 break;
 
             case 5:
-                select_or_update(main_database, false);
+                query(main_database, 0);
                 break;
 
             case 6:
-                select_or_update(main_database, true);
+                query(main_database, 1);
+                break;
+
+            case 7:
+                query(main_database, 2);
                 break;
 
             case 0:
