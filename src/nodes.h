@@ -146,6 +146,11 @@ class main_node {
         return get_attribute_list_index(attribute_index)->get_record_list(index_in_domain);
     }
 
+    std::vector< attribute_node * > *get_attribute_list()
+    {
+        return &attribute_list;
+    }
+
     //Function to add attribute to the main node
     void add_attribute(attribute_node* attr)
     {
@@ -160,6 +165,21 @@ class main_node {
     void add_foreign_key_link(main_node *fk)
     {
         parent_table_list.push_back(fk);
+    }
+
+    void del_node()
+    {
+        if(pre)
+        {
+            pre->next = next;
+        }
+
+        if(next)
+        {
+            next->pre = pre;
+        }
+
+        clear();
     }
 
     //Function to deallocate memory

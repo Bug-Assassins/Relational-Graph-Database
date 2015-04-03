@@ -349,7 +349,7 @@ class table {
         }
     }
 
-    //Function to find attribute's name
+
     std::string get_attribute_name(int attribute_index)
     {
         if(attribute_index < 0 || attribute_index >= attribute_names.size())
