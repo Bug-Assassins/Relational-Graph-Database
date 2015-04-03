@@ -126,6 +126,11 @@ class main_node {
         return attribute_list[i];
     }
 
+    std::vector< attribute_node * > *get_attribute_list()
+    {
+        return &attribute_list;
+    }
+
     //Function to add attribute to the main node
     void add_attribute(attribute_node* attr)
     {
@@ -145,6 +150,21 @@ class main_node {
     int attribute_count()
     {
         return attribute_list.size();
+    }
+
+    void del_node()
+    {
+        if(pre)
+        {
+            pre->next = next;
+        }
+
+        if(next)
+        {
+            next->pre = pre;
+        }
+
+        clear();
     }
 
     //Function to deallocate memory
