@@ -62,7 +62,7 @@ bool compare_values(std::string &left, std::string &right, int op, int data_type
 struct value_expression{
 
     /*
-     * tabel signifies if it's patent table or child table expression
+     * table signifies if it's parent table or child table expression
      * True = Child
      * False = Parent
      */
@@ -70,6 +70,11 @@ struct value_expression{
     int attribute;
     int op;
     std::string value;
+
+    value_expression()
+    {
+        table = true;
+    }
 };
 
 class table {
@@ -387,17 +392,23 @@ class table {
         return head;
     }
 
-    //Function to get parent table of a foreign_key
-    table *get_parent_table(int forign_key_index)
+    //Function to return the number of parent tables
+    int get_foreign_key_count()
     {
-        if(forign_key_index < 0 || forign_key_index > foreign_key.size())
+        return foreign_key.size();
+    }
+
+    //Function to get parent table of a foreign_key
+    table *get_parent_table(int foreign_key_index)
+    {
+        if(foreign_key_index < 0 || foreign_key_index > foreign_key.size())
         {
-            printf("%d foreign_key do not exist !!\nAborting!!", forign_key_index);
+            printf("%d foreign_key do not exist !!\nAborting!!", foreign_key_index);
             fflush(stdout);
             abort();
         }
 
-        return foreign_key[forign_key_index].first;
+        return foreign_key[foreign_key_index].first;
     }
 
     //Function to deallocate memory occupied by the table
@@ -447,7 +458,10 @@ class table {
     //Function Definition in table
     std::vector< main_node * > select_via_and(std::vector< value_expression > &expression_list);
     std::set< main_node * > select_single_table(std::vector< std::vector< value_expression > > &expression_vec);
-    //std::set< main_node *> table::join(int foreign_key_index, std::vector< std::vector< value_expression > > &expression_vec);
+    std::vector< main_node *> get_records_as_child(int foreign_key_index, main_node *parent_record);
+    std::vector< main_node *> get_all_records_as_child(int foreign_key_index, std::vector< value_expression > &expression_list);
+    std::vector< main_node * > join_via_and(int foreign_key_index, std::vector< value_expression > &expression_list);
+    std::set< main_node *> join(int foreign_key_index, std::vector< std::vector< value_expression > > &expression_vec);
 
 };
 

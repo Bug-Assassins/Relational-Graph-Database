@@ -140,12 +140,6 @@ class main_node {
         return get_attribute_list_index(attribute_index)->get_value();
     }
 
-    //Function to return all the main_nodes in the child table
-    std::vector< main_node *> *get_child_table_records(int attribute_index, int index_in_domain)
-    {
-        return get_attribute_list_index(attribute_index)->get_record_list(index_in_domain);
-    }
-
     //Function to add attribute to the main node
     void add_attribute(attribute_node* attr)
     {

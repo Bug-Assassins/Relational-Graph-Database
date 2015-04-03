@@ -96,7 +96,6 @@ std::vector< main_node * > table::select_via_and(std::vector< value_expression >
 std::set< main_node * > table::select_single_table(std::vector< std::vector< value_expression > > &expression_vec)
 {
     /*
-        tab = Table on which select operation has to be performed
         This function accepts a vector of vector.
         The inner vectors are all joined by AND operators only.
         The other vectors is formed by union
@@ -118,98 +117,124 @@ std::set< main_node * > table::select_single_table(std::vector< std::vector< val
     return result;
 }
 
-/*std::set< main_node *> table::join(int foreign_key_index, std::vector< std::vector< value_expression > > &expression_vec)
+//Function to return all child nodes connected to a particular main node
+std::vector< main_node *> table::get_records_as_child(int foreign_key_index, main_node *parent_record)
 {
-    int i, j, min_index, min_rec_count, temp_rec_count;
+    int i, j, min_index = -1, min_rec_count = INT_MAX, span_index, prime_index;
+    std::vector< main_node * > result, *child_result, *min_child_result;
+    std::string temp_value;
+
+    for(i = 0; i < foreign_key[foreign_key_index].second.size(); i++)
+    {
+        span_index = index_in_domain[foreign_key[foreign_key_index].second[i]];
+        prime_index = foreign_key[foreign_key_index].first->get_primary_attribute(i);
+        child_result = parent_record->get_attribute_list_index(prime_index)->get_record_list(span_index);
+
+        if(child_result->size() < min_rec_count)
+        {
+            min_index = i;
+            min_rec_count = child_result->size();
+            min_child_result = child_result;
+        }
+    }
+
+    for(i = 0; i < min_child_result->size(); i++)
+    {
+        for(j = 0; j < foreign_key[foreign_key_index].second.size(); j++)
+        {
+            if(j != min_index)
+            {
+                span_index = index_in_domain[foreign_key[foreign_key_index].second[i]];
+                prime_index = foreign_key[foreign_key_index].first->get_primary_attribute(i);
+                temp_value = (*min_child_result)[i]->get_attribute_value(span_index);
+                if(temp_value.compare(parent_record->get_attribute_value(prime_index)) != 0)
+                {
+                    break;
+                }
+            }
+            if(j == (foreign_key[foreign_key_index].second.size() - 1) )
+            {
+                result.push_back((*min_child_result)[i]);
+            }
+        }
+    }
+
+    return result;
+}
+
+//Function to get all child node connected to any node in parent result set
+//This function Assumes all logical operators used is AND
+std::vector< main_node *> table::get_all_records_as_child(int foreign_key_index, std::vector< value_expression > &expression_list)
+{
+    int i, j;
+    std::vector< main_node *> child_result, result, parent_list;
+
+    //Retrieving all the records in the parent table that satisfies given conditions
+    parent_list = foreign_key[foreign_key_index].first->select_via_and(expression_list);
+
+    for(i = 0; i < parent_list.size(); i++)
+    {
+        //Fetching all child records that satisfies the given condition
+        child_result = get_records_as_child(foreign_key_index, parent_list[i]);
+
+        //Taking union of these results - We can use vectors because no overlapping
+        for(j = 0; j < child_result.size(); j++)
+        {
+            result.push_back(child_result[j]);
+        }
+    }
+}
+
+//Function to join via and
+std::vector< main_node * > table::join_via_and(int foreign_key_index, std::vector< value_expression > &expression_list)
+{
+    int i;
+    std::vector< value_expression > parent, child;
+    std::vector< main_node *> parent_result, result;
+
+    for(i = 0; i < expression_list.size(); i++)
+    {
+        if(expression_list[i].table) child.push_back(expression_list[i]);
+        else parent.push_back(expression_list[i]);
+    }
+
+
+    if(parent.size() == 0) return select_via_and(child);
+    if(child.size() == 0) return get_all_records_as_child(foreign_key_index, parent);
+
+    parent_result = get_all_records_as_child(foreign_key_index, parent);
+
+    for(i = 0; i < parent_result.size(); i++)
+    {
+        if(compare_record(parent_result[i], child))
+        {
+            result.push_back(parent_result[i]);
+        }
+    }
+
+    return result;
+}
+
+std::set< main_node *> table::join(int foreign_key_index, std::vector< std::vector< value_expression > > &expression_vec)
+{
+    /*
+     * This function joins the current table with it's parent table
+     * It accepts vector od vector for expression
+     */
+    int i, j;
     std::set< main_node * > result;
-    std::vector< main_node * > temp_result, *child_result, *min_child_result;
-    std::vector< value_expression > temp_val_expr;
-    value_expression temp_expression
-    table *parent = get_parent_table(foreign_key_index);
+    std::vector< main_node *> temp_result;
 
-    for(i = 0; i < conditions.size(); i++)
+    for(i = 0; i < expression_vec.size(); i++)
     {
-        //Finding the result of the AND block
-        if(condition_list[i].table)
-        {
-            temp_result = select_via_and(expression_vec[i]);
+        //temporary result selected via AND
+        temp_result = join_via_and(foreign_key_index, expression_vec[i]);
 
-            //Taking Union of current result and previous result
-            result.insert(temp_result.begin(), temp_result.end());
-        }
-        else
-        {
-            temp_result = parent->select_via_and(expression_vec[i]);
-
-            for(j = 0; j < temp_result.size(); j++)
-            {
-                min_index = -1, min_rec_count = INT_MAX;
-
-                for(k = 0; k < foreign_key->get_primary_key_size(); k++)
-                {
-                    child_result = temp_result[j]->get_child_table_records(k, parent->);
-                    temp_rec_count = child_result.size();
-
-                    if(temp_rec_count < min_rec_count)
-                    {
-                        min_index = k;
-                        min_rec_count = temp_rec_count;
-                        min_child_result = child_result;
-                    }
-                }
-
-                for(l = 0; l < min_child_result.size(); l++)
-                {
-                    for(k = 0; k < )
-                }
-            }
-
-            //Taking Union of current result and previous result
-            result.insert(parent_result.begin(), );
-        }
+        //Taking UNION of current result with previous result
+        result.insert(temp_result.begin(), temp_result.end());
     }
 
-
-    int i, j, min_index = -1, min_rec_count = INT_MAX, temp_rec_count;  
-    std::vector< std::vector< main_node *> > result;
-    std::vector<int> tab_indexes;
-    std::vector< main_node * > *main_node_list;
-
-    for(i = 0; i < conditions.size(); i++)
-    {
-        if(conditions[i]->op == 0)
-        {
-            if(conditions[i].type)
-            {
-                main_node_list = table_list[conditions[i]->table_index]->get_records_with_val(conditions[i]->attribute_index, conditions[i]->value);
-                temp_rec_count = 1;
-                for(j = 0; j < table_list.size(); j++)
-                {
-                    if(j == conditions[i]->table_index)
-                    {
-                        temp_rec_count *= main_node_list->size();
-                    }
-                    else
-                    {
-                        temp_rec_count *= table_list[conditions[i]->table_index]->get_num_records();
-                    }
-                }
-            }
-            else
-            {
-                for(j = 0; j < conditions[i]->)
-                right_attribute_index = table_list[conditions[i]->table_index]->get_parent_table_index(
-                                    table_list[conditions[i]->dest_table], conditions[i]->attribute_index);
-
-            }
-
-            if(temp_rec_count < min_rec_count)
-            {
-                min_index = i;
-                min_rec_count = temp_rec_count;
-            }
-        }
-    }
-}*/
+    return result;
+}
 
 #endif // SELECT_INCLUDED
