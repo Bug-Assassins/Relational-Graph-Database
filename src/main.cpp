@@ -217,7 +217,7 @@ void select_or_update(database *main_database, bool update)
 
     std::set< main_node * > result;
 
-    int col_count, temp_int, expr_count, op, join_operator, i;
+    int col_count, temp_int, expr_count, join_operator, i;
     char rhs[100];
     std::string temp_string;
     value_expression temp_exp;
@@ -312,6 +312,122 @@ void select_or_update(database *main_database, bool update)
         print_record_list(selected_table, result, col_list);
     }
 }
+void print_main_node(main_node *result, std::vector< int > &col_list)
+{
+    int i;
+    for (i = 0; i < col_list.size(); i++)
+    {
+        printf("%s ", result->get_attribute_list_index(col_list[i])->get_value().c_str());
+    }
+    return;
+}
+void join_tables(database *main_database)
+{
+    table *j_table[2], *temp_table;
+    int j_index[2], table_span, i, foreign_key_index, expr_count, j, col_index, tab, op_type, j_type, t_index, col_count;
+    char rhs[100];
+    struct value_expression temp_expression;
+    std::vector< std::vector< value_expression > > expression_vec;
+    std::vector< value_expression > temp_expr_vect;
+    std::vector< int > col_list[2];
+    std::set< main_node * > result;
+    std::set< main_node * >::iterator it;
+    main_node *node;
+
+    printf("Enter the child table index\n");
+    j_index[0] = print_table_details(main_database);
+    j_table[0] = main_database->get_tables_index(j_index[0]);
+    table_span = j_table[0]->get_foreign_key_count();
+
+    printf("Enter the parent table index\n");
+    for (i = 0; i < table_span; i++)
+    {
+        temp_table = j_table[0]->get_parent_table(i);
+        printf("%d: %s\n",i + 1, temp_table->get_table_name().c_str());
+    }
+    scanf("%d", &foreign_key_index);
+
+    j_index[1] = main_database->get_index_table(j_table[0]->get_parent_table(foreign_key_index));
+
+
+    printf("Enter the number of columns you want to select:");
+    scanf("%d", &col_count);
+
+    for (i = 0; i < col_count; i++)
+    {
+        printf("Parent of child? 1/0 : ");
+        scanf("%d", &t_index);
+
+        printf("Enter the column index:");
+        scanf("%d", &col_index);
+
+        col_list[t_index].push_back(col_index - 1);
+    }
+
+    printf("Enter the number of expressions\n");
+    scanf("%d", &expr_count);
+
+    j = 0;
+    for (i = 0; i < expr_count; i++)
+    {
+        printf("LHS column is child or parent? 1/2:");
+        scanf("%d", &tab);
+
+        printf("Enter the index of the column:");
+        scanf("%d", &col_index);
+
+        printf("Enter the op type:");
+        scanf("%d", &op_type);
+
+        printf("Enter the rhs value:");
+        scanf("%s", rhs);
+
+
+        tab--;
+        if (tab)
+            temp_expression.table = true;
+        else
+            temp_expression.table = false;
+
+        temp_expression.attribute = col_index - 1;
+        temp_expression.op = op_type;
+        temp_expression.value.assign(rhs);
+
+        temp_expr_vect.push_back(temp_expression);
+
+        if (i != expr_count - 1)
+        {
+            printf("AND or OR? 1/0");
+            scanf("%d", &j_type);
+
+            if (j_type == 0)
+            {
+                j++;
+                expression_vec.push_back(temp_expr_vect);
+                temp_expr_vect.clear();
+            }
+        }
+    }
+    result = j_table[0]->join(foreign_key_index, expression_vec);
+
+    for (it = result.begin(); it != result.end(); it++)
+    {
+        node = *it;
+        print_main_node(node, col_list[0]);
+        print_main_node(node->get_parent_node(foreign_key_index), col_list[1]);
+        printf("\n");
+    }
+
+
+    for (i = 0; i < expression_vec.size(); i++)
+        expression_vec[i].clear();
+
+    expression_vec.clear();
+    temp_expr_vect.clear();
+    col_list[0].clear();
+    col_list[1].clear();
+    result.clear();
+}
 
 int main()
 {
@@ -336,6 +452,7 @@ int main()
             printf("4) Print a table\n");
             printf("5) Select from single table\n");
             printf("6) Update a table\n");
+            printf("7) Join two tables\n");
             printf("0) Exit\n");
         }
         scanf("%d", &choice);
@@ -365,6 +482,9 @@ int main()
             case 6:
                 select_or_update(main_database, true);
                 break;
+
+            case 7:
+                join_tables(main_database);
 
             case 0:
                 printf("Exiting cleanly!\n");
