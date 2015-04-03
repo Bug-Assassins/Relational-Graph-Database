@@ -108,7 +108,7 @@ int create_table(database *main_database)
     for (i = 0; i < pkey_span; i++)
     {
         scanf("%d", &temp_int);
-        temp_table->add_primary_key_index(temp_int - 1);
+        temp_table->add_primary_key(temp_int - 1);
     }
 
     if (VERBOSE)

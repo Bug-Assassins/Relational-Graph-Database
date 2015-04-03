@@ -63,9 +63,16 @@ class attribute_node {
         return nodes[tab_index].size();
     }
 
-    std::vector< main_node * > *get_record_list(int tab_index)
+    std::vector< main_node * > *get_record_list(int table_index)
     {
-        return &nodes[tab_index];
+        if(table_index < 0 || table_index > nodes.size())
+        {
+            printf("Passed Table index %d do not exist !!\nAborting!!", table_index);
+            fflush(stdout);
+            abort();
+        }
+
+        return &nodes[table_index];
     }
 
     void delete_edge(main_node *tab_node, int index)
@@ -110,15 +117,28 @@ class main_node {
         return next;
     }
 
-    attribute_node *get_attribute_list_index(int i)
+    //Function to return the corresponding connected attribute node
+    attribute_node *get_attribute_list_index(int attribute_index)
     {
-        if(i < 0 || i > attribute_list.size())
+        if(attribute_index < 0 || attribute_index > attribute_list.size())
         {
-            printf("Passed attribute index %d do not exist !!\nAborting!!", i);
+            printf("Passed attribute index %d do not exist !!\nAborting!!", attribute_index);
             fflush(stdout);
             abort();
         }
-        return attribute_list[i];
+        return attribute_list[attribute_index];
+    }
+
+    //Function to get an attribute node value
+    std::string get_attribute_value(int attribute_index)
+    {
+        return get_attribute_list_index(attribute_index)->get_value();
+    }
+
+    //Function to return all the main_nodes in the child table
+    std::vector< main_node *> *get_child_table_records(int attribute_index, int index_in_domain)
+    {
+        return get_attribute_list_index(attribute_index)->get_record_list(index_in_domain);
     }
 
     //Function to add attribute to the main node
@@ -135,11 +155,6 @@ class main_node {
     void add_foreign_key_link(main_node *fk)
     {
         parent_table_list.push_back(fk);
-    }
-    //Function to return number of attributes
-    int attribute_count()
-    {
-        return attribute_list.size();
     }
 
     //Function to deallocate memory

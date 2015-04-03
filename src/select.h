@@ -118,18 +118,59 @@ std::set< main_node * > table::select_single_table(std::vector< std::vector< val
     return result;
 }
 
-class condition {
-
-  public:
-    int table_index, attribute_index, op, foreign_key_index;
-    // True = Value, False = Column
-    bool type;
-    std::string value;
-};
-
-/*std::vector< std::vector< main_node * > > select_multiple_table(std::vector< table * > &table_list, std::vector< condition * > &conditions, std::vector< bool > &join_ops)
+/*std::set< main_node *> table::join(int foreign_key_index, std::vector< std::vector< value_expression > > &expression_vec)
 {
-    int i, j, min_index = -1, min_rec_count = INT_MAX, temp_rec_count;
+    int i, j, min_index, min_rec_count, temp_rec_count;
+    std::set< main_node * > result;
+    std::vector< main_node * > temp_result, *child_result, *min_child_result;
+    std::vector< value_expression > temp_val_expr;
+    value_expression temp_expression
+    table *parent = get_parent_table(foreign_key_index);
+
+    for(i = 0; i < conditions.size(); i++)
+    {
+        //Finding the result of the AND block
+        if(condition_list[i].table)
+        {
+            temp_result = select_via_and(expression_vec[i]);
+
+            //Taking Union of current result and previous result
+            result.insert(temp_result.begin(), temp_result.end());
+        }
+        else
+        {
+            temp_result = parent->select_via_and(expression_vec[i]);
+
+            for(j = 0; j < temp_result.size(); j++)
+            {
+                min_index = -1, min_rec_count = INT_MAX;
+
+                for(k = 0; k < foreign_key->get_primary_key_size(); k++)
+                {
+                    child_result = temp_result[j]->get_child_table_records(k, parent->);
+                    temp_rec_count = child_result.size();
+
+                    if(temp_rec_count < min_rec_count)
+                    {
+                        min_index = k;
+                        min_rec_count = temp_rec_count;
+                        min_child_result = child_result;
+                    }
+                }
+
+                for(l = 0; l < min_child_result.size(); l++)
+                {
+                    for(k = 0; k < )
+                }
+            }
+
+            //Taking Union of current result and previous result
+            result.insert(parent_result.begin(), );
+        }
+    }
+
+
+    int i, j, min_index = -1, min_rec_count = INT_MAX, temp_rec_count;  
     std::vector< std::vector< main_node *> > result;
     std::vector<int> tab_indexes;
     std::vector< main_node * > *main_node_list;

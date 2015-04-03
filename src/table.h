@@ -60,6 +60,13 @@ bool compare_values(std::string &left, std::string &right, int op, int data_type
 }
 
 struct value_expression{
+
+    /*
+     * tabel signifies if it's patent table or child table expression
+     * True = Child
+     * False = Parent
+     */
+    bool table;
     int attribute;
     int op;
     std::string value;
@@ -70,13 +77,11 @@ class table {
   private:
     std::string name; //Name of the Table
     main_node *head; //Head to the main list of the table
-    int attribute_count, record_count; //Number of attributes
+    int record_count; //Number of attributes
     size_t total_size;
     std::vector< domain * > normal;
     std::vector< std::string > attribute_names;
     std::vector< int > index_in_domain;
-    //std::vector< foreign_key * > foreign;
-    //std::vector<table *> foreign_out;
     std::vector< int > primary_keys;
     std::vector< std::pair< table *, std::vector< int > > > foreign_key;
 
@@ -85,7 +90,6 @@ class table {
     table(std::string table_name)
     {
         name = table_name;
-        attribute_count = 0;
         record_count = 0;
         head = NULL;
     }
@@ -101,6 +105,12 @@ class table {
         foreign_key.push_back(temp_pair);
     }
 
+    //Function to retrive attribute count in the table
+    int get_attribute_count()
+    {
+        return normal.size();
+    }
+
     //Function that adds an attribute to the table
     void add_attribute(int type, int length, std::string name)
     {
@@ -110,7 +120,6 @@ class table {
         temp_domain = new domain(type, length);
         tab_index = temp_domain->insert_table_pointer(this);
         add_to_size(sizeof(*temp_domain) + name.length());
-        attribute_count++;
         normal.push_back(temp_domain);
         attribute_names.push_back(name);
         index_in_domain.push_back(tab_index);
@@ -128,30 +137,6 @@ class table {
         return primary_keys[i];
     }
 
-    //Function to return attribute index in parent table given index here
-    int get_parent_table_index(table *parent, int idx)
-    {
-        int i, j;
-
-        for(i = 0; i < foreign_key.size(); i++)
-        {
-            if(foreign_key[i].first == parent)
-            {
-                for(j = 0; j < foreign_key[i].second.size(); j++)
-                {
-                    if(foreign_key[i].second[j] == idx)
-                    {
-                        return parent->get_primary_attribute(j);
-                    }
-                }
-
-                printf("Passed an attribute index which is foreign key span!!\nAborting!!\n");
-                fflush(stdout);
-                abort();
-            }
-        }
-    }
-
     //Function to find all the main_nodes with a certain attribute value
     std::vector< main_node * >  *get_records_with_val(int attribute_index, std::string &value)
     {
@@ -159,10 +144,17 @@ class table {
     }
 
     //Function to add primary key to the table
-    void add_primary_key(int attr_pos)
+    void add_primary_key(int attribute_index)
     {
-        assert(attr_pos < normal.size());
-        primary_keys.push_back(attr_pos);
+        if (attribute_index < 0 || attribute_index >= normal.size())
+        {
+            printf("%d attribute doesn't exist !!\nFailed to add primary key !!\nAborting", attribute_index);
+            fflush(stdout);
+            abort();
+        }
+
+        primary_keys.push_back(attribute_index);
+        return;
     }
 
     //Function to return a main node having the given primary key
@@ -195,7 +187,7 @@ class table {
             for(j = 0; j < primary_keys.size(); j++)
             {
                 col_index = primary_keys[j];
-                if(j != index && values[j].compare(min_nodes[i]->get_attribute_list_index(col_index)->get_value()) != 0)
+                if(j != index && values[j].compare(min_nodes[i]->get_attribute_value(col_index)) != 0)
                 {
                     break;
                 }
@@ -208,7 +200,6 @@ class table {
         }
 
         return NULL;
-
     }
 
     // Function to add foreign key links
@@ -300,7 +291,7 @@ class table {
     //Function that compares a particular attribute value of a record and returns result
     bool compare_attribute(main_node *record, value_expression expr)
     {
-        std::string attr_val = record->get_attribute_list_index(expr.attribute)->get_value();
+        std::string attr_val = record->get_attribute_value(expr.attribute);
         return compare_values(attr_val, expr.value, expr.op, normal[expr.attribute]->get_data_type());
     }
 
@@ -353,37 +344,55 @@ class table {
         }
     }
 
-    std::string get_attribute_name(int index)
+    //Function to find attribute's name
+    std::string get_attribute_name(int attribute_index)
     {
-        return attribute_names[index];
+        if(attribute_index < 0 || attribute_index >= attribute_names.size())
+        {
+            printf("Attribute Index %d do not exist!!\nAborting!!", attribute_index);
+            fflush(stdout);
+            abort();
+        }
+
+        return attribute_names[attribute_index];
     }
 
+    //Function to find table's name
     std::string get_table_name()
     {
         return name;
     }
 
-    int get_attribute_count()
+    //Function get the domain connect at a corresponding index
+    domain *get_normal_index(int normal_index)
     {
-        return attribute_count;
+        if (normal_index < 0 || normal_index >= normal.size())
+        {
+            printf("%d Normal Index do not exist !!\nAborting!!", normal_index);
+            fflush(stdout);
+            abort();
+        }
+
+        return normal[normal_index];
     }
 
-    domain *get_normal_index(int i)
-    {
-        if (i < normal.size())
-            return normal[i];
-        else
-            return NULL;
-    }
-
-    int add_primary_key_index(int i)
-    {
-        primary_keys.push_back(i);
-    }
-
+    //Function to get head of main_node list for iteration
     main_node *get_main_node_head()
     {
         return head;
+    }
+
+    //Function to get parent table of a foreign_key
+    table *get_parent_table(int forign_key_index)
+    {
+        if(forign_key_index < 0 || forign_key_index > foreign_key.size())
+        {
+            printf("%d foreign_key do not exist !!\nAborting!!", forign_key_index);
+            fflush(stdout);
+            abort();
+        }
+
+        return foreign_key[forign_key_index].first;
     }
 
     //Function to deallocate memory occupied by the table
@@ -433,6 +442,7 @@ class table {
     //Function Definition in table
     std::vector< main_node * > select_via_and(std::vector< value_expression > &expression_list);
     std::set< main_node * > select_single_table(std::vector< std::vector< value_expression > > &expression_vec);
+    //std::set< main_node *> table::join(int foreign_key_index, std::vector< std::vector< value_expression > > &expression_vec);
 
 };
 
