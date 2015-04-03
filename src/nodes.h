@@ -21,7 +21,7 @@ class attribute_node {
   public:
 
     //Constructor
-    attribute_node(std::string val, int num_tables)
+    attribute_node(std::string &val, int num_tables)
     {
         value = val;
         next = NULL;
@@ -96,20 +96,25 @@ class main_node {
 
   private:
     std::vector< attribute_node * > attribute_list;
-    main_node *next;
+    main_node *next, *pre;
     std::vector< main_node * > parent_table_list;
 
   public:
     //constructor
     main_node()
     {
-        next = NULL;
+        next = pre = NULL;
     }
 
     //Getter and Setter for next node
     void set_next(main_node* next_node)
     {
         next = next_node;
+    }
+
+    void set_pre(main_node* pre_node)
+    {
+        pre = pre_node;
     }
 
     main_node* get_next()

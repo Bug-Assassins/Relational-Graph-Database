@@ -278,12 +278,17 @@ class table {
                 //Logic when Given value is larger than the specified length of attribute
                 abort();
             }
-            add_to_size(normal[i]->add_get_new_value(values[i], new_main, index_in_domain[i]));
+            //add_to_size(normal[i]->add_get_new_value(values[i], new_main, index_in_domain[i]));
+            normal[i]->add_get_new_value(values[i], new_main, index_in_domain[i], true);
         }
 
         new_main->set_next(head);
+        if(head)
+        {
+            head->set_pre(new_main);
+        }
         head = new_main;
-        add_to_size(sizeof(*head));
+        //add_to_size(sizeof(*head));
         record_count++;
         return 1;
     }
@@ -336,8 +341,8 @@ class table {
                 if(values[j].compare(old_node->get_value()))
                 {
                     old_node->delete_edge((*it), index_in_domain[index[j]]);
-                    attribute_node *new_attribute_node = normal[index[j]]->add_new_attribute(values[j],
-                                                                    (*it), index_in_domain[index[j]]);
+                    attribute_node *new_attribute_node = normal[index[j]]->add_get_new_value(values[j],
+                                                                    (*it), index_in_domain[index[j]], false);
                     (*it)->update_attribute(index[j], new_attribute_node);
                 }
             }

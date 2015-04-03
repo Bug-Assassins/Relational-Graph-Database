@@ -58,7 +58,7 @@ class trie{
             root = new trie_node();
         }
 
-        attribute_node *get_node(std::string key, bool &exists, int num_tables)
+        attribute_node *get_node(std::string &key, bool &exists, int num_tables)
         {
             int level;
             int length = key.length() - 1;
@@ -97,7 +97,7 @@ class trie{
 
         }
 
-        attribute_node *insert_node(trie_node *node_crawl, std::string key, int level, int length, int num_tables)
+        attribute_node *insert_node(trie_node *node_crawl, std::string &key, int level, int length, int num_tables)
         {
             int index = key[level];
             trie_node *temp;

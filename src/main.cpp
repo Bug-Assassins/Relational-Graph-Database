@@ -145,7 +145,7 @@ int create_table(database *main_database)
 
 int insert_to_table(database *main_database)
 {
-    int index, success;
+    int index, success = -1;
     char temp_char_arr[100];
     table *temp_table;
     temp_table = main_database->get_tables_index(print_table_details(main_database));
@@ -184,7 +184,7 @@ int insert_to_table(database *main_database)
         printf("Integrity Violation\n");
     }
     values.clear();
-    printf("%lu\n", temp_table->get_size());
+    //printf("%lu\n", temp_table->get_size());
 }
 
 int print_table(database *main_database)
@@ -217,7 +217,7 @@ void select_or_update(database *main_database, bool update)
 
     std::set< main_node * > result;
 
-    int col_count, temp_int, expr_count, op, join_operator, i, l_index;
+    int col_count, temp_int, expr_count, op, join_operator, i;
     char rhs[100];
     std::string temp_string;
     value_expression temp_exp;
