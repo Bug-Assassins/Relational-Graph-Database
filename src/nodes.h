@@ -121,6 +121,10 @@ class main_node {
     {
         return next;
     }
+    main_node *get_parent_node(int fk_index)
+    {
+        return parent_table_list[fk_index];
+    }
 
     //Function to return the corresponding connected attribute node
     attribute_node *get_attribute_list_index(int attribute_index)
@@ -140,6 +144,17 @@ class main_node {
         return get_attribute_list_index(attribute_index)->get_value();
     }
 
+    //Function to return all the main_nodes in the child table
+    std::vector< main_node *> *get_child_table_records(int attribute_index, int index_in_domain)
+    {
+        return get_attribute_list_index(attribute_index)->get_record_list(index_in_domain);
+    }
+
+    std::vector< attribute_node * > *get_attribute_list()
+    {
+        return &attribute_list;
+    }
+
     //Function to add attribute to the main node
     void add_attribute(attribute_node* attr)
     {
@@ -154,6 +169,21 @@ class main_node {
     void add_foreign_key_link(main_node *fk)
     {
         parent_table_list.push_back(fk);
+    }
+
+    void del_node()
+    {
+        if(pre)
+        {
+            pre->next = next;
+        }
+
+        if(next)
+        {
+            next->pre = pre;
+        }
+
+        clear();
     }
 
     //Function to deallocate memory

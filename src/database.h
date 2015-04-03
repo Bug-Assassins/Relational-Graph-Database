@@ -34,6 +34,15 @@ class database {
     {
         return tables.size();
     }
+    int get_index_table(table *tab)
+    {
+        int i;
+        for (i = 0; i < tables.size(); i++)
+        {
+            if (tables[i] == tab)
+                return i;
+        }
+    }
 
     //Function to deallocate the database
     void clear()
