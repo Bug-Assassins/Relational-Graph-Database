@@ -292,6 +292,10 @@ class table {
         }
 
         new_main->set_next(head);
+        if(head)
+        {
+            head->set_pre(new_main);
+        }
         head = new_main;
         //add_to_size(sizeof(*head));
         record_count++;
