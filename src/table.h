@@ -349,6 +349,29 @@ class table {
         }
     }
 
+    void del(std::set< main_node * > &nodes)
+    {
+        std::set< main_node * >::iterator it;
+        int i;
+        std::vector< attribute_node * > *old_nodes;
+        for(it = nodes.begin(); it != nodes.end(); it++)
+        {
+            old_nodes = (*it)->get_attribute_list();
+            for(i = 0; i < old_nodes->size(); i++)
+            {
+                 (*old_nodes)[i]->delete_edge((*it), index_in_domain[i]);
+            }
+
+            if(head == (*it))
+            {
+                head = (*it)->get_next();
+            }
+
+            (*it)->del_node();
+            delete (*it);
+        }
+
+    }
 
     std::string get_attribute_name(int attribute_index)
     {
