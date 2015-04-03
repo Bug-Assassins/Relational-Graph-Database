@@ -67,8 +67,9 @@ class domain {
         }
         return -1;
     }
+
     //Function to add new value to domain
-    size_t add_get_new_value(std::string new_val, main_node *node, int tab_index)
+    attribute_node* add_get_new_value(std::string &new_val, main_node *node, int tab_index, bool ins)
     {
         bool exists = false;
         size_t node_size = sizeof(node);
@@ -89,17 +90,11 @@ class domain {
             node_size += sizeof(*head) + new_val.length() - sizeof(std::string);
         }
         new_node->connect_main_record(node, tab_index);
-        node->add_attribute(new_node);
-        return node_size;
-    }
-
-    attribute_node *add_new_attribute(std::string &value, main_node *node, int tab_index)
-    {
-        bool exists = false;
-        attribute_node* new_node = index->get_node(value, exists, table_list.size());
-        new_node->connect_main_record(node, tab_index);
+        if(ins)
+            node->add_attribute(new_node);
         return new_node;
     }
+
     // Function to get the list of main nodes connected to a specific attribute node which belong to the given table.
     std::vector< main_node * >  *get_main_nodes(std::string &value, int table_index)
     {
