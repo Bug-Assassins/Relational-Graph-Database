@@ -144,8 +144,8 @@ std::vector< main_node *> table::get_records_as_child(int foreign_key_index, mai
         {
             if(j != min_index)
             {
-                span_index = index_in_domain[foreign_key[foreign_key_index].second[i]];
-                prime_index = foreign_key[foreign_key_index].first->get_primary_attribute(i);
+                span_index = index_in_domain[foreign_key[foreign_key_index].second[j]];
+                prime_index = foreign_key[foreign_key_index].first->get_primary_attribute(j);
                 temp_value = (*min_child_result)[i]->get_attribute_value(span_index);
                 if(temp_value.compare(parent_record->get_attribute_value(prime_index)) != 0)
                 {
@@ -183,6 +183,8 @@ std::vector< main_node *> table::get_all_records_as_child(int foreign_key_index,
             result.push_back(child_result[j]);
         }
     }
+
+    return result;
 }
 
 //Function to join via and
