@@ -42,6 +42,7 @@ class database {
             if (tables[i] == tab)
                 return i;
         }
+        return -1;
     }
 
     //Function to deallocate the database

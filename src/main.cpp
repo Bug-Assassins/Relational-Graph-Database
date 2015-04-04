@@ -1,11 +1,18 @@
 #define VERBOSE 1
 #define DEBUG 1
-#define DEBUG_SELECT 0
+//#define DEBUG_SELECT 0
 
 #include <cstdio>
 
 #include "database.h"
 #include "select.h"
+
+struct dom
+{
+    std::string name;
+    int type;
+    int length;
+};
 
 int print_table_details(database *main_database)
 {
@@ -38,6 +45,7 @@ int print_table_details(database *main_database)
 
     return index - 1;
 }
+
 void print_record_list(table *tab, std::set< main_node *> &record_list, std::vector< int > &attributes)
 {
     int i, j;
@@ -49,7 +57,7 @@ void print_record_list(table *tab, std::set< main_node *> &record_list, std::vec
         printf("%s\t", tab->get_attribute_name(attributes[i]).c_str());
     }
     printf("\n");
-
+    printf("--------------------------------------------------------------------------------\n");
    // if(VERBOSE)
       //  printf("Record List Print Size = %d attributes = %d\n", (int) record_list.size(), (int) attributes.size());
 
@@ -64,12 +72,14 @@ void print_record_list(table *tab, std::set< main_node *> &record_list, std::vec
         printf("\n");
     }
 
-    printf("------------------------------------------------------------------------------------\n\n");
+
     return;
 }
 
 int create_table(database *main_database)
 {
+    dom temp_dom;
+    std::vector< dom > domains;
     std::vector< int > fk_list;
     char temp_name[100];
     int attribute_count, i, j, type, length, pkey_span, temp_int, fk_count, table_index;
@@ -80,21 +90,26 @@ int create_table(database *main_database)
 
     scanf("%s", temp_name);
 
-    temp_table = new table(std::string(temp_name));
 
     if (VERBOSE)
         printf("Enter the number of attributes:");
 
     scanf("%d", &attribute_count);
 
+    temp_table = new table(std::string(temp_name), attribute_count);
+
+    bool *ins_check = new bool[attribute_count];
+
     for (i = 0; i < attribute_count; i++)
     {
+        ins_check[i] = false;
         if (VERBOSE)
             printf("Enter the attribute name, type, length\n1: INTEGER\n2: STRING\n3: FLOAT\n");
 
-        scanf("%s %d %d", temp_name, &type, &length);
-
-        temp_table->add_attribute(type, length, std::string(temp_name));
+        scanf("%s %d %d", temp_name, &temp_dom.type, &temp_dom.length);
+        temp_dom.name.assign(temp_name);
+        domains.push_back(temp_dom);
+        //temp_table->add_attribute(type, length, std::string(temp_name));
     }
 
     if (VERBOSE)
@@ -125,18 +140,25 @@ int create_table(database *main_database)
         for (j = 0; j <  temp_table2->get_primary_key_size(); j++)
         {
             scanf("%d", &temp_int);
-            fk_list.push_back(temp_int - 1);
+            temp_int--;
+            ins_check[temp_int] = true;
+            temp_table->add_foreign_domain(domains[temp_int].name, temp_table2->get_domain(i), temp_int);
+            fk_list.push_back(temp_int);
         }
         temp_table->add_foreign_key(temp_table2, fk_list);
-        /*
-        printf("PRINTING FK INFO\n");
-        for (j = 0; j < fk_list.size(); j++)
-        {
-            printf("%d ", fk_list[j]);
-        }
-        printf("\n");
-        */
+
     }
+
+    for (i = 0; i < attribute_count; i++)
+    {
+        if(!ins_check[i])
+        {
+            temp_table->add_attribute(domains[i].type, domains[i].length, domains[i].name, i);
+        }
+    }
+
+    delete[] ins_check;
+    domains.clear();
     fk_list.clear();
     temp_table->add_to_size(sizeof(*temp_table));
     main_database->add_table(temp_table);
@@ -184,7 +206,7 @@ int insert_to_table(database *main_database)
         printf("Integrity Violation\n");
     }
     values.clear();
-    //printf("%lu\n", temp_table->get_size());
+
 }
 
 int print_table(database *main_database)
@@ -360,16 +382,16 @@ void join_tables(database *main_database)
         printf("%d: %s\n",i + 1, temp_table->get_table_name().c_str());
     }
     scanf("%d", &foreign_key_index);
+    foreign_key_index--;
 
     j_index[1] = main_database->get_index_table(j_table[0]->get_parent_table(foreign_key_index));
-
 
     printf("Enter the number of columns you want to select:");
     scanf("%d", &col_count);
 
     for (i = 0; i < col_count; i++)
     {
-        printf("Parent of child? 1/0 : ");
+        printf("Parent or child? 1/0 : ");
         scanf("%d", &t_index);
 
         printf("Enter the column index:");
@@ -395,13 +417,13 @@ void join_tables(database *main_database)
 
         printf("Enter the rhs value:");
         scanf("%s", rhs);
-
+        fflush(stdout);
 
         tab--;
         if (tab)
-            temp_expression.table = true;
-        else
             temp_expression.table = false;
+        else
+            temp_expression.table = true;
 
         temp_expression.attribute = col_index - 1;
         temp_expression.op = op_type;
@@ -422,8 +444,9 @@ void join_tables(database *main_database)
             }
         }
     }
+    expression_vec.push_back(temp_expr_vect);
+    temp_expr_vect.clear();
     result = j_table[0]->join(foreign_key_index, expression_vec);
-
     for (it = result.begin(); it != result.end(); it++)
     {
         node = *it;
@@ -437,7 +460,6 @@ void join_tables(database *main_database)
         expression_vec[i].clear();
 
     expression_vec.clear();
-    temp_expr_vect.clear();
     col_list[0].clear();
     col_list[1].clear();
     result.clear();
@@ -504,6 +526,7 @@ int main()
 
             case 8:
                 join_tables(main_database);
+                break;
 
             case 0:
                 printf("Exiting cleanly!\n");

@@ -123,7 +123,6 @@ std::vector< main_node *> table::get_records_as_child(int foreign_key_index, mai
     int i, j, min_index = -1, min_rec_count = INT_MAX, span_index, prime_index;
     std::vector< main_node * > result, *child_result, *min_child_result;
     std::string temp_value;
-
     for(i = 0; i < foreign_key[foreign_key_index].second.size(); i++)
     {
         span_index = index_in_domain[foreign_key[foreign_key_index].second[i]];
@@ -152,11 +151,13 @@ std::vector< main_node *> table::get_records_as_child(int foreign_key_index, mai
                     break;
                 }
             }
-            if(j == (foreign_key[foreign_key_index].second.size() - 1) )
-            {
-                result.push_back((*min_child_result)[i]);
-            }
         }
+
+        if(j == foreign_key[foreign_key_index].second.size())
+        {
+            result.push_back((*min_child_result)[i]);
+        }
+
     }
 
     return result;
@@ -178,10 +179,7 @@ std::vector< main_node *> table::get_all_records_as_child(int foreign_key_index,
         child_result = get_records_as_child(foreign_key_index, parent_list[i]);
 
         //Taking union of these results - We can use vectors because no overlapping
-        for(j = 0; j < child_result.size(); j++)
-        {
-            result.push_back(child_result[j]);
-        }
+        result.insert(result.end(), child_result.begin(), child_result.end());
     }
 
     return result;

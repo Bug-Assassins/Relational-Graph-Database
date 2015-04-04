@@ -92,11 +92,14 @@ class table {
 
   public:
     //Constructor that creates a table with given name
-    table(std::string table_name)
+    table(std::string table_name, int attribute_count)
     {
         name = table_name;
         record_count = 0;
         head = NULL;
+        normal.resize(attribute_count);
+        attribute_names.resize(attribute_count);
+        index_in_domain.resize(attribute_count);
     }
 
     int get_primary_key_size()
@@ -117,7 +120,7 @@ class table {
     }
 
     //Function that adds an attribute to the table
-    void add_attribute(int type, int length, std::string name)
+    void add_attribute(int type, int length, std::string name, int index)
     {
         int tab_index;
         domain *temp_domain;
@@ -125,9 +128,18 @@ class table {
         temp_domain = new domain(type, length);
         tab_index = temp_domain->insert_table_pointer(this);
         add_to_size(sizeof(*temp_domain) + name.length());
-        normal.push_back(temp_domain);
-        attribute_names.push_back(name);
-        index_in_domain.push_back(tab_index);
+        normal[index] = temp_domain;
+        attribute_names[index] = name;
+        index_in_domain[index] = tab_index;
+    }
+
+    //Function to link to already existing domain
+    void add_foreign_domain(std::string name, domain *dom, int index)
+    {
+        int tab_index = dom->insert_table_pointer(this);
+        normal[index] = dom;
+        attribute_names[index] = name;
+        index_in_domain[index] = tab_index;
     }
 
     //Function to return the index in primary_key list
@@ -140,6 +152,12 @@ class table {
             abort();
         }
         return primary_keys[i];
+    }
+
+    //Funtion to return the domain from primary key list
+    domain *get_domain(int i)
+    {
+        return normal[primary_keys[i]];
     }
 
     //Function to find all the main_nodes with a certain attribute value
@@ -437,12 +455,29 @@ class table {
     //Function to deallocate memory occupied by the table
     void clear()
     {
-        name.clear();
-        for(int i = 0; i < normal.size(); i++)
+        int i, j;
+        bool *check = new bool[attribute_names.size()];
+        for(i = 0; i < attribute_names.size(); i++)
         {
-            normal[i]->clear();
-            delete normal[i];
+            check[i] = false;
         }
+
+        for(i = 0; i < foreign_key.size(); i++)
+        {
+            for(j = 0; j < foreign_key[i].second.size(); j++)
+                check[foreign_key[i].second[j]] = true;
+        }
+
+        name.clear();
+        for(i = 0; i < normal.size(); i++)
+        {
+            if(!check[i])
+            {
+                normal[i]->clear();
+                delete normal[i];
+            }
+        }
+        delete[] check;
         normal.clear();
         primary_keys.clear();
 

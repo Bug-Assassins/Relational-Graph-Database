@@ -4,6 +4,7 @@
 #include <vector>
 #include <set>
 #include <string>
+#include <cstring>
 #include <cstdlib>
 #include <cassert>
 #include <climits>
