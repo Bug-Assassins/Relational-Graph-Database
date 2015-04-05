@@ -59,12 +59,12 @@ class attribute_node {
     }
 
     //Function to get number of connected records
-    int get_num_records(int tab_index)
+    unsigned int get_num_records(int tab_index)
     {
         return nodes[tab_index].size();
     }
 
-    std::vector< main_node * > *get_record_list(int table_index)
+    std::vector< main_node * > *get_record_list(unsigned int table_index)
     {
         if(table_index < 0 || table_index > nodes.size())
         {
@@ -83,8 +83,10 @@ class attribute_node {
     //Function to clear the node
     void clear()
     {
+        unsigned int i;
+
         value.clear();
-        for(int i = 0; i < nodes.size(); i++)
+        for(i = 0; i < nodes.size(); i++)
         {
             nodes[i].clear();
         }
@@ -128,7 +130,7 @@ class main_node {
     }
 
     //Function to return the corresponding connected attribute node
-    attribute_node *get_attribute_list_index(int attribute_index)
+    attribute_node *get_attribute_list_index(unsigned int attribute_index)
     {
         if(attribute_index < 0 || attribute_index > attribute_list.size())
         {

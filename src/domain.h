@@ -11,20 +11,20 @@ class attribute_node;
 class domain {
 
   private:
-    int data_type;
-    int attr_length;
+    unsigned int data_type;
+    unsigned int attr_length;
     std::vector<table *> table_list;
     attribute_node *head;
     trie *index;
 
   public:
 
-    static const int INTEGER = 1;
-    static const int STRING = 2;
-    static const int FLOAT = 3;
+    static const unsigned int INTEGER = 1;
+    static const unsigned int STRING = 2;
+    static const unsigned int FLOAT = 3;
 
     //Constructor for a new domain
-    domain(int type, int length)
+    domain(unsigned int type, unsigned int length)
     {
         data_type = type;
         attr_length = length;
@@ -33,13 +33,13 @@ class domain {
     }
 
     //Fucntion to get length of attribute
-    int get_attr_length()
+    unsigned int get_attr_length()
     {
         return attr_length;
     }
 
     //Function to get and set data type
-    int get_data_type()
+    unsigned int get_data_type()
     {
         return data_type;
     }
@@ -50,15 +50,17 @@ class domain {
         return index;
     }
 
-    int insert_table_pointer(table *tab)
+    unsigned int insert_table_pointer(table *tab)
     {
         table_list.push_back(tab);
         return (table_list.size() - 1);
     }
 
-    int get_table_index(table *tab)
+    unsigned int get_table_index(table *tab)
     {
-        for(int i = 0; i < table_list.size(); i++)
+        unsigned int i;
+
+        for(i = 0; i < table_list.size(); i++)
         {
             if(table_list[i] == tab)
             {
@@ -69,7 +71,7 @@ class domain {
     }
 
     //Function to add new value to domain
-    attribute_node* add_get_new_value(std::string &new_val, main_node *node, int tab_index, bool ins)
+    attribute_node* add_get_new_value(std::string &new_val, main_node *node, unsigned int tab_index, bool ins)
     {
         bool exists = false;
         size_t node_size = sizeof(node);
@@ -96,7 +98,7 @@ class domain {
     }
 
     // Function to get the list of main nodes connected to a specific attribute node which belong to the given table.
-    std::vector< main_node * >  *get_main_nodes(std::string &value, int table_index)
+    std::vector< main_node * >  *get_main_nodes(std::string &value, unsigned int table_index)
     {
         bool exists = true;
         attribute_node *node = index->get_node(value, exists, table_list.size());

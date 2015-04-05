@@ -16,7 +16,8 @@ std::vector< main_node * > table::select_via_and(std::vector< value_expression >
         All Logical Operators involved is assumed to be AND
     */
 
-    int i, j, node_count, min_index = -1, min_node_count = INT_MAX;
+    unsigned int i, node_count, min_node_count = INT_MAX;
+    int min_index = -1;
     main_node *head;
     std::vector< main_node * > *main_node_list, *min_main_node_list, result;
 
@@ -101,9 +102,25 @@ std::set< main_node * > table::select_single_table(std::vector< std::vector< val
         The other vectors is formed by union
     */
 
-    int i;
+    unsigned int i;
+    main_node *head;
     std::set< main_node * > result;
     std::vector< main_node * > temp_result;
+
+    if(expression_vec.size() == 0)
+    {
+        //Get the head of the main node linked list
+        head = get_main_node_head();
+
+        //Iterate all records and add it to the set
+        while(head != NULL)
+        {
+            result.insert(head);
+            head = head->get_next();
+        }
+
+        return result;
+    }
 
     for(i = 0; i < expression_vec.size(); i++)
     {
@@ -120,7 +137,7 @@ std::set< main_node * > table::select_single_table(std::vector< std::vector< val
 //Function to return all child nodes connected to a particular main node
 std::vector< main_node *> table::get_records_as_child(int foreign_key_index, main_node *parent_record)
 {
-    int i, j, min_index = -1, min_rec_count = INT_MAX, span_index, prime_index;
+    unsigned int i, j, min_rec_count = INT_MAX, span_index, prime_index, min_index = INT_MAX;
     std::vector< main_node * > result, *child_result, *min_child_result;
     std::string temp_value;
     for(i = 0; i < foreign_key[foreign_key_index].second.size(); i++)
@@ -167,7 +184,7 @@ std::vector< main_node *> table::get_records_as_child(int foreign_key_index, mai
 //This function Assumes all logical operators used is AND
 std::vector< main_node *> table::get_all_records_as_child(int foreign_key_index, std::vector< value_expression > &expression_list)
 {
-    int i, j;
+    unsigned int i;
     std::vector< main_node *> child_result, result, parent_list;
 
     //Retrieving all the records in the parent table that satisfies given conditions
@@ -188,7 +205,7 @@ std::vector< main_node *> table::get_all_records_as_child(int foreign_key_index,
 //Function to join via and
 std::vector< main_node * > table::join_via_and(int foreign_key_index, std::vector< value_expression > &expression_list)
 {
-    int i;
+    unsigned int i;
     std::vector< value_expression > parent, child;
     std::vector< main_node *> parent_result, result;
 
@@ -219,11 +236,29 @@ std::set< main_node *> table::join(int foreign_key_index, std::vector< std::vect
 {
     /*
      * This function joins the current table with it's parent table
-     * It accepts vector od vector for expression
+     * It accepts vector of vector for expression
+     * Outer Vector for OR and Inner Vector for AND
      */
-    int i, j;
+
+    unsigned int i;
+    main_node *head;
     std::set< main_node * > result;
     std::vector< main_node *> temp_result;
+
+    if(expression_vec.size() == 0)
+    {
+        //Get the head of the main node linked list
+        head = get_main_node_head();
+
+        //Iterate all records and add it to the set
+        while(head != NULL)
+        {
+            result.insert(head);
+            head = head->get_next();
+        }
+
+        return result;
+    }
 
     for(i = 0; i < expression_vec.size(); i++)
     {

@@ -134,18 +134,20 @@ class table {
     }
 
     //Function to link to already existing domain
-    void add_foreign_domain(std::string name, domain *dom, int index)
+    void add_foreign_domain(std::string name, domain *dom, unsigned int index)
     {
-        int tab_index = dom->insert_table_pointer(this);
+        unsigned int tab_index;
+
+        tab_index = dom->insert_table_pointer(this);
         normal[index] = dom;
         attribute_names[index] = name;
         index_in_domain[index] = tab_index;
     }
 
     //Function to return the index in primary_key list
-    int get_primary_attribute(int i)
+    int get_primary_attribute(unsigned int i)
     {
-        if(i < 0 || i > primary_keys.size())
+        if(i > primary_keys.size())
         {
             printf("Wrong Primary Key Attribute Index Requested!\nAborting!!");
             fflush(stdout);
@@ -155,21 +157,21 @@ class table {
     }
 
     //Funtion to return the domain from primary key list
-    domain *get_domain(int i)
+    domain *get_domain(unsigned int i)
     {
         return normal[primary_keys[i]];
     }
 
     //Function to find all the main_nodes with a certain attribute value
-    std::vector< main_node * >  *get_records_with_val(int attribute_index, std::string &value)
+    std::vector< main_node * >  *get_records_with_val(unsigned int attribute_index, std::string &value)
     {
         return normal[attribute_index]->get_main_nodes(value, index_in_domain[attribute_index]);
     }
 
     //Function to add primary key to the table
-    void add_primary_key(int attribute_index)
+    void add_primary_key(unsigned int attribute_index)
     {
-        if (attribute_index < 0 || attribute_index >= normal.size())
+        if (attribute_index >= normal.size())
         {
             printf("%d attribute doesn't exist !!\nFailed to add primary key !!\nAborting", attribute_index);
             fflush(stdout);
@@ -183,7 +185,7 @@ class table {
     //Function to return a main node having the given primary key
     main_node* check_for_primary(std::vector< std::string > &values)
     {
-        int i, j, col_index, node_count = INT_MAX, index;
+        unsigned int i, j, col_index, node_count = INT_MAX, index = INT_MAX;
         std::vector< main_node * > *fetch_nodes, min_nodes;
 
         for(i = 0; i < primary_keys.size(); i++)
@@ -231,7 +233,7 @@ class table {
         std::vector< std::string > temp_values;
         table *temp_table;
         main_node *temp_main_node;
-        int i, j;
+        unsigned int i, j;
 
         for (i = 0; i < foreign_key.size(); i++)
         {
@@ -258,7 +260,7 @@ class table {
     int add_new_record(std::vector< std::string > &values)
     {
         std::vector< std::string > prime(primary_keys.size());
-        int i;
+        unsigned int i;
 
         for(i = 0; i < primary_keys.size(); i++)
         {
@@ -332,7 +334,7 @@ class table {
             expressions also implemented
         */
 
-        int i;
+        unsigned int i;
 
         for(i = 0; i < expr.size(); i++)
         {
@@ -354,7 +356,7 @@ class table {
     void update(std::set< main_node * > &nodes,  std::vector< int > &index, std::vector< std::string > &values)
     {
         std::set< main_node * >::iterator it;
-        int j;
+        unsigned int j;
         attribute_node *old_node;
         for(it = nodes.begin(); it != nodes.end(); it++)
         {
@@ -375,7 +377,7 @@ class table {
     void del(std::set< main_node * > &nodes)
     {
         std::set< main_node * >::iterator it;
-        int i;
+        unsigned int i;
         std::vector< attribute_node * > *old_nodes;
         for(it = nodes.begin(); it != nodes.end(); it++)
         {
@@ -396,9 +398,9 @@ class table {
 
     }
 
-    std::string get_attribute_name(int attribute_index)
+    std::string get_attribute_name(unsigned int attribute_index)
     {
-        if(attribute_index < 0 || attribute_index >= attribute_names.size())
+        if(attribute_index >= attribute_names.size())
         {
             printf("Attribute Index %d do not exist!!\nAborting!!", attribute_index);
             fflush(stdout);
@@ -415,9 +417,9 @@ class table {
     }
 
     //Function get the domain connect at a corresponding index
-    domain *get_normal_index(int normal_index)
+    domain *get_normal_index(unsigned int normal_index)
     {
-        if (normal_index < 0 || normal_index >= normal.size())
+        if (normal_index >= normal.size())
         {
             printf("%d Normal Index do not exist !!\nAborting!!", normal_index);
             fflush(stdout);
@@ -440,9 +442,9 @@ class table {
     }
 
     //Function to get parent table of a foreign_key
-    table *get_parent_table(int foreign_key_index)
+    table *get_parent_table(unsigned int foreign_key_index)
     {
-        if(foreign_key_index < 0 || foreign_key_index > foreign_key.size())
+        if(foreign_key_index > foreign_key.size())
         {
             printf("%d foreign_key do not exist !!\nAborting!!", foreign_key_index);
             fflush(stdout);
@@ -455,8 +457,9 @@ class table {
     //Function to deallocate memory occupied by the table
     void clear()
     {
-        int i, j;
+        unsigned int i, j;
         bool *check = new bool[attribute_names.size()];
+
         for(i = 0; i < attribute_names.size(); i++)
         {
             check[i] = false;
@@ -491,7 +494,8 @@ class table {
             head = temp;
         }
         attribute_names.clear();
-        for (int i = 0; i < foreign_key.size(); i++)
+
+        for (i = 0; i < foreign_key.size(); i++)
         {
             foreign_key[i].second.clear();
         }

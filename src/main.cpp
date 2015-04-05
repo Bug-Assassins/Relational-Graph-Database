@@ -17,7 +17,7 @@ struct dom
 int print_table_details(database *main_database)
 {
     table *temp_table;
-    int i, index, att_count;
+    unsigned int i, index, att_count;
 
     if (VERBOSE)
     {
@@ -48,7 +48,7 @@ int print_table_details(database *main_database)
 
 void print_record_list(table *tab, std::set< main_node *> &record_list, std::vector< int > &attributes)
 {
-    int i, j;
+    unsigned int i, j;
     std::set< main_node * >::iterator it;
 
     //Printing the heading of each column
@@ -57,7 +57,7 @@ void print_record_list(table *tab, std::set< main_node *> &record_list, std::vec
         printf("%s\t", tab->get_attribute_name(attributes[i]).c_str());
     }
     printf("\n");
-    printf("--------------------------------------------------------------------------------\n");
+    
    // if(VERBOSE)
       //  printf("Record List Print Size = %d attributes = %d\n", (int) record_list.size(), (int) attributes.size());
 
@@ -71,7 +71,7 @@ void print_record_list(table *tab, std::set< main_node *> &record_list, std::vec
         }
         printf("\n");
     }
-
+    printf("--------------------------------------------------------------------------------\n");
 
     return;
 }
@@ -82,7 +82,7 @@ int create_table(database *main_database)
     std::vector< dom > domains;
     std::vector< int > fk_list;
     char temp_name[100];
-    int attribute_count, i, j, type, length, pkey_span, temp_int, fk_count, table_index;
+    int attribute_count, i, j, pkey_span, temp_int, fk_count, table_index;
     table *temp_table, *temp_table2;
 
     if (VERBOSE)
@@ -165,7 +165,7 @@ int create_table(database *main_database)
     return 0;
 }
 
-int insert_to_table(database *main_database)
+void insert_to_table(database *main_database)
 {
     int index, success = -1;
     char temp_char_arr[100];
@@ -209,7 +209,7 @@ int insert_to_table(database *main_database)
 
 }
 
-int print_table(database *main_database)
+void print_table(database *main_database)
 {
     int attribute_count, i;
     table *temp_table;
@@ -328,12 +328,9 @@ void query(database *main_database, int check)
                 expression.clear();
             }
         }
-        else
-        {
-            expression_vec.push_back(expression);
-            expression.clear();
-        }
     }
+    expression_vec.push_back(expression);
+    expression.clear();
     result = selected_table->select_single_table(expression_vec);
     if(check == 0)
     {
@@ -350,7 +347,8 @@ void query(database *main_database, int check)
 }
 void print_main_node(main_node *result, std::vector< int > &col_list)
 {
-    int i;
+    unsigned int i;
+    
     for (i = 0; i < col_list.size(); i++)
     {
         printf("%s ", result->get_attribute_list_index(col_list[i])->get_value().c_str());
@@ -456,7 +454,7 @@ void join_tables(database *main_database)
     }
 
 
-    for (i = 0; i < expression_vec.size(); i++)
+    for (i = 0; i < (int) expression_vec.size(); i++)
         expression_vec[i].clear();
 
     expression_vec.clear();

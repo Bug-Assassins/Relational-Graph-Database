@@ -23,20 +23,23 @@ class database {
         tables.push_back(tab);
     }
 
-    table *get_tables_index(int i)
+    table *get_tables_index(unsigned int i)
     {
-        if (i < tables.size())
-            return tables[i];
-        else
+        if (i > tables.size())
             return NULL;
+        
+        return tables[i];
     }
-    int get_tables_size()
+
+    unsigned int get_tables_size()
     {
         return tables.size();
     }
-    int get_index_table(table *tab)
+
+    unsigned int get_index_table(table *tab)
     {
-        int i;
+        unsigned int i;
+
         for (i = 0; i < tables.size(); i++)
         {
             if (tables[i] == tab)
@@ -48,8 +51,10 @@ class database {
     //Function to deallocate the database
     void clear()
     {
+        unsigned int i;
+
         name.clear();
-        for(int i = 0; i < tables.size(); i++)
+        for(i = 0; i < tables.size(); i++)
         {
             tables[i]->clear();
             delete tables[i];
