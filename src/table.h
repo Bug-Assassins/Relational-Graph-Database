@@ -120,12 +120,12 @@ class table {
     }
 
     //Function that adds an attribute to the table
-    void add_attribute(int type, int length, std::string name, int index)
+    void add_attribute(int type, std::string name, int index)
     {
         int tab_index;
         domain *temp_domain;
 
-        temp_domain = new domain(type, length);
+        temp_domain = new domain(type);
         tab_index = temp_domain->insert_table_pointer(this);
         add_to_size(sizeof(*temp_domain) + name.length());
         normal[index] = temp_domain;
@@ -298,11 +298,6 @@ class table {
 
         for(i = 0; i < values.size(); i++)
         {
-            if(normal[i]->get_attr_length() < values[i].size())
-            {
-                //Logic when Given value is larger than the specified length of attribute
-                abort();
-            }
             //add_to_size(normal[i]->add_get_new_value(values[i], new_main, index_in_domain[i]));
             normal[i]->add_get_new_value(values[i], new_main, index_in_domain[i], true);
         }

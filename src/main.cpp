@@ -37,9 +37,8 @@ int print_table_details(database *main_database)
         for (i = 0; i < att_count; i++)
         {
 
-            printf ("%s\t%d\t%d\n", temp_table->get_attribute_name(i).c_str(),
-                                    temp_table->get_normal_index(i)->get_data_type(),
-                                    temp_table->get_normal_index(i)->get_attr_length());
+            printf ("%s\t%d\n", temp_table->get_attribute_name(i).c_str(),
+                                temp_table->get_normal_index(i)->get_data_type());
         }
     }
 
@@ -76,13 +75,15 @@ void print_record_list(table *tab, std::set< main_node *> &record_list, std::vec
     return;
 }
 
-int create_table(database *main_database)
+void create_table(database *main_database)
 {
-    dom temp_dom;
-    std::vector< dom > domains;
+    std::string temp_str;
+    std::vector< unsigned int > type;
+    std::vector< std::string > attribute_names;
     std::vector< int > fk_list;
     char temp_name[100];
     int attribute_count, i, j, pkey_span, temp_int, fk_count, table_index;
+    unsigned int temp_type;
     table *temp_table, *temp_table2;
 
     if (VERBOSE)
@@ -90,26 +91,25 @@ int create_table(database *main_database)
 
     scanf("%s", temp_name);
 
-
     if (VERBOSE)
         printf("Enter the number of attributes:");
 
     scanf("%d", &attribute_count);
 
     temp_table = new table(std::string(temp_name), attribute_count);
-
     bool *ins_check = new bool[attribute_count];
 
     for (i = 0; i < attribute_count; i++)
     {
         ins_check[i] = false;
-        if (VERBOSE)
-            printf("Enter the attribute name, type, length\n1: INTEGER\n2: STRING\n3: FLOAT\n");
 
-        scanf("%s %d %d", temp_name, &temp_dom.type, &temp_dom.length);
-        temp_dom.name.assign(temp_name);
-        domains.push_back(temp_dom);
-        //temp_table->add_attribute(type, length, std::string(temp_name));
+        if (VERBOSE)
+            printf("Enter the attribute name, type (1: INTEGER 2: STRING 3: FLOAT) :");
+
+        scanf("%s %u", temp_name, &temp_type);
+        temp_str.assign(temp_name);
+        attribute_names.push_back(temp_str);
+        type.push_back(temp_type);
     }
 
     if (VERBOSE)
@@ -135,34 +135,34 @@ int create_table(database *main_database)
     {
         table_index = print_table_details(main_database);
         fk_list.clear();
-
         temp_table2 =  main_database->get_tables_index(table_index);
+
         for (j = 0; j <  temp_table2->get_primary_key_size(); j++)
         {
             scanf("%d", &temp_int);
             temp_int--;
             ins_check[temp_int] = true;
-            temp_table->add_foreign_domain(domains[temp_int].name, temp_table2->get_domain(i), temp_int);
+            temp_table->add_foreign_domain(attribute_names[temp_int], temp_table2->get_domain(i), temp_int);
             fk_list.push_back(temp_int);
         }
-        temp_table->add_foreign_key(temp_table2, fk_list);
 
+        temp_table->add_foreign_key(temp_table2, fk_list);
     }
 
     for (i = 0; i < attribute_count; i++)
     {
-        if(!ins_check[i])
+        if(ins_check[i] == false)
         {
-            temp_table->add_attribute(domains[i].type, domains[i].length, domains[i].name, i);
+            temp_table->add_attribute(type[i], attribute_names[i], i);
         }
     }
 
     delete[] ins_check;
-    domains.clear();
     fk_list.clear();
     temp_table->add_to_size(sizeof(*temp_table));
     main_database->add_table(temp_table);
-    return 0;
+
+    return;
 }
 
 void insert_to_table(database *main_database)
@@ -348,7 +348,7 @@ void query(database *main_database, int check)
 void print_main_node(main_node *result, std::vector< int > &col_list)
 {
     unsigned int i;
-    
+
     for (i = 0; i < col_list.size(); i++)
     {
         printf("%s ", result->get_attribute_list_index(col_list[i])->get_value().c_str());

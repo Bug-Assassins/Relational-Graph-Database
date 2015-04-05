@@ -12,7 +12,6 @@ class domain {
 
   private:
     unsigned int data_type;
-    unsigned int attr_length;
     std::vector<table *> table_list;
     attribute_node *head;
     trie *index;
@@ -24,18 +23,11 @@ class domain {
     static const unsigned int FLOAT = 3;
 
     //Constructor for a new domain
-    domain(unsigned int type, unsigned int length)
+    domain(unsigned int type)
     {
         data_type = type;
-        attr_length = length;
         index = new trie();
         head = NULL;
-    }
-
-    //Fucntion to get length of attribute
-    unsigned int get_attr_length()
-    {
-        return attr_length;
     }
 
     //Function to get and set data type
