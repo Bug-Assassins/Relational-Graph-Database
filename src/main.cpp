@@ -37,7 +37,6 @@ int print_table_details(database *main_database)
 
     return index - 1;
 }
-
 void print_record_list(table *tab, std::set< main_node *> &record_list, std::vector< int > &attributes)
 {
     unsigned int i, j;
@@ -240,11 +239,22 @@ void query(database *main_database, int check)
     std::set< main_node * > result;
 
     int col_count, temp_int, expr_count, join_operator, i;
-    char rhs[100];
+    char rhs[100], lhs[100], op_string[100];
     std::string temp_string;
     value_expression temp_exp;
+    char t_name[100], col_name[100], temp_char_arr[100];
 
-    int table_index = print_table_details(main_database);
+
+    printf("Enter the table name:");
+    fflush(stdout);
+    scanf("%s", t_name);
+    temp_string.assign(t_name);
+    int table_index = main_database->check_tab_name(temp_string);
+    if (table_index == -1)
+    {
+        printf("Wrong table name\n");
+        return;
+    }
     table *selected_table = main_database->get_tables_index(table_index);
 
     if(check < 2)
@@ -255,21 +265,29 @@ void query(database *main_database, int check)
                 printf("Enter the number of columns you want to update:");
             else if(check == 0)
                 printf("Enter the number of columns you want to select:");
+            fflush(stdout);
         }
 
         scanf("%d", &col_count);
 
         if (VERBOSE)
         {
-            printf("Enter the indexes of the columns");
+            printf("Enter the column name(s)");
             if(check == 1)
-                printf(" and their corresponding values:\n");
+                printf(" and their corresponding value(s)");
+            printf("\n");
         }
 
         for (i = 0; i < col_count; i++)
         {
-            scanf("%d", &temp_int);
-            col_list.push_back(temp_int - 1);
+            scanf("%s", col_name);
+            temp_string.assign(col_name);
+            temp_int = selected_table->check_column_name(temp_string);
+            if (temp_int == -1)
+            {
+                printf("Wrong column\n");
+            }
+            col_list.push_back(temp_int);
             if(check == 1)
             {
                 scanf("%s", rhs);
@@ -280,7 +298,8 @@ void query(database *main_database, int check)
     }
 
     if (VERBOSE)
-        printf("Enter the number of expressions\n");
+        printf("Enter the number of expressions:");
+    fflush(stdout);
 
     scanf("%d", &expr_count);
 
@@ -288,31 +307,58 @@ void query(database *main_database, int check)
     {
         if (VERBOSE)
         {
-            printf("Enter the %d expression\n", i + 1);
-            printf("Enter the LHS col index\n");
+            printf("Enter expression no. %d:", i + 1);
+            fflush(stdout);
         }
-
-        scanf("%d", &temp_exp.attribute);
-        temp_exp.attribute--;
-
-        if (VERBOSE)
-            printf("Enter the operator index that you want\n");
-
-        scanf("%d", &temp_exp.op);
-        temp_exp.op--;
-
-        if (VERBOSE)
-            printf("Enter the value of RHS:");
-
-        scanf("%s", rhs);
+        scanf("%s %s %s", lhs, op_string, rhs);
         temp_exp.value.assign(rhs);
 
+        temp_string.assign(lhs);
+        temp_int = selected_table->check_column_name(temp_string);
+        if (temp_int == -1)
+        {
+            printf("Wrong column name\n");
+            return;
+        }
+        temp_exp.attribute = temp_int;
+
+        temp_string.assign(op_string);
+        if (temp_string.compare("=") == 0)
+            temp_exp.op = 0;
+        else if (temp_string.compare("<=") == 0)
+            temp_exp.op = 1;
+        else if (temp_string.compare(">=") == 0)
+            temp_exp.op = 2;
+        else if (temp_string.compare("!=") == 0)
+            temp_exp.op = 3;
+        else if (temp_string.compare(">") == 0)
+            temp_exp.op = 4;
+        else if (temp_string.compare("<") == 0)
+            temp_exp.op = 5;
+        else
+        {
+            printf("Wrong operation\n");
+            return;
+        }
+        
         expression.push_back(temp_exp);
 
         if (i != expr_count - 1)
         {
             if (VERBOSE)
-                printf("AND(1) / OR(0) ? :");
+                printf("AND/OR ? :");
+
+            scanf("%s", temp_char_arr);
+            temp_string.assign(temp_char_arr);
+            if (temp_string.compare("AND") == 0)
+                join_operator = 1;
+            else if(temp_string.compare("OR") == 0)
+                join_operator = 0;
+            else
+            {
+                printf("Wrong option\n");
+                return;
+            }
 
             scanf("%d", &join_operator);
             if(join_operator == 0)
@@ -344,7 +390,7 @@ void print_main_node(main_node *result, std::vector< int > &col_list)
 
     for (i = 0; i < col_list.size(); i++)
     {
-        printf("%s ", result->get_attribute_list_index(col_list[i])->get_value().c_str());
+        printf("%s\t", result->get_attribute_list_index(col_list[i])->get_value().c_str());
     }
     return;
 }
@@ -505,7 +551,19 @@ void join_tables(database *main_database)
 
         if (i != expr_count - 1)
         {
-            printf("AND or OR? 1/0");
+            printf("AND/OR: ");
+            fflush(stdout);
+            scanf("%s", temp_char_arr);
+            temp_string.assign(temp_char_arr);
+            if (temp_string.compare("AND") == 0)
+                j_type = 1;
+            else if(temp_string.compare("OR") == 0)
+                j_type = 0;
+            else
+            {
+                printf("Wrong option\n");
+                return;
+            }
             scanf("%d", &j_type);
 
             if (j_type == 0)
@@ -519,6 +577,18 @@ void join_tables(database *main_database)
     expression_vec.push_back(temp_expr_vect);
     temp_expr_vect.clear();
     result = j_table[0]->join(foreign_key_index, expression_vec);
+
+    for (i = 0; i < col_list[0].size(); i++)
+    {
+        printf("%s\t", j_table[0]->get_attribute_name(col_list[0][i]).c_str());
+    }
+    for (i = 0; i < col_list[1].size(); i++)
+    {
+        printf("%s\t", j_table[1]->get_attribute_name(col_list[1][i]).c_str());
+    }
+    printf("\n");
+
+
     for (it = result.begin(); it != result.end(); it++)
     {
         node = *it;
