@@ -2,7 +2,7 @@ void create_dept(database *db)
 {
     table *temp_table;
 
-    temp_table = new table(std::string("Department"), 3);
+    temp_table = new table(std::string("DEPARTMENT"), 3);
     temp_table->add_attribute(1, "ID", 0);
     temp_table->add_attribute(2, "NAME", 1);
     temp_table->add_attribute(2, "LOCATION", 2);
@@ -14,7 +14,7 @@ void create_emp(database *db)
 {
     table *temp_table, *foreign_table;
     std::vector< int > fk_list;
-    temp_table = new table(std::string("Employee"), 6);
+    temp_table = new table(std::string("EMPLOYEE"), 6);
     temp_table->add_attribute(1, "ID", 0);
     temp_table->add_attribute(2, "NAME", 1);
     temp_table->add_attribute(2, "ADDRESS", 2);
@@ -94,8 +94,8 @@ void insert_emp(database *db)
     float sal;
     double result_time = 0;
     max_sal = 1000000;
-    num_records = 100000;
-    unique_rec_count = 5000;
+    num_records = 100;
+    unique_rec_count = 50;
     attribute_len = 20;
 
     table *temp_table;

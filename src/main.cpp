@@ -1,6 +1,6 @@
 #define VERBOSE 1
 #define DEBUG 1
-//#define TEST 1
+#define TEST 1
 
 #include <cstdio>
 
@@ -627,6 +627,7 @@ void join_tables(database *main_database)
     expression_vec.push_back(temp_expr_vect);
     temp_expr_vect.clear();
     result = j_table[0]->join(foreign_key_index, expression_vec);
+    printf("re = %lu\n", result.size());
     for (i = 0; i < col_list[0].size(); i++)
     {
         printf("%s.", j_table[0]->get_table_name().c_str());

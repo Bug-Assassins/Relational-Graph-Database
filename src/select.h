@@ -38,6 +38,12 @@ std::vector< main_node * > table::select_via_and(std::vector< value_expression >
             #endif // DEBUG
 
             main_node_list = get_records_with_val(expression_list[i].attribute, expression_list[i].value);
+
+            if(main_node_list == NULL)
+            {
+                return result;
+            }
+
             node_count = main_node_list->size();
 
             if(node_count < min_node_count)
@@ -145,6 +151,11 @@ std::vector< main_node *> table::get_records_as_child(int foreign_key_index, mai
         span_index = index_in_domain[foreign_key[foreign_key_index].second[i]];
         prime_index = foreign_key[foreign_key_index].first->get_primary_attribute(i);
         child_result = parent_record->get_attribute_list_index(prime_index)->get_record_list(span_index);
+
+        if(child_result == NULL)
+        {
+            return result;
+        }
 
         if(child_result->size() < min_rec_count)
         {
