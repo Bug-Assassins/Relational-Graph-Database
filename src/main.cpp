@@ -161,23 +161,37 @@ void insert_to_table(database *main_database)
 {
     int index, success = -1;
     char temp_char_arr[100];
+    std::string temp_string;
     table *temp_table;
-    temp_table = main_database->get_tables_index(print_table_details(main_database));
+
+    printf("Enter table name:");
+    fflush(stdout);
+    scanf("%s", temp_char_arr);
+    temp_string.assign(temp_char_arr);
+    index = main_database->check_tab_name(temp_string);
+    if (index == -1)
+    {
+        printf("Wrong table name\n");
+        return;
+    }
+    temp_table = main_database->get_tables_index(index);
 
     std::vector< std::string > values(temp_table->get_attribute_count());
 
     if (VERBOSE)
     {
-        printf("Enter the index of the column and the value. Enter 0 as the index to finish entering info\n");
+        printf("Enter column name, value pair. Enter 0 to finish entering info\n");
     }
 
     while (1)
     {
-        scanf("%d", &index);
-        if (index == 0)
+        scanf("%s", temp_char_arr);
+        temp_string.assign(temp_char_arr);
+        index = temp_table->check_column_name(temp_string);
+        if (index == -1)
             break;
         scanf("%s", temp_char_arr);
-        values[index - 1].assign(temp_char_arr);
+        values[index].assign(temp_char_arr);
     }
 
     success = temp_table->add_new_record(values);
