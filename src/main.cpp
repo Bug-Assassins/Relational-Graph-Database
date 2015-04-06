@@ -1,11 +1,15 @@
 #define VERBOSE 1
 #define DEBUG 1
-//#define DEBUG_SELECT 0
+#define TEST 1
 
 #include <cstdio>
 
 #include "database.h"
 #include "select.h"
+
+#ifdef TEST
+    #include "test.h"
+#endif
 
 struct dom
 {
@@ -56,7 +60,7 @@ void print_record_list(table *tab, std::set< main_node *> &record_list, std::vec
         printf("%s\t", tab->get_attribute_name(attributes[i]).c_str());
     }
     printf("\n");
-    
+
    // if(VERBOSE)
       //  printf("Record List Print Size = %d attributes = %d\n", (int) record_list.size(), (int) attributes.size());
 
@@ -474,6 +478,26 @@ int main()
     scanf("%s", name);
 
     database *main_database = new database(std::string(name));
+
+#ifdef TEST
+    create_dept(main_database);
+    create_emp(main_database);
+
+    int start=clock();
+	insert_dept(main_database);
+    int stop=clock();
+    printf("Time : %lf\n", (stop-start)/double(CLOCKS_PER_SEC));
+
+    start=clock();
+	insert_emp(main_database);
+    stop=clock();
+    printf("Time : %lf\n", (stop-start)/double(CLOCKS_PER_SEC));
+
+    //main_database->clear();
+    //delete main_database;
+    //return 0;
+#endif
+
 
     while (1)
     {
