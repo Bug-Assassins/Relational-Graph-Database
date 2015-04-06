@@ -7,13 +7,6 @@
 #include "database.h"
 #include "select.h"
 
-struct dom
-{
-    std::string name;
-    int type;
-    int length;
-};
-
 int print_table_details(database *main_database)
 {
     table *temp_table;
@@ -359,7 +352,6 @@ void join_tables(database *main_database)
 {
     table *j_table[2], *temp_table;
     int j_index[2], table_span, i, foreign_key_index, expr_count, j, col_index, tab, op_type, j_type, t_index, col_count;
-    char rhs[100];
     struct value_expression temp_expression;
     std::vector< std::vector< value_expression > > expression_vec;
     std::vector< value_expression > temp_expr_vect;
@@ -367,63 +359,145 @@ void join_tables(database *main_database)
     std::set< main_node * > result;
     std::set< main_node * >::iterator it;
     main_node *node;
+    std::string temp_string;
+    char t_name[100], col_name[100], temp_char_arr[500];
+    char lhs[100], op_string[4], rhs[100];
 
-    printf("Enter the child table index\n");
-    j_index[0] = print_table_details(main_database);
+    printf("Enter the child table name:");
+    fflush(stdout);
+    scanf("%s", t_name);
+    temp_string.assign(t_name);
+    j_index[0] = main_database->check_tab_name(temp_string);
+    if (j_index[0] == -1)
+    {
+        printf("Wrong table name\n");
+        return;
+    }
+    
     j_table[0] = main_database->get_tables_index(j_index[0]);
     table_span = j_table[0]->get_foreign_key_count();
 
-    printf("Enter the parent table index\n");
-    for (i = 0; i < table_span; i++)
+    printf("Enter the parent table name:");
+    fflush(stdout);
+    scanf("%s", t_name);
+    temp_string.assign(t_name);
+    foreign_key_index = j_table[0]->check_parent_name(temp_string);
+    if (foreign_key_index == -1)
     {
-        temp_table = j_table[0]->get_parent_table(i);
-        printf("%d: %s\n",i + 1, temp_table->get_table_name().c_str());
+        printf("Wrong parent name\n");
+        return;
     }
-    scanf("%d", &foreign_key_index);
-    foreign_key_index--;
-
     j_index[1] = main_database->get_index_table(j_table[0]->get_parent_table(foreign_key_index));
+    j_table[1] = main_database->get_tables_index(j_index[1]);
 
     printf("Enter the number of columns you want to select:");
+    fflush(stdout);
     scanf("%d", &col_count);
 
     for (i = 0; i < col_count; i++)
     {
-        printf("Parent or child? 1/0 : ");
-        scanf("%d", &t_index);
+        printf("Column name:");
+        fflush(stdout);
+        scanf("%s", temp_char_arr);
+        temp_string.assign(temp_char_arr);
+        //temp_string.substr(0, temp_string.find("."));
+        t_index = main_database->check_tab_name(temp_string.substr(0, temp_string.find(".")));
+        
+        if (t_index == -1)
+        {
+            printf("Wrong table name\n");
+            return;
+        }
+        else if (t_index == j_index[0])
+        {
+            t_index = 0;
+        }
+        else if (t_index == j_index[1])
+        {
+            t_index = 1;
+        }
+        else
+        {
+            printf("This table was not selected\n");
+            return;
+        }
 
-        printf("Enter the column index:");
-        scanf("%d", &col_index);
-
-        col_list[t_index].push_back(col_index - 1);
+        temp_string.assign(temp_string.substr(temp_string.find(".") + 1));
+        col_index = j_table[t_index]->check_column_name(temp_string);
+        if (col_index == -1)
+        {
+            printf("Wrong column selected\n");
+            return;
+        }
+        col_list[t_index].push_back(col_index);
     }
 
-    printf("Enter the number of expressions\n");
+    printf("Enter the number of expressions:");
+    fflush(stdout);
     scanf("%d", &expr_count);
 
     j = 0;
     for (i = 0; i < expr_count; i++)
     {
-        printf("LHS column is child or parent? 1/2:");
-        scanf("%d", &tab);
 
-        printf("Enter the index of the column:");
-        scanf("%d", &col_index);
-
-        printf("Enter the op type:");
-        scanf("%d", &op_type);
-
-        printf("Enter the rhs value:");
-        scanf("%s", rhs);
+        printf("Expression:");
         fflush(stdout);
+        scanf("%s %s %s", lhs, op_string, rhs);
+        temp_string.assign(lhs);
+        t_index = main_database->check_tab_name(temp_string.substr(0, temp_string.find(".")));
+        
+        if (t_index == -1)
+        {
+            printf("Wrong table name\n");
+            return;
+        }
+        else if (t_index == j_index[0])
+        {
+            t_index = 0;
+        }
+        else if (t_index == j_index[1])
+        {
+            t_index = 1;
+        }
+        else
+        {
+            printf("This table was not selected\n");
+            return;
+        }
 
-        tab--;
-        if (tab)
+        temp_string.assign(temp_string.substr(temp_string.find(".") + 1));
+        col_index = j_table[t_index]->check_column_name(temp_string);
+        if (col_index == -1)
+        {
+            printf("Wrong column selected\n");
+            return;
+        }
+
+        temp_string.assign(op_string);
+        if (temp_string.compare("=") == 0)
+            op_type = 0;
+        else if (temp_string.compare("<=") == 0)
+            op_type = 1;
+        else if (temp_string.compare(">=") == 0)
+            op_type = 2;
+        else if (temp_string.compare("!=") == 0)
+            op_type = 3;
+        else if (temp_string.compare(">") == 0)
+            op_type = 4;
+        else if (temp_string.compare("<") == 0)
+            op_type = 5;
+        else
+        {
+            printf("Wrong operation\n");
+            return;
+        }
+
+        if (t_index)
             temp_expression.table = false;
         else
             temp_expression.table = true;
 
-        temp_expression.attribute = col_index - 1;
+        temp_expression.attribute = col_index;
         temp_expression.op = op_type;
         temp_expression.value.assign(rhs);
 
