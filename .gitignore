@@ -1,7 +1,7 @@
 src/a.out
-src/test.*
 src/*.o
 src/test
+src/test.txt
 src/main
 src/main.exe
 src/test_files/*

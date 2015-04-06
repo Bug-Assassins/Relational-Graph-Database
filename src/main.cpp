@@ -1,11 +1,15 @@
 #define VERBOSE 1
 #define DEBUG 1
-//#define DEBUG_SELECT 0
+#define TEST 1
 
 #include <cstdio>
 
 #include "database.h"
 #include "select.h"
+
+#ifdef TEST
+    #include "test.h"
+#endif
 
 int print_table_details(database *main_database)
 {
@@ -48,7 +52,7 @@ void print_record_list(table *tab, std::set< main_node *> &record_list, std::vec
         printf("%s\t", tab->get_attribute_name(attributes[i]).c_str());
     }
     printf("\n");
-    
+
    // if(VERBOSE)
       //  printf("Record List Print Size = %d attributes = %d\n", (int) record_list.size(), (int) attributes.size());
 
@@ -354,7 +358,7 @@ void query(database *main_database, int check)
             printf("Wrong operation\n");
             return;
         }
-        
+
         expression.push_back(temp_exp);
 
         if (i != expr_count - 1)
@@ -433,7 +437,7 @@ void join_tables(database *main_database)
         printf("Wrong table name\n");
         return;
     }
-    
+
     j_table[0] = main_database->get_tables_index(j_index[0]);
     table_span = j_table[0]->get_foreign_key_count();
 
@@ -462,7 +466,7 @@ void join_tables(database *main_database)
         temp_string.assign(temp_char_arr);
         //temp_string.substr(0, temp_string.find("."));
         t_index = main_database->check_tab_name(temp_string.substr(0, temp_string.find(".")));
-        
+
         if (t_index == -1)
         {
             printf("Wrong table name\n");
@@ -505,7 +509,7 @@ void join_tables(database *main_database)
         scanf("%s %s %s", lhs, op_string, rhs);
         temp_string.assign(lhs);
         t_index = main_database->check_tab_name(temp_string.substr(0, temp_string.find(".")));
-        
+
         if (t_index == -1)
         {
             printf("Wrong table name\n");
@@ -632,6 +636,14 @@ int main()
     scanf("%s", name);
 
     database *main_database = new database(std::string(name));
+
+#ifdef TEST
+    create_dept(main_database);
+    create_emp(main_database);
+	insert_dept(main_database);
+	insert_emp(main_database);
+#endif
+
 
     while (1)
     {
