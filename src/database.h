@@ -48,6 +48,21 @@ class database {
         return -1;
     }
 
+    // Function to check whether a table "name" exists or not and returns the index of the table
+    // Function returns -1 to indicate that the table does not exist
+    int check_tab_name(std::string name)
+    {
+        int i;
+        for (i = 0; i < tables.size(); i++)
+        {
+            if (tables[i]->get_table_name().compare(name) == 0)
+            {
+                printf("Table = %s\n", tables[i]->get_table_name().c_str());
+                return i;
+            }
+        }
+        return -1;
+    }
     //Function to deallocate the database
     void clear()
     {

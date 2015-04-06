@@ -449,6 +449,38 @@ class table {
         return foreign_key[foreign_key_index].first;
     }
 
+    // Function to check whether the table has a parent table named "parent_name" or not
+    // Returns the foreign_key_index if it exists else -1
+    int check_parent_name(std::string parent_name)
+    {
+        int i;
+        for (i = 0; i < foreign_key.size(); i++)
+        {
+            if (foreign_key[i].first->get_table_name().compare(parent_name) == 0)
+            {
+                printf("Parent = %s\n", foreign_key[i].first->get_table_name().c_str());
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    // Function to check whether the table has a column named "col_name" or not
+    // Returns the column number if it exists else -1
+    int check_column_name(std::string column_name)
+    {
+        int i;
+        for (i = 0; i < attribute_names.size(); i++)
+        {
+            if (attribute_names[i].compare(column_name) == 0)
+            {
+                printf("Column = %s\n", attribute_names[i].c_str());
+                return i;
+            }
+        }
+        return -1;
+    }
+
     //Function to deallocate memory occupied by the table
     void clear()
     {
