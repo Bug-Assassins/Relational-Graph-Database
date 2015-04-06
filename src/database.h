@@ -53,6 +53,7 @@ class database {
     int check_tab_name(std::string name)
     {
         int i;
+        std::transform(name.begin(), name.end(), name.begin(), toupper);
         for (i = 0; i < tables.size(); i++)
         {
             if (tables[i]->get_table_name().compare(name) == 0)
