@@ -453,6 +453,7 @@ class table {
     int check_parent_name(std::string parent_name)
     {
         int i;
+        std::transform(parent_name.begin(), parent_name.end(), parent_name.begin(), toupper);
         for (i = 0; i < foreign_key.size(); i++)
         {
             if (foreign_key[i].first->get_table_name().compare(parent_name) == 0)
@@ -469,6 +470,7 @@ class table {
     int check_column_name(std::string column_name)
     {
         int i;
+        std::transform(column_name.begin(), column_name.end(), column_name.begin(), toupper);
         for (i = 0; i < attribute_names.size(); i++)
         {
             if (attribute_names[i].compare(column_name) == 0)

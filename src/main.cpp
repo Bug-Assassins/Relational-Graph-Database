@@ -1,6 +1,6 @@
 #define VERBOSE 1
 #define DEBUG 1
-#define TEST 1
+//#define TEST 1
 
 #include <cstdio>
 
@@ -15,6 +15,7 @@ int print_table_details(database *main_database)
 {
     table *temp_table;
     unsigned int i, index, att_count;
+    int temp_int;
 
     if (VERBOSE)
     {
@@ -25,6 +26,7 @@ int print_table_details(database *main_database)
         }
     }
     scanf("%d", &index);
+    printf("\n");
 
     temp_table = main_database->get_tables_index(index - 1);
     att_count = temp_table->get_attribute_count();
@@ -34,8 +36,14 @@ int print_table_details(database *main_database)
         for (i = 0; i < att_count; i++)
         {
 
-            printf ("%s\t%d\n", temp_table->get_attribute_name(i).c_str(),
-                                temp_table->get_normal_index(i)->get_data_type());
+            printf ("%s\t", temp_table->get_attribute_name(i).c_str());
+            temp_int = temp_table->get_normal_index(i)->get_data_type();
+            if (temp_int == 1)
+                printf("INTEGER\n");
+            else if (temp_int == 2)
+                printf("STRING\n");
+            else
+                printf("FLOAT\n");
         }
     }
 
@@ -46,6 +54,7 @@ void print_record_list(table *tab, std::set< main_node *> &record_list, std::vec
     unsigned int i, j;
     std::set< main_node * >::iterator it;
 
+    printf("\n--------------------------------------------------------------------------------\n");
     //Printing the heading of each column
     for(i = 0; i < attributes.size(); i++)
     {
@@ -86,13 +95,16 @@ void create_table(database *main_database)
         printf("Enter the table name:");
 
     scanf("%s", temp_name);
+    temp_str.assign(temp_name);
+    std::transform(temp_str.begin(), temp_str.end(), temp_str.begin(), toupper);
+
 
     if (VERBOSE)
         printf("Enter the number of attributes:");
 
     scanf("%d", &attribute_count);
 
-    temp_table = new table(std::string(temp_name), attribute_count);
+    temp_table = new table(temp_str, attribute_count);
     bool *ins_check = new bool[attribute_count];
 
     for (i = 0; i < attribute_count; i++)
@@ -104,6 +116,7 @@ void create_table(database *main_database)
 
         scanf("%s %u", temp_name, &temp_type);
         temp_str.assign(temp_name);
+        std::transform(temp_str.begin(), temp_str.end(), temp_str.begin(), toupper);
         attribute_names.push_back(temp_str);
         type.push_back(temp_type);
     }
@@ -221,13 +234,33 @@ void insert_to_table(database *main_database)
 
 void print_table(database *main_database)
 {
-    int attribute_count, i;
+    int attribute_count, i, index;
     table *temp_table;
     main_node *temp_main_node;
+    char temp_char_arr[100];
+    std::string temp_string;
 
-    temp_table = main_database->get_tables_index(print_table_details(main_database));
+    printf("Enter the name of table:");
+    fflush(stdout);
+    scanf("%s", temp_char_arr);
+    printf("\n");
+    temp_string.assign(temp_char_arr);
+    index = main_database->check_tab_name(temp_string);
+    if (index == -1)
+    {
+        printf("Table does not exist\n");
+        return;
+    }
+
+    temp_table = main_database->get_tables_index(index);
     temp_main_node = temp_table->get_main_node_head();
     attribute_count = temp_table->get_attribute_count();
+
+    for (i = 0; i < attribute_count; i++)
+    {
+        printf("%s\t", temp_table->get_attribute_name(i).c_str());
+    }
+    printf("\n");
 
     while (temp_main_node != NULL)
     {
@@ -263,7 +296,7 @@ void query(database *main_database, int check)
     char t_name[100], col_name[100], temp_char_arr[100];
 
 
-    printf("Enter the table name:");
+    printf("\nEnter the table name:");
     fflush(stdout);
     scanf("%s", t_name);
     temp_string.assign(t_name);
@@ -274,7 +307,7 @@ void query(database *main_database, int check)
         return;
     }
     table *selected_table = main_database->get_tables_index(table_index);
-
+    printf("\n");
     if(check < 2)
     {
         if (VERBOSE)
@@ -316,7 +349,7 @@ void query(database *main_database, int check)
     }
 
     if (VERBOSE)
-        printf("Enter the number of expressions:");
+        printf("\nEnter the number of expressions:");
     fflush(stdout);
 
     scanf("%d", &expr_count);
@@ -365,6 +398,7 @@ void query(database *main_database, int check)
         {
             if (VERBOSE)
                 printf("AND/OR ? :");
+            fflush(stdout);
 
             scanf("%s", temp_char_arr);
             temp_string.assign(temp_char_arr);
@@ -378,7 +412,6 @@ void query(database *main_database, int check)
                 return;
             }
 
-            scanf("%d", &join_operator);
             if(join_operator == 0)
             {
                 expression_vec.push_back(expression);
@@ -427,7 +460,7 @@ void join_tables(database *main_database)
     char t_name[100], col_name[100], temp_char_arr[500];
     char lhs[100], op_string[4], rhs[100];
 
-    printf("Enter the child table name:");
+    printf("\nEnter the child table name:");
     fflush(stdout);
     scanf("%s", t_name);
     temp_string.assign(t_name);
@@ -454,13 +487,13 @@ void join_tables(database *main_database)
     j_index[1] = main_database->get_index_table(j_table[0]->get_parent_table(foreign_key_index));
     j_table[1] = main_database->get_tables_index(j_index[1]);
 
-    printf("Enter the number of columns you want to select:");
+    printf("\nEnter the number of columns you want to select:");
     fflush(stdout);
     scanf("%d", &col_count);
 
     for (i = 0; i < col_count; i++)
     {
-        printf("Column name:");
+        printf("\nColumn name(TABLE.COLUMN_NAME) : ");
         fflush(stdout);
         scanf("%s", temp_char_arr);
         temp_string.assign(temp_char_arr);
@@ -496,7 +529,7 @@ void join_tables(database *main_database)
         col_list[t_index].push_back(col_index);
     }
 
-    printf("Enter the number of expressions:");
+    printf("\nEnter the number of expressions:");
     fflush(stdout);
     scanf("%d", &expr_count);
 
@@ -504,7 +537,7 @@ void join_tables(database *main_database)
     for (i = 0; i < expr_count; i++)
     {
 
-        printf("Expression:");
+        printf("\nExpression:");
         fflush(stdout);
         scanf("%s %s %s", lhs, op_string, rhs);
         temp_string.assign(lhs);
@@ -582,7 +615,6 @@ void join_tables(database *main_database)
                 printf("Wrong option\n");
                 return;
             }
-            scanf("%d", &j_type);
 
             if (j_type == 0)
             {
@@ -595,14 +627,15 @@ void join_tables(database *main_database)
     expression_vec.push_back(temp_expr_vect);
     temp_expr_vect.clear();
     result = j_table[0]->join(foreign_key_index, expression_vec);
-
     for (i = 0; i < col_list[0].size(); i++)
     {
-        printf("%s\t", j_table[0]->get_attribute_name(col_list[0][i]).c_str());
+        printf("%s.", j_table[0]->get_table_name().c_str());
+        printf("%s  ", j_table[0]->get_attribute_name(col_list[0][i]).c_str());
     }
     for (i = 0; i < col_list[1].size(); i++)
     {
-        printf("%s\t", j_table[1]->get_attribute_name(col_list[1][i]).c_str());
+        printf("%s.", j_table[1]->get_table_name().c_str());
+        printf("%s  ", j_table[1]->get_attribute_name(col_list[1][i]).c_str());
     }
     printf("\n");
 
@@ -649,6 +682,7 @@ int main()
     {
         if (VERBOSE)
         {
+            printf("\n");
             printf("Enter your choice :\n");
             printf("1) Create a table\n");
             printf("2) Insert to table\n");
