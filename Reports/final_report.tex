@@ -123,6 +123,7 @@
 \end{center}
 \end{titlepage}
 
+ \pagebreak \textcolor{white}{text}
 \thispagestyle{empty}
 \pagenumbering{gobble}
 \pagebreak
@@ -133,7 +134,7 @@
 \textbf{National Institute of Technology Karnataka, Surathkal} \\
 \vspace{1cm} \Large
 \textbf{Minor Project} \\ \vspace{0.5cm}
-\textbf{Mid Semester Evaluation (February 2015)}
+\textbf{End Semester Evaluation (April 2015)}
 \vspace{1cm}
 \end{center}
 Course Code : IT 399 \\
@@ -175,42 +176,111 @@ Details of Project Group : \\
 Place: NITK Surathkal, Mangalore \\
 Date: \today
 \end{flushleft}
-\pagebreak
+
+\pagebreak \textcolor{white}{text} \pagebreak
 \thispagestyle{empty}
 \begin{center}
 	\textbf{ \huge Abstract}
 \end{center}
 \vspace{1cm}
-Relational Database Management System has been there for quite a few decades. Relational databases are still the most popular means of storing huge amount of data on disk. They are efficient in most cases however in certain types of queries like Join they fail to compute the results efficiently. In recent times, quite a bit of research has been done on Graph Databases - which seems like a promising solution to the bottleneck. Many implementations of such databases have come up - Google's Cayley, Neo4j, etc. However even these graph databases suffer from several overheads.
+Relational Database Management Systems has been there for quite a few decades. They are still the most popular means of storing huge amount of data on disk. Relational databases are efficient in most cases however in certain types of queries (Join) they fail to compute the result efficiently. In recent times a quite a bit of research has been done on Graph Databases - which seems like  a promising solution to the bottleneck. Many implementation of such databases have come up - Google's Cayley, Neo4j, etc. However even these graph database suffer from several overhead.
 \par
-This project aims at exploring the various ways of using a graph-like storage model for traditional Relational Databases. \\
+This project aims at exploring the various ways of using a graph-like storage model for traditional Relational Databases and optimize it to perform Inner Join and Aggregate Queries efficiently.
 \par
 \textbf{Keywords : }Database, Graph, Relational
 
 \thispagestyle{empty}
 \listoffigures
+\listoftables
 \tableofcontents
 
 \setcounter{page}{1}
 \pagenumbering{arabic}
 
 \chapter{Introduction}
-As the name suggests, graph database model uses graph structures for semantic queries with nodes, edges, and properties to represent and store data. A graph database storage system provides index-free adjacency. This means that every element contains a direct pointer to its adjacent elements and no index lookups are necessary.
-\section{Motivation}
-Graph Databases look like a promising model to solve all the problems that exist with the current relational databases. They provide an optimal way to compute the equivalent of the join query in a relational database. Recently there has been increased interest in graphs to represent social networks, web site link structures, and others. Within the field of biology itself, there are many uses for graphs, including metabolic networks, protein-protein interaction networks, chemical structure graphs, gene clusters, and genetic maps. Graphs truly are one of the most useful structures for modeling objects and interactions. However, Graph databases have their own overheads and drawbacks. Sometimes it is very difficult or even impossible to construct the equivalent relational database from a graph database. Moreover, graph databases don't use SQL and as such it is very difficult for the programmers to realize the query they want to perform. \\
-\par
-Owing to these reasons, the use of graph databases is currently limited. We were motivated to resolve this problem by taking a middle path between graph and relational databases. We wanted to explore the various ways to optimize the query execution time as well as the storage of the currently popular relational databases. We also wanted to eliminate some sort of data redundancy in a typical relational database system.
+In the world of computer science, a graph database is a database that uses graph structures for semantic queries with nodes, edges, and properties to represent and store data. A graph database is any storage system that provides index-free adjacency. This means that every element contains a direct pointer to its adjacent elements and no index lookups are necessary.
 \begin{figure}[h]
  \begin{center}
-  \includegraphics[width=\textwidth]{pics/graph.png}
+  \includegraphics[width=0.7\textwidth]{pics/graph.png}
   \caption{A Graph Database}
  \end{center}
 \end{figure}
+\section{Motivation}
+Graph Databases seems like a promising model to solve all the problems the exist with the current relational databases. They provide an optimal may to compute the equivalent of the join query in a relational database. They can also scale very well and can handle large volume of data. However, Graph databases have their own overheads and drawbacks. Sometimes it is very difficult or even impossible to construct the equivalent relational database from a graph database. Moreover graph databases don't use SQL and as such it is very difficult for the programmers to realize the query they want to perform. Even if the developers are able to realize the query, the existing queries in the system has to be changed which will take a lot of resources. Organizations which have made huge investments on their database system might not be willing switch to graph databases. \\ \par
+Owing to these reasons the use of graph database is currently limited. We were motivated to resolve this problem by taking a middle path between graph and relational databases. We wanted to explore the various way to optimize the query execution time as well as the storage of the currently popular relational databases. We also wanted to eliminate all the redundancy in a typical relational database.
 
-\pagebreak
+\section{Problem Description}
+In this project we concentrate on 2 major problems of relational database - the data redundancy and expensive join queries.
+\subsection{Data Redundancy}
+To demonstrate this problem let us consider a typical Employee table in a relational database ~\ref{tab:employee_demo}. Each Employee record has all the typical attributes associated with it like \emph{id} (primary or identifying attribute), \emph{name}, \emph{department}, \emph{salary}, etc. 
+\begin{table}[h]
+\begin{center}
+    \begin{tabular}{| m{0.01\textwidth} | m{0.05\textwidth} | m{0.15\textwidth} | m{0.01\textwidth} | m{0.01\textwidth} | m{0.01\textwidth} | m{0.01\textwidth} | @{}m{0pt}@{}}
+    \hline
+    \multicolumn{1}{|c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \\
+    \multicolumn{1}{|c|}{\textbf{Id}} & \multicolumn{1}{c|}{\textbf{Name}} & \multicolumn{1}{c|}{\textbf{Department}} & \multicolumn{1}{c|}{\textbf{Age}} & \multicolumn{1}{c|}{\textbf{Product}} & \multicolumn{1}{c|}{\textbf{Location}} & \multicolumn{1}{c|}{\textbf{Salary}} & \\
+    \multicolumn{1}{|c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \\
+    \hline
+    1 & John & Information Technology & 40 & Firefox & Mumbai & 20000 & \\ [1ex] \hline
+    2 & David & Information Technology & 42 & Firefox & Mumbai & 23000 & \\ [1ex] \hline
+    3 & Roger & Information Technology & 34 & Firefox & Mumbai & 25000 & \\ [1ex] \hline
+    4 & Paul & Information Technology & 27 & Firefox & Mumbai & 20000 & \\ [1ex] \hline
+    5 & James & Information Technology & 45 & Firefox & Mumbai & 20000 & \\ [1ex] \hline
+    6 & Charlie & Information Technology & 40 & Firefox & Mumbai & 25000 & \\ [1ex] \hline
+    7 & Shaun & Information Technology & 40 & Firefox & Mumbai & 25000 & \\ [1ex] \hline
+    8 & Jade & Information Technology & 24 & Firefox & Mumbai & 25000 & \\ [1ex] \hline
+    9 & Jack & Information Technology & 34 & Firefox & Mumbai & 23000 & \\ [1ex] \hline
+    \end{tabular}
+\end{center}
+    \caption{A sample Employee Table with redundant data}
+    \label{tab:employee_demo}
+\end{table}
+
+As we can observe that each department is uniquely associated with a product and is located in a particular city. The same triplet of values - Information Technology, Firefox and Mumbai - is stored for each of the 9 employees working with that product. This wastes a lot of space. This table is in a de-normalized state. The traditional way to reduce redundancy is to decompose this table into multiple tables. One way in which this table can be decomposed in demonstrated in table ~\ref{tab:emp_normal} and table ~\ref{tab:product}. The product details is stored in a separate table and the Employee table refers to the product table as foreign key.
+
+\begin{table}
+    \centering
+    \begin{tabular}{| c | c | c | c | c | @{}m{0pt}@{}}
+    \hline
+    \multicolumn{1}{|c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \\
+    \multicolumn{1}{|c|}{\textbf{Id}} & \multicolumn{1}{c|}{\textbf{Name}} & \multicolumn{1}{c|}{\textbf{Age}} & \multicolumn{1}{c|}{\textbf{Pr. ID}} & \multicolumn{1}{c|}{\textbf{Salary}} & \\
+    \multicolumn{1}{|c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \\
+    \hline
+    1 & John & 40 & 1 & 20000 & \\ [1ex] \hline
+    2 & David & 42 & 1 & 23000 & \\ [1ex] \hline
+    3 & Roger & 34 & 1 & 25000 & \\ [1ex] \hline
+    4 & Paul & 27 & 1 & 20000 & \\ [1ex] \hline
+    5 & James & 45 & 1 & 20000 & \\ [1ex] \hline
+    6 & Charlie & 40 & 1 & 25000 & \\ [1ex] \hline
+    7 & Shaun & 40 & 1 & 25000 & \\ [1ex] \hline
+    8 & Jade & 24 & 1 & 25000 & \\ [1ex] \hline
+    9 & Jack & 34 & 1 & 23000 & \\ [1ex] \hline
+    \end{tabular}
+    \caption{A normalized Employee Table}
+    \label{tab:emp_normal}
+\end{table}
+
+\begin{table}
+    \centering
+    \begin{tabular}{| c | c | c | c | @{}m{0pt}@{}}
+    \hline
+    \multicolumn{1}{|c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \\
+    \multicolumn{1}{|c|}{\textbf{Id}} & \multicolumn{1}{c|}{\textbf{Department}} & \multicolumn{1}{c|}{\textbf{Product}} & \multicolumn{1}{c|}{\textbf{Location}} & \\
+    \multicolumn{1}{|c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \\
+    \hline
+    1 & Information Technology & Firefox & Mumbai & \\ [1ex] \hline
+    \end{tabular}
+    \caption{A sample product table}
+    \label{tab:product}
+\end{table}
+There may be redundancy in a single attribute column also - like Salary. The Salary can only take one of 3 values - \{20000, 23000, 25000\}. These values are repeated. Even this can be decomposed into multiple tables and linked via foreign key. However, Normalization tables have a overhead - an expensive join query has to be performed in order to obtain the original table. To perform a join operation a relational database management system will take the Cartesian project of the two table. This has been discussed in detail in following section. \\ \par
+We have tried to reduce this data redundancy by modeling each unique value as a separate node in a graph and all the records that has this value only stores a pointer to the actual node which stores the value. The value is stored only once in the memory and a pointer is added to that same value whenever a new record with that value is inserted. This optimizes storage requirements (especially if the value is large compared to size of a pointer). This also helps achieve data consistency. If the value is changed for some reason all the records pointing to it automatically changes.
+\subsection{Expensive Join Queries}
+Often user has to fetch data spanning across multiple tables in a database. This is achieved using Join Queries. User specifies the tables from which the records have to be selected. Typically user also specifies the join condition i.e., how the two tables are related. For Example the Employee and Product Tables are joined based on the fact that the \emph{Pr.ID} attribute in Employee table corresponds to the \emph{Id} attribute in product table they must be equal. Join such as this is called Inner Joins. \par
+Join Queries are common in applications using relational database to store data. Theoretically, the time complexity of each Join Operation is $\mathcal{O}\left( mn \right)$ where, $m, n$ is the number of records in the two tables being joined. This is inefficient considering the frequency of join operation. We have tried to optimize inner join operation. Our graph based storage can theoretically perform an inner join in linear time. 
 
 \chapter{Literature Review}
-Relational Databases are a common choice for primary data storage structure in both academic and commercial pursuits since the 1970s. The Relational Model organizes data into one or more tables of rows and columns, with a unique key for each tuple. Generally, each entity type described in a database has its own table, the tuples representing instances of that entity and the columns representing the attribute values describing each instance. They provide relational operators to manipulate the data in tabular form. Most of the relational databases use SQL as their query language. Relational database systems are generally efficient unless the data contains many relationships requiring joins of large tables. These costly join operations are usually addressed by denormalising data to reduce the number of joins necessary.  
+Relational Databases are a common choice for primary data storage structure in both academic and commercial pursuits since the 1970s. The Relational Model organizes data into one or more tables of rows and columns, with a unique key for each tuple. Generally, each entity type described in a database has its own table, the tuples representing instances of that entity and the columns representing the attribute values describing each instance. They provide relational operators to manipulate the data in tabular form. Most of the relational databases use SQL as their query language. Relational database systems are generally efficient unless the data contains many relationships requiring joins of large tables. These costly join operations are usually addressed by denormalizing data to reduce the number of joins necessary.  
 \section{Graph Model}
 In recent years, software developers have been investigating storage alternatives to relational databases. BigTable, Cassandra, CouchDB, Project Voldemort, and Dynamo are all NoSQL projects, as they are all high-volume data stores that actively reject the relational model. In the graph model, nodes represent entities. Properties are pertinent information that relate to nodes. Edges are the lines that connect nodes to nodes or nodes to properties and they represent the relationship between the two. Compared with relational databases, graph databases are often faster for associative data sets and map more directly to the structure of object-oriented applications. They can scale more naturally to large data sets as they do not typically require expensive join operations. As they depend less on a rigid schema, they are more suitable to manage ad hoc and changing data with evolving schema. Graph databases are a powerful tool for graph-like queries, for example computing the shortest path between two nodes in the graph.\\
 \par
@@ -230,19 +300,54 @@ To develop a data storage system based on graph structure in order to optimize t
 \end{itemize}
 
 \chapter{Methodology}
-Relational databases performs inefficiently when you make a join type query. Graph database is able to perform join type queries quite fast because it stores the data using a graph structure. But because of the model used, it is sometimes unable to represent all kinds of relational databases. Realizing that the problem lies with the model of the graph used, we came up with our own model to represent relational databases, using graphs.\\
+In this chapter we will discuss our proposed model in detail. We will describe how the data is handled and manipulated.
+Relational databases performs inefficiently when you make a join type query. Graph database is able to perform join type queries quite fast because it stores the data using a graph structure. But because of the model used, it is sometimes unable to represent all kinds of relational databases. Realizing that the problem lies with the model of the graph used, we came up with our own model to represent relational databases, using graphs.\\ \par
+\section{Definitions}
+A single relation(table) can be represented a set of nodes and edges in our proposed graph storage, Before we discuss the model in detail, we define certain terminology used in the context of this project.
+\begin{enumerate}
+ \item \textbf{Domain} - Each attribute of a relation is a domain in our model. For Example for an employee table, the relevant domains are \emph{Name}, \emph{Salary}, \emph{Age}, etc. Unlike traditional relational databases two relation can share same domain i.e., A domain can belong to multiple table. For example in Employee Product example (~\ref{tab:employee_demo}) \emph{Pr. Id} belongs to both Employee table and Product table. Each table can have separate attribute name for the domain. A domain is nothing but a list of unique Attribute Nodes
+ \item \textbf{Attribute Node} - Attribute Node is a graph node which contains actual data. Each Attribute Node contains only one value. An attribute node also has a list of pointers to record that has it's stored value in corresponding domain.
+ \item \textbf{Main Node} - Each main node represents a record in the table. Main node do not contain values - rather they point to $n$ different attribute nodes (one each in $n$ domains) where $n$ is the number of attributes. Main Node of a table may also point to the main node of any other table in case of foreign key i.e., parent-child relationship.
+\end{enumerate}
 
-\par The model for a single relation can be represented as follows :
+\section{Overall Structure}
+A database consist of multiple tables. Each table is a collection of domains (one domain corresponding to each attribute) and a list of main node records. Each Domain is collection of attribute nodes. Each attribute node contains the actual data elements. Nodes are connected to each other by edges (using pointers). A brief overview of the model has been illustrated in figure ~\ref{fig:overview}
+\begin{figure}
+ \centering
+ \includegraphics[width=0.8\textwidth]{pics/model.pdf}
+ \caption{Overview of Proposed Graph Based Storage}
+ \label{fig:overview}
+\end{figure}
+
+\section{Constraints}
+In this section we will discuss about the constraints that are added to the relations in a traditional RDBMS to ensure data integrity and logical consistency.
+\subsection{Primary Key}
+In a Relational Database Primary Key is a collection of one or more attributes of a relation which uniquely identifies a tuple i.e., each record will have a different value of primary key. The main thing to note here is that Primary Key can span over multiple attributes i.e., a collection of attributes together uniquely identifies a primary key. While performing an insertion operation, it is essential to check that no previous record has the same value for the primary key. When primary key spans over multiple attributes (or domains in our proposed model) one has to check if the combination of values being inserted is unique. The primary key constraint has been illustrated in figure ~\ref{fig:primary_key}. A record (in a relation storing data about engineering institutes) is uniquely determined by combination of department and institute.
+\begin{figure}
+ \centering
+ \includegraphics[width=0.8\textwidth]{pics/primary_key.pdf}
+ \caption{Primary Keys in Proposed Model}
+ \label{fig:primary_key}
+\end{figure}
+
+\subsection{Foreign Key}
+When multiple relations are involved with some of them having foreign key relation, then our model will be expanded to accommodate those constraints. Storage of foreign key in our proposed model has been illustrated in figure ~\ref{fig:foreign_key}.
+\begin{figure}[h]
+ \centering
+ \includegraphics[width=0.6\textwidth]{pics/foreign_key.pdf}
+ \caption{Handling of Foreign Key Constraints}
+ \label{fig:foreign_key}
+\end{figure}
+Major points to observe are as follows :
 \begin{itemize}
- \item Each attribute of a relation will have its own domain.
- \item Each domain has a list of nodes called attribute nodes
- \item Each attribute node represents a particular value which exists in at-least one tuple's corresponding attribute. Note that a particular value belonging to a domain will only be represented once in the attribute list.
- \item We also have a main domain which too has a list of nodes, called main nodes.
- \item Each main node has as many links as the number of attributes in the relation.
- \item Each link will connect a particular domain's attribute node and the main node. No two links from the main node will connect to the same domain. The links connect to those attribute nodes which represent the value of the tuple's attribute.
+ \item Suppose relation A has a foreign key relationship with relation B. Then relation A is said to be the child and relation B is said to be the parent relation.
+ \item Each tuples (modeled as Main Node) in the child relation will reference a single tuple in the parent relation.
+ \item Multiple tuples in child relation can refer to the same tuple in the parent relation.
+ \item The attribute in which foreign key constraint is applied is shared between child relation and parent relation i.e., A single domain is shared between 2
+ tables.
+ \item A child relation will always refer to the primary key in the parent relation. Thus, if the primary key in parent relation spans over multiple domains, the foreign key in child relation also spans over multiple domains and each domain is shared between parent and child.
+ \item A relation can have multiple foreign key constraint each referring to different relation in the database.
 \end{itemize}
-When multiple relations are involved with some of them having foreign key relation, then our model will be expanded slightly to accommodate that as follows.\\
-\par Suppose relation 1 has a foreign key relationship with relation 2. Then relation 1 is said to be the child and relation 2 is said to be the parent relation. Each tuple in the child relation will reference a single tuple in the parent relation. Multiple tuples can refer to the same tuple in the parent relation. In our model we add a single link between each main node of the child relation(Note that each main node represents a single tuple) and the main node in the parent relation to which it refers to.
 
 \chapter{Work Done}
 As of now we have been able to partially implement the proposed graph like storage.
@@ -360,11 +465,12 @@ It is clearly evident from these plots that traditional RDBMS increases their st
 \par
 However, Several factors were not accounted while making these observations - which makes these observations a little less reliable. We intend to perform a more vigorous analysis of the storage requirement in future.
 
-\pagebreak
-
-%\bibliographystyle{ieeetr}
-%\bibliography{biblio}
-%\addcontentsline{toc}{chapter}{Bibliography}
+\chapter{Future Work}
+There are various optimizations and techniques that couldn't be implemented in the current version of source code owing to shortage of time. In this chapter we will discuss the major future works that can be undertaken with regard to this project.
+\section{Parallel Execution of Queries}
+Various Queries especially - select and Join queries are read only. More over in our model, queries like typically access data belonging to different relations. As such, these queries can easily be executed in parallel fashion. In current implementation we often determine multiple set of results and then take Intersection (AND operator) or Union (OR operator) to obtain the final result. During Intersection we choose the size of minimum set and iterate over it to check if it belongs to all the other set. Such operations are embarrassingly parallel. We can fetch different set of results on different threads. \par
+We can use pthreads or openmp for the said purpose. We can use General Purpose Graphic Processing Unit Libraries like Cuda or OpenCL to create large number of threads which may perform better.
+\section{Hybrid Database}
 %\addcontentsline{toc}{chapter}{Appendix Paper 1}
 %\includepdf[pages={1-9}]{paper1.pdf}
 %\addcontentsline{toc}{chapter}{Appendix Paper 2}
