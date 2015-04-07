@@ -89,14 +89,16 @@ void insert_dept(database *db)
 
 void insert_emp(database *db)
 {
+    FILE *fp = fopen("Result.txt", "w");
     srand(time(NULL));
     int i, j, success, num_records, unique_rec_count, attribute_len, failed = 0, start, stop, max_sal;
+    long unsigned rel_size = 0;
     float sal;
     double result_time = 0;
-    max_sal = 1000000;
+    max_sal = 100000;
     num_records = 100;
-    unique_rec_count = 50;
-    attribute_len = 20;
+    unique_rec_count = 10;
+    attribute_len = 50;
 
     table *temp_table;
     char *str = new char[num_records + 1];
@@ -137,6 +139,10 @@ void insert_emp(database *db)
         j = (rand() % 20) + 1;
         sprintf(s, "%d", j);
         values[5].assign(s);
+        for(j = 0; j < 6; j++)
+        {
+            rel_size += values[j].length();
+        }
         start = clock();
             success = temp_table->add_new_record(values);
         stop = clock();
@@ -146,6 +152,7 @@ void insert_emp(database *db)
         {
             failed++;
         }
+        fprintf(fp, "%lu %lu\n", temp_table->get_size(), rel_size);
     }
 
     if(failed)
@@ -158,4 +165,5 @@ void insert_emp(database *db)
     delete[] s;
     values.clear();
     unique_rec.clear();
+    fclose(fp);
 }

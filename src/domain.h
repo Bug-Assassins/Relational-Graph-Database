@@ -63,10 +63,9 @@ class domain {
     }
 
     //Function to add new value to domain
-    attribute_node* add_get_new_value(std::string &new_val, main_node *node, unsigned int tab_index, bool ins)
+    attribute_node* add_get_new_value(std::string &new_val, main_node *node, unsigned int tab_index, bool ins, size_t &node_size)
     {
         bool exists = false;
-        size_t node_size = sizeof(node);
 
         //Add the new value to trie for indexing
         attribute_node* new_node = index->get_node(new_val, exists, table_list.size());
@@ -75,13 +74,13 @@ class domain {
         if(head == NULL)
         {
             head = new_node;
-            node_size += sizeof(*head) + new_val.length() - sizeof(std::string);
+            node_size += sizeof(attribute_node *) + new_val.length();
         }
         else if(!exists)
         {
             new_node->set_next(head);
             head = new_node;
-            node_size += sizeof(*head) + new_val.length() - sizeof(std::string);
+            node_size += sizeof(attribute_node *) + new_val.length();
         }
         new_node->connect_main_record(node, tab_index);
         if(ins)

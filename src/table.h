@@ -127,7 +127,7 @@ class table {
 
         temp_domain = new domain(type);
         tab_index = temp_domain->insert_table_pointer(this);
-        add_to_size(sizeof(*temp_domain) + name.length());
+        //add_to_size(sizeof(*temp_domain) + name.length());
         normal[index] = temp_domain;
         attribute_names[index] = name;
         index_in_domain[index] = tab_index;
@@ -295,10 +295,13 @@ class table {
             return -2;
         }
 
+        size_t node_size;
         for(i = 0; i < values.size(); i++)
         {
             //add_to_size(normal[i]->add_get_new_value(values[i], new_main, index_in_domain[i]));
-            normal[i]->add_get_new_value(values[i], new_main, index_in_domain[i], true);
+            node_size = sizeof(main_node *);
+            normal[i]->add_get_new_value(values[i], new_main, index_in_domain[i], true, node_size);
+            total_size += node_size;
         }
 
         new_main->set_next(head);
@@ -306,8 +309,9 @@ class table {
         {
             head->set_pre(new_main);
         }
+
         head = new_main;
-        //add_to_size(sizeof(*head));
+        total_size += head->get_size();
         record_count++;
         return 1;
     }
@@ -349,6 +353,7 @@ class table {
 
     void update(std::set< main_node * > &nodes,  std::vector< int > &index, std::vector< std::string > &values)
     {
+        size_t temp_size;
         std::set< main_node * >::iterator it;
         unsigned int j;
         attribute_node *old_node;
@@ -361,7 +366,7 @@ class table {
                 {
                     old_node->delete_edge((*it), index_in_domain[index[j]]);
                     attribute_node *new_attribute_node = normal[index[j]]->add_get_new_value(values[j],
-                                                                    (*it), index_in_domain[index[j]], false);
+                                                                    (*it), index_in_domain[index[j]], false, temp_size);
                     (*it)->update_attribute(index[j], new_attribute_node);
                 }
             }
