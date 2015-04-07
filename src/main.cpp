@@ -1,4 +1,4 @@
-#define VERBOSE 1
+#define VERBOSE 0
 #define DEBUG 1
 #define TEST 1
 
@@ -168,7 +168,7 @@ void create_table(database *main_database)
 
     delete[] ins_check;
     fk_list.clear();
-    temp_table->add_to_size(sizeof(*temp_table));
+   // temp_table->add_to_size(sizeof(*temp_table));
     main_database->add_table(temp_table);
 
     return;
@@ -229,7 +229,7 @@ void insert_to_table(database *main_database)
         printf("Integrity Violation\n");
     }
     values.clear();
-
+    //printf("%lu\n", temp_table->get_size());
 }
 
 void print_table(database *main_database)
@@ -675,6 +675,9 @@ int main()
     create_emp(main_database);
 	insert_dept(main_database);
 	insert_emp(main_database);
+	main_database->clear();
+    delete main_database;
+    return 0;
 #endif
 
 
