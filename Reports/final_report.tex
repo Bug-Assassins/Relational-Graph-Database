@@ -271,7 +271,7 @@ As we can observe that each department is uniquely associated with a product and
     \caption{A sample product table}
     \label{tab:product}
 \end{table}
-There may be redundancy in a single attribute column also - like Salary. The Salary can only take one of 3 values - \{20000, 23000, 25000\}. These values are repeated. Even this can be decomposed into multiple tables and linked via foreign key. However, Normalization of tables have a overhead - an expensive join query has to be performed in order to obtain the original table. To perform a join operation a relational database management system will take the Cartesian project of the two table. This has been discussed in detail in section ~\ref{sec:join}. \par
+There may be redundancy in a single attribute column also - like Salary. The Salary can only take one of 3 values - \{20000, 23000, 25000\}. These values are repeated. Even this can be decomposed into multiple tables and linked via foreign key. However, Normalization of tables have a overhead - an expensive join query has to be performed in order to obtain the original table. To perform a join operation a relational database management system will take the Cartesian Product of the two tables. This has been discussed in detail in section ~\ref{sec:join}. \par
 We have tried to reduce this data redundancy by modeling each unique value as a separate node in a graph and all the records that has this value only stores a pointer to the actual node which stores the value. The value is stored only once in the memory and a pointer is added to that same value whenever a new record with that value is inserted. This optimizes storage requirements (especially if the value is large compared to size of a pointer). This also helps achieve data consistency. If the value is changed for some reason all the records pointing to it automatically changes.
 \subsection{Expensive Join Queries}
 \label{sec:join}
@@ -482,16 +482,15 @@ The test data that we generated had the following structure and characteristics 
 The Maximum length of string data type was specified and a random length was used for each record. Random Records were generated using the psuedorandom generators provided by the standard C Library.
 
 \subsection{Practical Observation of Size}
-We created an equivalent table in both traditional Relational DBMS and our graph storage. We measured the size occupied by both the models. We have plotted several graphs. Numbers of records are increasing along X axis, while space occupied by the model is increasing along Y axis.
-\begin{enumerate}
- \item \textbf{100 Records} - Number of records was varied between 1 to 100. Observations were made after every record. The graph obtained is shown in figure ~\ref{fig:100result}
- \begin{figure}[H]
-  \begin{center}
+\begin{figure}[ht]
+  \centering
    \includegraphics[width=\textwidth]{pics/100.pdf}
    \caption{Comparison of Size of 100 records}
    \label{fig:100result}
-  \end{center}
- \end{figure}
+\end{figure}
+We created an equivalent table in both traditional Relational DBMS and our graph storage. We measured the size occupied by both the models. We have plotted several graphs. Numbers of records are increasing along X axis, while space occupied by the model is increasing along Y axis.
+\begin{enumerate}
+ \item \textbf{100 Records} - Number of records was varied between 1 to 100. Observations were made after every record. The graph obtained is shown in figure ~\ref{fig:100result}
   \item \textbf{1000 Records} - Number of records was varied between 1 to 1000. Observations were made after every 10 record. The graph obtained is shown in figure ~\ref{fig:1000result}
  \begin{figure}[H]
   \begin{center}
@@ -518,10 +517,22 @@ We created an equivalent table in both traditional Relational DBMS and our graph
  \end{figure}
 \end{enumerate}
 \par
-It is clearly evident from these plots that traditional RDBMS increases their storage linearly. Our proposed model also scales linearly. The initial size occupied by out proposed model is more but the slope if smaller than that of relational database storage. In the long run the graph model performs better.
-\par
-However, Several factors were not accounted while making these observations - which makes these observations a little less reliable. We intend to perform a more vigorous analysis of the storage requirement in future.
-
+It is clearly evident from these plots that traditional RDBMS increases their storage linearly. Our proposed model also scales linearly. The initial size occupied by out proposed model is more but the slope of or model is smaller than that of relational database storage. In the long run the graph model performs better. \par
+However, Several factors were not accounted while making these observations - which makes these observations a little less reliable. Owing to limitations of the physical resources available with us, we were unable to test the system for larger dataset. We intend to perform a more vigorous analysis of the storage requirement in future.
+\subsection{Practical Observation of Time}
+We chose to measure the time taken to execute the most expensive query - Join. The exact query that we executed was : \\
+\begin{center}
+ \textbf{Select $*$ from employee, department where employee.id $>$ 10 AND \\
+ department.id $<$ 50 AND employee.dept\_id = department.id}
+\end{center}
+We measured the time taken with different number of records in the child relation i.e., Employee relation. The number of records in the parent relation (Department) was kept constant i.e, 100. The points of observation in child relation were - 100, 1000, 10000 and 90000. The results have been illustrated in figure ~\ref{fig:timeresult}. \par
+\begin{figure}[ht]
+ \centering
+ \includegraphics[width=\textwidth]{pics/time.pdf}
+ \caption{Time Taken for Join Query}
+ \label{fig:timeresult}
+\end{figure}
+A linear relation was observed to exist between the number of records and time taken for join query.
 \subsection{Objectives Achieved}
 As mentioned previously, we had particular objectives to achieve during the course of this project. We have been able to achieve most of those objectives as mentioned in the following section.
 \subsubsection{Relational Model vs Graph Model}
