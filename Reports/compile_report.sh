@@ -21,11 +21,11 @@ else
     fi
     #Use rsvg
 
-    rsvg rsvg-convert -f pdf -o pics/model.pdf pics/model.svg
+    rsvg-convert -f pdf -o pics/model.pdf pics/model.svg
 
-    rsvg rsvg-convert -f pdf -o pics/foreign_key.pdf pics/foreign_key.svg
+    rsvg-convert -f pdf -o pics/foreign_key.pdf pics/foreign_key.svg
 
-    rsvg rsvg-convert -f pdf -o pics/primary_key.pdf pics/primary_key.svg
+    rsvg-convert -f pdf -o pics/primary_key.pdf pics/primary_key.svg
 fi
 
 #Compiling Latex which includes pdfs
