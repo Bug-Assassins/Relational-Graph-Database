@@ -132,7 +132,7 @@ class main_node {
     //Function to return the corresponding connected attribute node
     attribute_node *get_attribute_list_index(unsigned int attribute_index)
     {
-        if(attribute_index < 0 || attribute_index > attribute_list.size())
+        if(attribute_index > attribute_list.size())
         {
             printf("Passed attribute index %d do not exist !!\nAborting!!", attribute_index);
             fflush(stdout);

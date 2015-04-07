@@ -1,5 +1,5 @@
 \documentclass[12pt, oneside]{book}
-\usepackage[top=0.7in, bottom=0.7in, left=1in, right=0.7in, a4paper]{geometry}
+\usepackage[top=0.9in, bottom=0.8in, left=1in, right=0.7in, a4paper]{geometry}
 \title{Graph Based Storage for Relational Databases}
 \author{Adarsh Mohata, Ajith P S, Ashish Kedia, Sourabh Suman}
 
@@ -119,14 +119,13 @@
 \vspace{5mm}
 \textbf{National Institute of Technology Karnataka, Surathkal} \\
 \vspace{5mm}
-\text{February 2015}
+\text{April 2015}
 \end{center}
 \end{titlepage}
 
  \pagebreak \textcolor{white}{text}
 \thispagestyle{empty}
 \pagenumbering{gobble}
-\pagebreak
 \begin{center}
 \Large
 \textbf{Department of Information Technology} \\
@@ -177,7 +176,7 @@ Place: NITK Surathkal, Mangalore \\
 Date: \today
 \end{flushleft}
 
-\pagebreak \textcolor{white}{text} \pagebreak
+\pagebreak \textcolor{white}{text}
 \thispagestyle{empty}
 \begin{center}
 	\textbf{ \huge Abstract}
@@ -355,11 +354,18 @@ There are 3 other ways in which the foreign key constraint can be handled. We ca
  \item \textbf{Duplicate Domain Model} - There are two copies of the shared domain - one belonging to each child and parent relation. And a unidirectional (or bidirectional if need be) edge between tuples in child relation and tuples in parent relation exist. This model requires 2 or 3 edges as well as an attribute node for each foreign key connection. This model has a lot of storage overhead but it allows all the operation to be performed in the most optimal fashion. However, due to data replication, this model may cause data inconsistency.
 \end{enumerate}
 
+\section{Records and their Attributes}
+In this section we will discuss how a record and it's associated values are stored in our proposed graph storage model.
+\subsection{Tuple of a Relation - Main Node}
+\label{sec:tuple}
+We propose use of linked list to store all the main nodes. The nature of linked linked can be unidirectional (singly) or bidirectional (doubly). A singly linked list or a vector of linked list will make have less storage storage overhead, however the delete operation might be expensive. A possible workaround of this problem is to store a boolean field with each main node which marks the tuple as well as the associated values in attribute nodes as invalid. After a regular interval the whole list can be traversed and all the marked records can be deleted. This way we save on space. However, whenever brute force method is used to execute the select query an extra data-access is required to check if the data is valid or not.
+\subsection{Attributes of Record}
+Each column in a table of a relational database has it's own domain and it contains a list of values. The list may be singly linked list or doubly linked list depending on the requirement. The same argument as section ~\ref{sec:tuple} applies here. Each node which contains the actual record is not of fixed size. Size of an attribute node is dynamic - it depends on size of the value unlike traditional relational databases where the size of an attribute is fixed and specified at the time of creating table. An attribute node will be bidirectionally connected with all the main nodes in all the table (in case of shared domains) that contains this value. This means aggregate queries can be performed much faster. As an example let us assume that in a relation containing 50,000 records about the employees of an organization, we intend to find all employees with a given salary say 100\$. Now, let us assume that there are only 10 such employees. Then we can find all those 10 tuples with at max 10 record access in worst case i.e., $\mathcal{O}(k)$, where $k = 10$ is the size of the result. In traditional databases if there is no indexing on the salary attribute then the same query may take $\mathcal{O}(n)$, where is $n = 50000$ is the number of records in the table.
 
 \chapter{Work Done}
-As of now we have been able to implement a basic version of the proposed graph like storage model which supports all the queries of a traditional relational database. The whole graph storage model has been implemented using C++. We choose to go with C++ owing to it's speed as well as the powerful Standard Template Library. The user input is taken via a command line with no GUI. All data is stored in main memory.
+As of now we have been able to implement a basic version of the proposed graph like storage model which supports all the queries of a traditional relational database. The whole graph storage model has been implemented using C++. We choose to go with C++ owing to it's speed, object oriented nature and the powerful Standard Template Library. STL containers like \emph{vectors}, \emph{string} and \emph{set} are used throughout the source code. We have also used methods provided STL to handle data. The user input is taken via standard input stream i.e., command line. Similarly all output is printed on standard output stream. No GUI has been provided as of now. All data is stored in main memory.
 \section{Implementation}
-We have implemented the following core functionalities :
+We have implemented the following core functionalities which the user can choose from the main menu :
 \begin{multicols}{2}
  \begin{itemize}
   \item Creating Tables
@@ -370,25 +376,37 @@ We have implemented the following core functionalities :
   \item Selecting from single table
   \item Deleting Records in table
   \item Updating Records in table
-  \item Joining 2 Tables
+  \item Joining two Tables
   \item Clearing Memory Allocated
  \end{itemize}
 \end{multicols}
 
 \subsection{Indexing}
-Trie is the optimal indexing methodology that maps a string to it's corresponding node in the graph. The algorithmic complexity of inserting and querying a string in trie is $\mathcal{O} \left( d\right)$ where, $d$ is the length of the string mapped. The data structure can be further optimized in terms of storage requirements by using a compressed trie. However, for time bound remains optimal.
-\par
-The \emph{trie} class in the source code provides all the properties and functions required to index string data.
+Trie is the optimal indexing methodology that maps a string to it's corresponding node in the graph. The algorithmic complexity of inserting and querying a string in trie is $\mathcal{O} \left( d\right)$ where, $d$ is the length of the string mapped. The data structure can be further optimized in terms of storage requirements by using a compressed trie. However, for time bound remains optimal. The \emph{trie} data structure has been illustrated in figure ~\ref{fig:trie}.
+\begin{figure}
+ \centering
+ \includegraphics[width=0.5\textwidth]{pics/trie.pdf}
+ \caption{Trie Data Structure for Indexing}
+ \label{fig:trie}
+\end{figure}
+
+The \emph{trie} class in the source code provides all the properties and functions required to index string data. The trie also has a composite class called \emph{trie\_node} associated with it which represents a node in the trie and stores a single character of the string. Each node in trie contains edges to the 256 possible nodes in the next level. Each domain has it's own trie. The \emph{trie} class provides 2 major methods :
+\begin{itemize}
+ \item \textbf{Value Look Up} - to lookup a string value and get the attribute node which stores this value in the domain
+ \item \textbf{Insert Value} - index a new string value along with the attribute node which stores the value being inserted
+\end{itemize}
+
 \subsection{Code Structure}
 The Code is divided into multiple files for ease of development. Each file provides one or more classes that are a logical entity. The details have been discussed in the following section :
 \begin{enumerate}
  \item \textbf{Database} - The database class is the root class that contains all the data. It only contains a list of all the tables. Currently the system supports only one database. It provides functionalities to add a new table, compute the size of all tables and delete all the tables on demand.
- \item \textbf{Table} - The table class represents a relation. This class provides most of the over all functionalities of the system. It provides all the table related functionalities like measuring size, insertion, selection, projection, update, delete etc. It also provides a function to delete the table on demand. The table class has been divided into 2 files namely - \emph{table.h} and \emph{select.h}. A few utility functionalities like comparing 2 values given a data type, traversing records from parent relation to child relation or vice-versa. A few wrapper type utility classes like are also provided which helps in passing around the a bunch of logically related set of values from one function to another. Table class stores several meta data about the relation and also provides methods to access or manipulate those meta-data.
- \item \textbf{Main Node} - This class represents a typical tuple in a table. Although no data is stored in Main Node but it points to corresponding attribute node. A Linked List of main nodes makes up a Table
- \item \textbf{Domain} - It represents the domain of a data. It is a linked list of all the valid values that an attribute can take. It provides functionality like searching, adding and deleting attribute nodes. It also provides function to measure storage requirements.
- \item \textbf{Attribute Node} - It is the smallest logical entity that stores the actual data. Only one copy of a particular value is stored in a domain to avoid redundancy. It also stores a list of pointers to all the records that are pointing to it.
- \item \textbf{Others} - Other classes such as primary and foreign key are also there however they are currently not been used.
+ \item \textbf{Table} - The table class represents a relation. This class provides most of the over all functionalities of the system. It provides all the table related functionalities like measuring size, insertion, selection, projection, update, delete etc. It also provides a function to delete the table on demand. The table class has been divided into 2 files namely - \emph{table.h} and \emph{select.h}. A few utility functionalities like comparing 2 values given a data type, traversing records from parent relation to child relation or vice-versa. A few wrapper type utility classes like \emph{value\_expression} are also provided which helps in passing around a bunch of logically related set of values from one function to another. Table class stores several meta data about the relation and also provides methods to access or manipulate those meta-data. These meta-data include primary key associated with the relation, foreign key constraints and edges to respective domains. Useful methods associated with these meta data are adding primary key, checking existence of record with a given primary key, fetching all records in child relation, fetching record from parent relation, etc. Overall the \emph{table} class provides various independent modules of code in form of functions which are used throughout the database.
+ \item \textbf{Main Node} - This class represents a typical tuple in a table. Although no data is stored in Main Node but it points to corresponding attribute node. A Linked List of main nodes makes up a Table. Main node only has a vector of pointers to the corresponding attribute nodes. Each main node belonging to the same table points to same number of attributes. The main node class also provides functionalities to access / update / delete a particular value in that tuple.
+ \item \textbf{Domain} - It represents the domain of a data. It is a linked list of all the valid values that an attribute can take. It provides functionality like searching, adding and deleting attribute nodes. It also provides function to measure storage requirements. Since a domain can belong to multiple tables, a domain all stores meta-data about the different table it belongs to. The most important functionality provided my the \emph{domain} class is to retrieve a list of all the main nodes connected with the attribute node of a given value.
+ \item \textbf{Attribute Node} - It is the smallest logical entity that stores the actual data. Only one copy of a particular value is stored in a domain to avoid redundancy. It also stores a list of pointers to all the records (in all the table) that are pointing to it.
+ \item \textbf{Testing} - The file \emph{test.h} provides methods to create a sample database. It creates multiple tables and inserts thousands of records in each table. It also measures metrics such as \emph{time} and \emph{space} required to perform those insertion operations. A vigorous testing was performed in order to ensure that the system was stable and that there were no memory leaks. Our implementation is only limited by the main memory available on the system running the database server.
 \end{enumerate}
+
 \section{Results}
 The Results of our study can be divided into two sections - Storage and Time. We have performed both theoretical as well as practical memory bound calculations. \\
 \subsection{Theoretical Calculations}
