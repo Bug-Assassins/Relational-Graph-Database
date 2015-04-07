@@ -1,5 +1,5 @@
 \documentclass[12pt, oneside]{book}
-\usepackage[top=1in, bottom=1in, left=1.2in, right=1in, a4paper]{geometry}
+\usepackage[top=0.7in, bottom=0.7in, left=1in, right=0.7in, a4paper]{geometry}
 \title{Graph Based Storage for Relational Databases}
 \author{Adarsh Mohata, Ajith P S, Ashish Kedia, Sourabh Suman}
 
@@ -273,12 +273,11 @@ As we can observe that each department is uniquely associated with a product and
     \caption{A sample product table}
     \label{tab:product}
 \end{table}
-There may be redundancy in a single attribute column also - like Salary. The Salary can only take one of 3 values - \{20000, 23000, 25000\}. These values are repeated. Even this can be decomposed into multiple tables and linked via foreign key. However, Normalization of tables have a overhead - an expensive join query has to be performed in order to obtain the original table. To perform a join operation a relational database management system will take the Cartesian project of the two table. This has been discussed in detail in section ~\ref{sec:join}. \\ \par
+There may be redundancy in a single attribute column also - like Salary. The Salary can only take one of 3 values - \{20000, 23000, 25000\}. These values are repeated. Even this can be decomposed into multiple tables and linked via foreign key. However, Normalization of tables have a overhead - an expensive join query has to be performed in order to obtain the original table. To perform a join operation a relational database management system will take the Cartesian project of the two table. This has been discussed in detail in section ~\ref{sec:join}. \par
 We have tried to reduce this data redundancy by modeling each unique value as a separate node in a graph and all the records that has this value only stores a pointer to the actual node which stores the value. The value is stored only once in the memory and a pointer is added to that same value whenever a new record with that value is inserted. This optimizes storage requirements (especially if the value is large compared to size of a pointer). This also helps achieve data consistency. If the value is changed for some reason all the records pointing to it automatically changes.
 \subsection{Expensive Join Queries}
 \label{sec:join}
-Often user has to fetch data spanning across multiple tables in a database. This is achieved using Join Queries. User specifies the tables from which the records have to be selected. Typically user also specifies the join condition i.e., how the two tables are related. For Example the Employee and Product Tables are joined based on the fact that the \emph{Pr.ID} attribute in Employee table corresponds to the \emph{Id} attribute in product table they must be equal. Join such as this is called Inner Joins. \par
-Join Queries are common in applications using relational database to store data. Theoretically, the time complexity of each Join Operation is $\mathcal{O}\left( mn \right)$ where, $m, n$ is the number of records in the two tables being joined. This is inefficient considering the frequency of join operation. We have tried to optimize inner join operation. Our graph based storage can theoretically perform an inner join in linear time. 
+Often user has to fetch data spanning across multiple tables in a database. This is achieved using Join Queries. User specifies the tables from which the records have to be selected. Typically user also specifies the join condition i.e., how the two tables are related. For Example the Employee and Product Tables are joined based on the fact that the \emph{Pr.ID} attribute in Employee table corresponds to the \emph{Id} attribute in product table they must be equal. Join such as this is called Inner Joins. Join Queries are common in applications using relational database to store data. Theoretically, the time complexity of each Join Operation is $\mathcal{O}\left( mn \right)$ where, $m, n$ is the number of records in the two tables being joined. This is inefficient considering the frequency of join operation. We have tried to optimize inner join operation. Our graph based storage can theoretically perform an inner join in linear time. 
 
 \chapter{Literature Review}
 Relational Databases are a common choice for primary data storage structure in both academic and commercial pursuits since the 1970s. The Relational Model organizes data into one or more tables of rows and columns, with a unique key for each tuple. Generally, each entity type described in a database has its own table, the tuples representing instances of that entity and the columns representing the attribute values describing each instance. They provide relational operators to manipulate the data in tabular form. Most of the relational databases use SQL as their query language. Relational database systems are generally efficient unless the data contains many relationships requiring joins of large tables. These costly join operations are usually addressed by denormalizing data to reduce the number of joins necessary.  
@@ -313,7 +312,7 @@ A single relation(table) can be represented a set of nodes and edges in our prop
 
 \section{Overall Structure}
 A database consist of multiple tables. Each table is a collection of domains (one domain corresponding to each attribute) and a list of main node records. Each Domain is collection of attribute nodes. Each attribute node contains the actual data elements. Nodes are connected to each other by edges (using pointers). A brief overview of the model has been illustrated in figure ~\ref{fig:overview}
-\begin{figure}
+\begin{figure}[t]
  \centering
  \includegraphics[width=0.8\textwidth]{pics/model.pdf}
  \caption{Overview of Proposed Graph Based Storage}
@@ -349,15 +348,16 @@ Major points to observe are as follows :
  \item A child relation will always refer to the primary key in the parent relation. Thus, if the primary key in parent relation spans over multiple domains, the foreign key in child relation also spans over multiple domains and each domain is shared between parent and child.
  \item A relation can have multiple foreign key constraint each referring to different relation in the database.
 \end{itemize}
-There are 3 other ways in which the foreign key constraint can be handled. We came up with these methods during our research however we chose to implement the above described mode. The methods are described as follows :
-\begin{itemize}
- \item Each Domain will belong to a single table. Whenever a child refers to the parent table, only the main node of record in the child relation is bidirectionally connected to the main node of the corresponding record in parent relation. Further the meta-data about the foreign key can be stored separately.
- \item There is no direct connection between child and parent main nodes. In this case, a domain can belong to multiple tables and a domain is bidirectionally connected 
-\end{itemize}
+There are 3 other ways in which the foreign key constraint can be handled. We came up with these methods during our research however we chose to implement the model that has been described above. The methods are described as follows :
+\begin{enumerate}
+ \item \textbf{Direct Connection Model} - Each Domain will belong to a single table. Whenever a child refers to the parent table, only the main node of record in the child relation is bidirectionally connected to the main node of the corresponding record in parent relation. Further the meta-data about the foreign key is stored separately in database. This model requires 2 edges between each foreign key connection and it is very efficient when corresponding tuples in child relation has to fetched given a tuple in parent relation. However, queries which involves accessing the attribute nodes of the foreign key domain will be expensive as the only path between the shared domain's attribute nodes and main nodes of child relation is via parent table.
+ \item \textbf{Shared Domain Model} - There is no direct connection between child and parent main nodes. In this case, a domain can belong to multiple tables and a domain is bidirectionally connected to both the parent and child relation. Attribute nodes of the shared domain is also bi-directionally connection with multiple tuples in child relation and a single tuple in parent relation. This model requires 4 edges for each foreign key connection. Here aggregate queries on child relation can be performed faster as the shared domain is directly accessible to both the child and the parent relation. However, accessing corresponding parent relation's record given a child relation's record or vice-versa.
+ \item \textbf{Duplicate Domain Model} - There are two copies of the shared domain - one belonging to each child and parent relation. And a unidirectional (or bidirectional if need be) edge between tuples in child relation and tuples in parent relation exist. This model requires 2 or 3 edges as well as an attribute node for each foreign key connection. This model has a lot of storage overhead but it allows all the operation to be performed in the most optimal fashion. However, due to data replication, this model may cause data inconsistency.
+\end{enumerate}
 
 
 \chapter{Work Done}
-As of now we have been able to implement a basic version of the proposed graph like storage model which supports all the queries of a traditional relational database.
+As of now we have been able to implement a basic version of the proposed graph like storage model which supports all the queries of a traditional relational database. The whole graph storage model has been implemented using C++. We choose to go with C++ owing to it's speed as well as the powerful Standard Template Library. The user input is taken via a command line with no GUI. All data is stored in main memory.
 \section{Implementation}
 We have implemented the following core functionalities :
 \begin{multicols}{2}
@@ -383,8 +383,8 @@ The \emph{trie} class in the source code provides all the properties and functio
 The Code is divided into multiple files for ease of development. Each file provides one or more classes that are a logical entity. The details have been discussed in the following section :
 \begin{enumerate}
  \item \textbf{Database} - The database class is the root class that contains all the data. It only contains a list of all the tables. Currently the system supports only one database. It provides functionalities to add a new table, compute the size of all tables and delete all the tables on demand.
- \item \textbf{Table} - The table class represents a table. It provides (or will provide in future) all the table related functionalities like measuring size, inserting, selecting, projecting, etc. It also provides a function to delete the table on demand.
- \item \textbf{Main Node} - This class represents a typical tuple in a table. Although no data is stored in Main Node but it points to corresponding attribute node. A Linked List of main nodes make up a Table
+ \item \textbf{Table} - The table class represents a relation. This class provides most of the over all functionalities of the system. It provides all the table related functionalities like measuring size, insertion, selection, projection, update, delete etc. It also provides a function to delete the table on demand. The table class has been divided into 2 files namely - \emph{table.h} and \emph{select.h}. A few utility functionalities like comparing 2 values given a data type, traversing records from parent relation to child relation or vice-versa. A few wrapper type utility classes like are also provided which helps in passing around the a bunch of logically related set of values from one function to another. Table class stores several meta data about the relation and also provides methods to access or manipulate those meta-data.
+ \item \textbf{Main Node} - This class represents a typical tuple in a table. Although no data is stored in Main Node but it points to corresponding attribute node. A Linked List of main nodes makes up a Table
  \item \textbf{Domain} - It represents the domain of a data. It is a linked list of all the valid values that an attribute can take. It provides functionality like searching, adding and deleting attribute nodes. It also provides function to measure storage requirements.
  \item \textbf{Attribute Node} - It is the smallest logical entity that stores the actual data. Only one copy of a particular value is stored in a domain to avoid redundancy. It also stores a list of pointers to all the records that are pointing to it.
  \item \textbf{Others} - Other classes such as primary and foreign key are also there however they are currently not been used.

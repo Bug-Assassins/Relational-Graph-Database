@@ -7,11 +7,11 @@ if hash inkscape > /dev/null 2>&1;
 then
     #using inkscape
 
-    inkscape -D -z --file=/pics/foreign_key.svg --export-pdf=/pics/foreign_key.pdf
+    inkscape -D -z --file=pics/foreign_key.svg --export-pdf=pics/foreign_key.pdf
 
-    inkscape -D -z --file=/pics/model.svg --export-pdf=/pics/model.pdf
+    inkscape -D -z --file=pics/model.svg --export-pdf=pics/model.pdf
 
-    inkscape -D -z --file=/pics/primary_key.svg --export-pdf=/pics/primary_key.pdf
+    inkscape -D -z --file=pics/primary_key.svg --export-pdf=pics/primary_key.pdf
 
 else
     if ! hash rsvg-convert > /dev/null 2>&1;
@@ -44,3 +44,4 @@ rm final_report.lot
 rm final_report.out
 rm final_report.tex.backup
 rm final_report.toc
+rm pics/*.pdf
