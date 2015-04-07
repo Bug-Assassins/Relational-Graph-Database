@@ -109,6 +109,12 @@ class main_node {
         next = pre = NULL;
     }
 
+    size_t get_size()
+    {
+        return  sizeof(main_node *) + (sizeof(attribute_node *) * attribute_list.size())
+                + (sizeof(main_node *) * parent_table_list.size());
+    }
+
     //Getter and Setter for next node
     void set_next(main_node* next_node)
     {
