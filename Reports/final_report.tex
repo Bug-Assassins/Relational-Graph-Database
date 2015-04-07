@@ -273,9 +273,10 @@ As we can observe that each department is uniquely associated with a product and
     \caption{A sample product table}
     \label{tab:product}
 \end{table}
-There may be redundancy in a single attribute column also - like Salary. The Salary can only take one of 3 values - \{20000, 23000, 25000\}. These values are repeated. Even this can be decomposed into multiple tables and linked via foreign key. However, Normalization tables have a overhead - an expensive join query has to be performed in order to obtain the original table. To perform a join operation a relational database management system will take the Cartesian project of the two table. This has been discussed in detail in following section. \\ \par
+There may be redundancy in a single attribute column also - like Salary. The Salary can only take one of 3 values - \{20000, 23000, 25000\}. These values are repeated. Even this can be decomposed into multiple tables and linked via foreign key. However, Normalization of tables have a overhead - an expensive join query has to be performed in order to obtain the original table. To perform a join operation a relational database management system will take the Cartesian project of the two table. This has been discussed in detail in section ~\ref{sec:join}. \\ \par
 We have tried to reduce this data redundancy by modeling each unique value as a separate node in a graph and all the records that has this value only stores a pointer to the actual node which stores the value. The value is stored only once in the memory and a pointer is added to that same value whenever a new record with that value is inserted. This optimizes storage requirements (especially if the value is large compared to size of a pointer). This also helps achieve data consistency. If the value is changed for some reason all the records pointing to it automatically changes.
 \subsection{Expensive Join Queries}
+\label{sec:join}
 Often user has to fetch data spanning across multiple tables in a database. This is achieved using Join Queries. User specifies the tables from which the records have to be selected. Typically user also specifies the join condition i.e., how the two tables are related. For Example the Employee and Product Tables are joined based on the fact that the \emph{Pr.ID} attribute in Employee table corresponds to the \emph{Id} attribute in product table they must be equal. Join such as this is called Inner Joins. \par
 Join Queries are common in applications using relational database to store data. Theoretically, the time complexity of each Join Operation is $\mathcal{O}\left( mn \right)$ where, $m, n$ is the number of records in the two tables being joined. This is inefficient considering the frequency of join operation. We have tried to optimize inner join operation. Our graph based storage can theoretically perform an inner join in linear time. 
 
@@ -331,7 +332,7 @@ In a Relational Database Primary Key is a collection of one or more attributes o
 \end{figure}
 
 \subsection{Foreign Key}
-When multiple relations are involved with some of them having foreign key relation, then our model will be expanded to accommodate those constraints. Storage of foreign key in our proposed model has been illustrated in figure ~\ref{fig:foreign_key}.
+When multiple relations are involved with some of them having foreign key relation, then our proposed model is expanded to accommodate those constraints. Storage of foreign key in our proposed model has been illustrated in figure ~\ref{fig:foreign_key}.
 \begin{figure}[h]
  \centering
  \includegraphics[width=0.6\textwidth]{pics/foreign_key.pdf}
@@ -348,11 +349,32 @@ Major points to observe are as follows :
  \item A child relation will always refer to the primary key in the parent relation. Thus, if the primary key in parent relation spans over multiple domains, the foreign key in child relation also spans over multiple domains and each domain is shared between parent and child.
  \item A relation can have multiple foreign key constraint each referring to different relation in the database.
 \end{itemize}
+There are 3 other ways in which the foreign key constraint can be handled. We came up with these methods during our research however we chose to implement the above described mode. The methods are described as follows :
+\begin{itemize}
+ \item Each Domain will belong to a single table. Whenever a child refers to the parent table, only the main node of record in the child relation is bidirectionally connected to the main node of the corresponding record in parent relation. Further the meta-data about the foreign key can be stored separately.
+ \item There is no direct connection between child and parent main nodes. In this case, a domain can belong to multiple tables and a domain is bidirectionally connected 
+\end{itemize}
+
 
 \chapter{Work Done}
-As of now we have been able to partially implement the proposed graph like storage.
+As of now we have been able to implement a basic version of the proposed graph like storage model which supports all the queries of a traditional relational database.
 \section{Implementation}
-We have implemented the functionalities to create a table, insert records to it and index the records for faster retrieval. As of now we have only considered String data type.
+We have implemented the following core functionalities :
+\begin{multicols}{2}
+ \begin{itemize}
+  \item Creating Tables
+  \item Describing Existing Table
+  \item Inserting Records in table
+  \item Printing Table
+  \item Indexing Records
+  \item Selecting from single table
+  \item Deleting Records in table
+  \item Updating Records in table
+  \item Joining 2 Tables
+  \item Clearing Memory Allocated
+ \end{itemize}
+\end{multicols}
+
 \subsection{Indexing}
 Trie is the optimal indexing methodology that maps a string to it's corresponding node in the graph. The algorithmic complexity of inserting and querying a string in trie is $\mathcal{O} \left( d\right)$ where, $d$ is the length of the string mapped. The data structure can be further optimized in terms of storage requirements by using a compressed trie. However, for time bound remains optimal.
 \par
@@ -470,7 +492,19 @@ There are various optimizations and techniques that couldn't be implemented in t
 \section{Parallel Execution of Queries}
 Various Queries especially - select and Join queries are read only. More over in our model, queries like typically access data belonging to different relations. As such, these queries can easily be executed in parallel fashion. In current implementation we often determine multiple set of results and then take Intersection (AND operator) or Union (OR operator) to obtain the final result. During Intersection we choose the size of minimum set and iterate over it to check if it belongs to all the other set. Such operations are embarrassingly parallel. We can fetch different set of results on different threads. \par
 We can use pthreads or openmp for the said purpose. We can use General Purpose Graphic Processing Unit Libraries like Cuda or OpenCL to create large number of threads which may perform better.
-\section{Hybrid Database}
+\section{Hybrid Adapting Model}
+There is obviously no solution optimized for each situation. Relational Database might still be better than our proposed model in many cases. For example, if most of the records in a relation is unique then the overhead of storing pointers in more than the gain gue to redundancy in our proposed model. Again, if most of the queries performed do not require index lookups and are purely aggregate in nature pure graph databases might perform much better than the proposed model as well as relational databases. As such the most optimized method seems to be the one where an appropriate storage module is adapted based on the frequency of the queries being executed on the system. \par
+When database is newly created and number of records are growing at a fast rate relational databases should be used. When the system is saturated with data and uses the database only for reading / updating, the proposed model might be optimal. The switch-over between the models will be determined by a number of parameters like database design, storage overhead, data redundancy, query etc. One can also use Machine Learning methods to train the system to select best model based on the type of most frequent queries and the corresponding query plan.
+\section{Adapting Data Structures Used}
+\subsection{Nodes}
+Currently Attribute Nodes and Main Nodes are stored as a Linked List in corresponding table or domain. Main Nodes is stored as a doubly linked list, while attribute node is a singly linked list. However, this might not be the most optimized data structures for every situation. For Example, if the frequency of delete operation is low then an extra reverse pointers in doubly linked list node (main node) is an overhead in the long-run. If the number of new attribute nodes inserted in the domain falls over time i.e., new values are rare and all new records uses existing values, then a sorted list of attribute nodes will be more efficient as aggregate queries can be performed much faster. All the choices of data structures to be used for internal implementation mostly depends on the type of queries performed. The system can be tuned to perform only a particular type of queries optimally while still supporting other types of queries.
+\subsection{Indexing}
+The data structure used for indexing in the current implementation is trie - which is known for its storage overheads. Moreover, all the data types are stored as strings in the attribute node - including the integers and floating point values. The performance can be drastically improved in terms of both storage overheads and query execution time if all data is stored in it's native format and an optimal indexing is used for each data type. For Example, any Balanced Binary Search Tree will perform much better than trie for looking up integral and floating point values. They even have less storage overhead. However, handling different data structures for different data types might be tedious task for the developers. The foremost optimization would be the use of compressed trie data structure which improves the storage overhead of the existing normal trie. \\ \par
+The switch over between different data structures has it's own overhead and might require inputs from DB Administrator. Query service might also be unavailable during the switch over.
+\subsection{Constraints}
+The model to handle foreign-key can also be adapted to suit a particular application. However, this might be one of the most difficult adaption to implement as the method to handle foreign-keys is tightly coupled with the storage model. If the type of queries are known before the database is created we might still be able to choose the best model.
+\section{Query Optimization}
+In current implementation, all the select and join queries are executed in a generic fashion. However it is very intuitive to observe that using a bit of estimation, statistics and relational algebra we can re-arrange the expressions in the where clause such that we take least time to execute the query. There should be a query plan for each query which specifies the best route to be taken while traversing the graph nodes and edges. A lot of research has been done in this area already and an existing query optimizer from relational database can be used for our proposed storage model.
 %\addcontentsline{toc}{chapter}{Appendix Paper 1}
 %\includepdf[pages={1-9}]{paper1.pdf}
 %\addcontentsline{toc}{chapter}{Appendix Paper 2}
