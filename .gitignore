@@ -1,11 +1,10 @@
 src/a.out
-src/*.o
 src/test
 src/test.txt
 src/main
 src/main.exe
 src/test_files/*
-Reports/*.pdf
+*.pdf
 Reports/*.aux
 Reports/*.bbl
 Reports/*.blg
