@@ -13,6 +13,8 @@ then
 
     inkscape -D -z --file=pics/primary_key.svg --export-pdf=pics/primary_key.pdf
 
+    inkscape -D -z --file=pics/trie.svg --export-pdf=pics/trie.pdf
+
 else
     if ! hash rsvg-convert > /dev/null 2>&1;
     then
@@ -26,6 +28,8 @@ else
     rsvg-convert -f pdf -o pics/foreign_key.pdf pics/foreign_key.svg
 
     rsvg-convert -f pdf -o pics/primary_key.pdf pics/primary_key.svg
+
+    rsvg-convert -f pdf -o pics/trie.pdf pics/trie.svg
 fi
 
 #Compiling Latex which includes pdfs
