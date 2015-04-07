@@ -15,6 +15,14 @@ then
 
     inkscape -D -z --file=pics/trie.svg --export-pdf=pics/trie.pdf
 
+    inkscape -D -z --file=pics/100.svg --export-pdf=pics/100.pdf
+
+    inkscape -D -z --file=pics/1000.svg --export-pdf=pics/1000.pdf
+
+    inkscape -D -z --file=pics/10000.svg --export-pdf=pics/10000.pdf
+
+    inkscape -D -z --file=pics/90000.svg --export-pdf=pics/90000.pdf
+
 else
     if ! hash rsvg-convert > /dev/null 2>&1;
     then
@@ -30,6 +38,15 @@ else
     rsvg-convert -f pdf -o pics/primary_key.pdf pics/primary_key.svg
 
     rsvg-convert -f pdf -o pics/trie.pdf pics/trie.svg
+
+    rsvg-convert -f pdf -o pics/100.pdf pics/100.svg
+
+    rsvg-convert -f pdf -o pics/1000.pdf pics/1000.svg
+
+    rsvg-convert -f pdf -o pics/10000.pdf pics/10000.svg
+
+    rsvg-convert -f pdf -o pics/90000.pdf pics/90000.svg
+
 fi
 
 #Compiling Latex which includes pdfs
@@ -38,14 +55,16 @@ then
     apt-get install pdflatex
 fi
 
-pdflatex final_report
+pdflatex final_report.tex
+pdflatex final_presentation.tex
 
 #Cleaning up junk files generated
-rm final_report.aux
-rm final_report.lof
-rm final_report.log
-rm final_report.lot
-rm final_report.out
-rm final_report.tex.backup
-rm final_report.toc
-rm pics/*.pdf
+rm *.aux
+rm *.lof
+rm *.log
+rm *.lot
+rm *.out
+rm *.tex.backup
+rm *.toc
+rm *.nav
+rm *.snm

@@ -39,8 +39,7 @@
 \raggedbottom
 \renewcommand{\bibname}{References}
 \newcommand{\project}{Graph Based Storage for Relational Databases}
-\setcounter{secnumdepth}{4}
-\setcounter{tocdepth}{4}
+\addtocontents{toc}{\protect\setcounter{tocdepth}{1}}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -189,9 +188,9 @@ This project aims at exploring the various ways of using a graph-like storage mo
 \textbf{Keywords : }Database, Graph, Relational
 
 \thispagestyle{empty}
-\listoffigures
-\listoftables
-\tableofcontents
+{\listoffigures}
+{\listoftables}
+{\tableofcontents}
 
 \setcounter{page}{1}
 \pagenumbering{arabic}
@@ -407,7 +406,7 @@ The Code is divided into multiple files for ease of development. Each file provi
  \item \textbf{Testing} - The file \emph{test.h} provides methods to create a sample database. It creates multiple tables and inserts thousands of records in each table. It also measures metrics such as \emph{time} and \emph{space} required to perform those insertion operations. A vigorous testing was performed in order to ensure that the system was stable and that there were no memory leaks. Our implementation is only limited by the main memory available on the system running the database server.
 \end{enumerate}
 
-\section{Results}
+\section{Results and Analysis}
 The Results of our study can be divided into two sections - Storage and Time. We have performed both theoretical as well as practical memory bound calculations. \\
 \subsection{Theoretical Calculations}
 Each of the record in the graph storage has following extra data :
@@ -419,7 +418,7 @@ Each of the record in the graph storage has following extra data :
 \end{itemize}
 Thus the size occupied by a table in the graph model can be equated using the following equation :
 \begin{equation}
-  Size\_Graph = (n * x * rs) + (n * ptr * (3 * attr + 1))
+  Size\_Graph = (n * x * (rs + (attr  * ptr)) ) + (n * ptr * (2 * attr + 1))
   \label{grsize}
 \end{equation}
 where, \\
@@ -441,69 +440,106 @@ $n$ = Number of tuples in a table, \\
 $rs$ = Theoretical size of each tuple in a table \\
 
 \par
-Using equation ~\ref{grsize} and ~\ref{rdbmssize} we can conclude that given a particular table (Fixed number of attributes) on a particular system (Fixed Pointer Size) the Space complexity of both the engines is same i.e., $\mathcal{O}\left( n\right)$ where, $n$ is the number of tuples in the table. However, for absolute measurement we can equate the two equation to obtain a break-even point after which the graph storage engine is more efficient than the traditional relational model. 
+Using equation ~\ref{grsize} and ~\ref{rdbmssize} we can conclude that given a particular table (Fixed number of attributes) on a particular system (Fixed Pointer Size) the Space complexity of both the engines is same i.e., $\mathcal{O}\left( n\right)$ where, $n$ is the number of tuples in the table. However, for absolute measurement we can equate the two equation to obtain a break-even point after which the graph storage engine is more efficient than the traditional relational model.
 \begin{center}
   \begin{math}
-    (n * x * rs) + (n * ptr * (3 * attr + 1)) < n * rs
+    (n * x * (rs + (attr  * ptr)) ) + (n * ptr * (2 * attr + 1 )) < n * rs
   \end{math}\\
   \begin{math}
-    ptr * (3 * attr + 1) < rs * (1 - x)
+    ( x * ( rs + ( attr * ptr ) ) ) + ( ptr * (2 * attr + 1 )) < rs
   \end{math}
 \end{center}
-Assuming a typical record size to be 400 bytes, number of attributes to be 5, pointer size to be 8 bytes (x64 systems) we get,
-\begin{center}
- \begin{math}
-  8 * (3 * 5 + 1) < 400 * (1 - x)
- \end{math} \\
- \begin{math}
-  128 < 400 * (1-x)
- \end{math} \\
- \begin{math}
-  x < 0.68
- \end{math}
-\end{center}
-which means that if at-least 32\% of values in a table are repeated then the graph storage engine occupies less space than the relational databases. In a real-life database there are numerous duplicate entries and thus the proposed storage model may perform better.
+\[
+ x  < \frac{ rs - ( ptr * (2 * attr + 1 )) }{rs + ( attr * ptr )}
+\]
 
-\subsection{Practical Observation}
-We created an equivalent table in both traditional RDBMS and our graph storage. We measured the size occupied by both the models. We have plotted several graphs. All this testing was done using a single table with 4 attributes and size of each attribute to be 80 bytes. Numbers of records are increasing along X axis, while space occupied by the model is increasing along Y axis.
+Assuming a typical record size to be 400 bytes, number of attributes to be 5, pointer size to be 8 bytes (x64 systems) we get,
+\[
+ x < \frac{400 - (8 * (2 * 5 + 1))}{400 + (5 * 8)}
+\]
+\[
+ x < \frac{400 - (88)}{400 + 40} = \frac{312}{440} \sim 0.71
+\]
+which means that if at-least 29\% of values in a table are repeated then the graph storage engine occupies less space than the relational databases. In a real-life database there are numerous duplicate entries and thus the proposed storage model may perform better.
+
+\subsection{Testing Environment}
+The machine on which the testing was performed and results were observed had the following configuration :
+\begin{itemize}
+ \item \textbf{OS} - Linux (Debian - Ubuntu 14.04)
+ \item \textbf{Processor} - Intel 3rd Gen i5 Quad Core
+ \item \textbf{Main Memory} - 4 GB
+ \item \textbf{Architecture} - 32 bit
+ \item \textbf{Compiler Used} - g++
+\end{itemize}
+The test data that we generated had the following structure and characteristics :
+\begin{itemize}
+\item \textbf{Number of Database} - 1
+ \item \textbf{Number of Tables} - Two
+ \item \textbf{Number of Attributes} - 6 (ID, Name, Address, Salary, Sex, Dept\_ID)
+ \item \textbf{Type of Attribute} - Integer (Primary key), String (1-30), String (1-50), Float, String(4, 6), Integer (Foreign Key)
+ \item \textbf{Redundancy of Values} - 40 \%
+\end{itemize}
+The Maximum length of string data type was specified and a random length was used for each record. Random Records were generated using the psuedorandom generators provided by the standard C Library.
+
+\subsection{Practical Observation of Size}
+We created an equivalent table in both traditional Relational DBMS and our graph storage. We measured the size occupied by both the models. We have plotted several graphs. Numbers of records are increasing along X axis, while space occupied by the model is increasing along Y axis.
 \begin{enumerate}
- \item \textbf{100 Records} - Number of records was varied between 1 to 100. Observations were made after every record.
+ \item \textbf{100 Records} - Number of records was varied between 1 to 100. Observations were made after every record. The graph obtained is shown in figure ~\ref{fig:100result}
  \begin{figure}[H]
   \begin{center}
-   \includegraphics[width=\textwidth]{pics/100.png}
+   \includegraphics[width=\textwidth]{pics/100.pdf}
    \caption{Comparison of Size of 100 records}
-   \label{100pic}
+   \label{fig:100result}
   \end{center}
  \end{figure}
-\item \textbf{1000 Records} - Number of records was varied between 1 to 1000. Observations were made after every 10 record.
+  \item \textbf{1000 Records} - Number of records was varied between 1 to 1000. Observations were made after every 10 record. The graph obtained is shown in figure ~\ref{fig:1000result}
  \begin{figure}[H]
   \begin{center}
-   \includegraphics[width=\textwidth]{pics/1000.png}
+   \includegraphics[width=\textwidth]{pics/1000.pdf}[H]
    \caption{Comparison of Size of 1000 records}
-   \label{100pic}
+   \label{fig:1000result}
   \end{center}
  \end{figure}
-\item \textbf{10000 Records} - Number of records was varied from 1 to 10000. Observations were made after every 100 record.
+  \item \textbf{10000 Records} - Number of records was varied from 1 to 10000. Observations were made after every 100 record. The graph obtained is shown in figure ~\ref{fig:10000result}
  \begin{figure}[H]
   \begin{center}
-   \includegraphics[width=\textwidth]{pics/10000.png}
+   \includegraphics[width=\textwidth]{pics/10000.pdf}
    \caption{Comparison of Size of 10000 records}
-   \label{100pic}
+   \label{fig:10000result}
   \end{center}
  \end{figure}
- \item \textbf{100000 Records} - Number of records was varied from 1 to 100000. Observations were made after every 1000 record.
- \begin{figure}[H]
+ \item \textbf{90000 Records} - Number of records was varied from 1 to 90000. Observations were made after every 900 record. The graph obtained is shown in figure ~\ref{fig:90000result}
+ \begin{figure}[ht]
   \begin{center}
-   \includegraphics[width=\textwidth]{pics/100000.png}
-   \caption{Comparison of Size of 100000 records}
-   \label{100pic}
+   \includegraphics[width=\textwidth]{pics/90000.pdf}
+   \caption{Comparison of Size of 90000 records}
+   \label{fig:90000result}
   \end{center}
  \end{figure}
 \end{enumerate}
 \par
-It is clearly evident from these plots that traditional RDBMS increases their storage space in steps. In the long run the graph model performs better.
+It is clearly evident from these plots that traditional RDBMS increases their storage linearly. Our proposed model also scales linearly. The initial size occupied by out proposed model is more but the slope if smaller than that of relational database storage. In the long run the graph model performs better.
 \par
 However, Several factors were not accounted while making these observations - which makes these observations a little less reliable. We intend to perform a more vigorous analysis of the storage requirement in future.
+
+\subsection{Objectives Achieved}
+As mentioned previously, we had particular objectives to achieve during the course of this project. We have been able to achieve most of those objectives as mentioned in the following section.
+\subsubsection{Relational Model vs Graph Model}
+We were able to get more insights about the graph based storage and the storage model in relational database after implementation of the proposed model. We observed the following :
+\begin{itemize}
+ \item Graph Database has lot of overhead due to pointers and implicit indexing. The amount of meta-data required to be stored with graph model might also be more that the meta-data stored with traditional relational databases. If the actual data do not have sufficient redundancy the the graph model performs poorly.
+ \item If there is a lot of redundant data or the size of the actual value is only a small fraction of the maximum allowed size for the corresponding attribute then the overhead in graph model is less compared to the gain in terms of storage
+ \item Theoretically the time bound for any type of query is same in Graph model is less than or equal to that of the traditional relational database storage. This means that the graph model is much faster in terms of time taken. Our model is best to perform the Inner Join Queries which have a theoretical upper bound of $\mathcal{O}(max(m, n))$ where, $m, n$ is the size of the two relations being joined. It can be further reduced to $\mathcal{O}(min(m,n))$ if the query plan is most optimal.
+ \item The growth stage of the database i.e., when the number of records is steadily rising in database the graph based storage might seem to be slower despite same time complexity owing to large constant. However, once the database is stable and select queries become the most frequent one, then graph model perform much faster. Also graph model requires periodic deletion of invalid (soft deleted) records.
+\end{itemize}
+\subsubsection{Relational Algebraic Operations}
+Our proposed model is successfully able to represent any relational database. All the relational algebraic operations are supported by our model.
+\begin{itemize}
+ \item \textbf{Project} - The model that we propose handles projection very easily. Given a Tuple, to apply the Projection operation we go to it's Main node and only access those attributes that the projection operation demands.
+ \item \textbf{Select} - The model proposed is able to handle the application of propositional formula. The performance of the select operation is dependent on the order in which the formula are applied along with the logical operators. By and large our model is able to handle the binary operation "=" very effectively due to the indexing option given to the user. In the worst case it performs the operation in $\mathcal{O}(n)$. Other logical operators like $ <, >, \leq, \geq, \neq$,  require $\mathcal{O}(n)$ for all cases.
+ \item \textbf{Natural Join} - In the model proposed the Select operation can be implemented by using the links that connect the main nodes of two tables which are related to each other through foreign key relationship. This is done in O(N) where N varies between the size of the records of the two tables depending on the way the propositional formula is solved.
+\end{itemize}
+
 
 \chapter{Future Work}
 There are various optimizations and techniques that couldn't be implemented in the current version of source code owing to shortage of time. In this chapter we will discuss the major future works that can be undertaken with regard to this project.
@@ -511,7 +547,7 @@ There are various optimizations and techniques that couldn't be implemented in t
 Various Queries especially - select and Join queries are read only. More over in our model, queries like typically access data belonging to different relations. As such, these queries can easily be executed in parallel fashion. In current implementation we often determine multiple set of results and then take Intersection (AND operator) or Union (OR operator) to obtain the final result. During Intersection we choose the size of minimum set and iterate over it to check if it belongs to all the other set. Such operations are embarrassingly parallel. We can fetch different set of results on different threads. \par
 We can use pthreads or openmp for the said purpose. We can use General Purpose Graphic Processing Unit Libraries like Cuda or OpenCL to create large number of threads which may perform better.
 \section{Hybrid Adapting Model}
-There is obviously no solution optimized for each situation. Relational Database might still be better than our proposed model in many cases. For example, if most of the records in a relation is unique then the overhead of storing pointers in more than the gain gue to redundancy in our proposed model. Again, if most of the queries performed do not require index lookups and are purely aggregate in nature pure graph databases might perform much better than the proposed model as well as relational databases. As such the most optimized method seems to be the one where an appropriate storage module is adapted based on the frequency of the queries being executed on the system. \par
+There is obviously no solution optimized for each situation. Relational Database might still be better than our proposed model in many cases. For example, if most of the records in a relation is unique then the overhead of storing pointers is more than the gain due to redundancy in our proposed model. Again, if most of the queries performed do not require index lookups and are purely aggregate in nature pure graph databases might perform much better than the proposed model as well as relational databases. As such the most optimized method seems to be the one where an appropriate storage module is adapted based on the frequency of the queries being executed on the system. \par
 When database is newly created and number of records are growing at a fast rate relational databases should be used. When the system is saturated with data and uses the database only for reading / updating, the proposed model might be optimal. The switch-over between the models will be determined by a number of parameters like database design, storage overhead, data redundancy, query etc. One can also use Machine Learning methods to train the system to select best model based on the type of most frequent queries and the corresponding query plan.
 \section{Adapting Data Structures Used}
 \subsection{Nodes}

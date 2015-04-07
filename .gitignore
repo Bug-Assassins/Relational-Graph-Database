@@ -13,6 +13,8 @@ Reports/*.log
 Reports/*.lot
 Reports/*.out
 Reports/*.toc
+Reports/*.snm
+Reports/*.nav
 Reports/*.tex.backup
 theory/*
 results/*
