@@ -23,6 +23,8 @@ then
 
     inkscape -D -z --file=pics/90000.svg --export-pdf=pics/90000.pdf
 
+    inkscape -D -z --file=pics/time.svg --export-pdf=pics/time.pdf
+
 else
     if ! hash rsvg-convert > /dev/null 2>&1;
     then
@@ -46,6 +48,8 @@ else
     rsvg-convert -f pdf -o pics/10000.pdf pics/10000.svg
 
     rsvg-convert -f pdf -o pics/90000.pdf pics/90000.svg
+
+    rsvg-convert -f pdf -o pics/time.pdf pics/time.svg
 
 fi
 
