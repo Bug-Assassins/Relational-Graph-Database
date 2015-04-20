@@ -196,7 +196,7 @@ This project aims at exploring the various ways of using a graph-like storage mo
 \pagenumbering{arabic}
 
 \chapter{Introduction}
-In the world of computer science, a graph database is a database that uses graph structures for semantic queries with nodes, edges, and properties to represent and store data. A graph database is any storage system that provides index-free adjacency. This means that every element contains a direct pointer to its adjacent elements and no index lookups are necessary.
+In the world of computer science, a graph database is a database that uses graph structures for semantic queries with nodes, edges, and properties to represent and store data. A graph database is any storage system that provides index-free adjacency. This means that every element contains a direct pointer to its adjacent elements and no index lookups are necessary. Graph Databases is being extensively researched upon in recent years. There are are several implementation of graph databases available like Neo4j \cite{neo4j}, Titan \cite{titan} and OrientDB \cite{orientdb} all of which is based the same principle.
 \begin{figure}[h]
  \begin{center}
   \includegraphics[width=0.7\textwidth]{pics/graph.png}
@@ -204,7 +204,8 @@ In the world of computer science, a graph database is a database that uses graph
  \end{center}
 \end{figure}
 \section{Motivation}
-Graph Databases seems like a promising model to solve all the problems the exist with the current relational databases. They provide an optimal may to compute the equivalent of the join query in a relational database. They can also scale very well and can handle large volume of data. However, Graph databases have their own overheads and drawbacks. Sometimes it is very difficult or even impossible to construct the equivalent relational database from a graph database. Moreover graph databases don't use SQL and as such it is very difficult for the programmers to realize the query they want to perform. Even if the developers are able to realize the query, the existing queries in the system has to be changed which will take a lot of resources. Organizations which have made huge investments on their database system might not be willing switch to graph databases. \\ \par
+Graph Databases seems like a promising model to solve all the problems the exist with the current relational databases. They provide an optimal may to compute the equivalent of the join query in a relational database. They can also scale very well and can handle large volume of data. Several Load Balancing Techniques can also be used to optimize queries during large scale Graph Processing \cite{load_balancing}. Because of these reasons Graph Database is being widely used. Angles et. al have surveyed the most popular graph based model \cite{graph_database_survey}. \\ \par
+However, Graph databases have their own overheads and drawbacks. Sometimes it is very difficult or even impossible to construct the equivalent relational database from a graph database. Moreover graph databases don't use SQL and as such it is very difficult for the programmers to realize the query they want to perform. Even if the developers are able to realize the query, the existing queries in the system has to be changed which will take a lot of resources. Organizations which have made huge investments on their database system might not be willing switch to graph databases. Vicknair et. al have drawn a good comparison between graph based databases and traditional relational databases in terms of performance and storage requirements \cite{graph_relational_comparison}. \\ \par
 Owing to these reasons the use of graph database is currently limited. We were motivated to resolve this problem by taking a middle path between graph and relational databases. We wanted to explore the various way to optimize the query execution time as well as the storage of the currently popular relational databases. We also wanted to eliminate all the redundancy in a typical relational database.
 
 \section{Problem Description}
@@ -570,6 +571,11 @@ The switch over between different data structures has it's own overhead and migh
 The model to handle foreign-key can also be adapted to suit a particular application. However, this might be one of the most difficult adaption to implement as the method to handle foreign-keys is tightly coupled with the storage model. If the type of queries are known before the database is created we might still be able to choose the best model.
 \section{Query Optimization}
 In current implementation, all the select and join queries are executed in a generic fashion. However it is very intuitive to observe that using a bit of estimation, statistics and relational algebra we can re-arrange the expressions in the where clause such that we take least time to execute the query. There should be a query plan for each query which specifies the best route to be taken while traversing the graph nodes and edges. A lot of research has been done in this area already and an existing query optimizer from relational database can be used for our proposed storage model.
+
+\pagebreak
+\bibliographystyle{ieeetr}
+\bibliography{biblio}
+\addcontentsline{toc}{chapter}{Bibliography}
 %\addcontentsline{toc}{chapter}{Appendix Paper 1}
 %\includepdf[pages={1-9}]{paper1.pdf}
 %\addcontentsline{toc}{chapter}{Appendix Paper 2}
