@@ -532,7 +532,11 @@ We measured the time taken with different number of records in the child relatio
  \label{fig:timeresult}
 \end{figure}
 A linear relation was observed to exist between the number of records and time taken for join query.
-\subsection{Objectives Achieved}
+
+
+\chapter{Conclusion and Future Work}
+This chapter discusses about the conclusion and the objectives achieved by us during the course of this project. It also discusses some ideas which could be included in the project in the near future.   
+\section{Conclusion}
 As mentioned previously, we had particular objectives to achieve during the course of this project. We have been able to achieve most of those objectives as mentioned in the following section.
 \subsubsection{Relational Model vs Graph Model}
 We were able to get more insights about the graph based storage and the storage model in relational database after implementation of the proposed model. We observed the following :
@@ -551,23 +555,23 @@ Our proposed model is successfully able to represent any relational database. Al
 \end{itemize}
 
 
-\chapter{Future Work}
+\section{Future Work}
 There are various optimizations and techniques that couldn't be implemented in the current version of source code owing to shortage of time. In this chapter we will discuss the major future works that can be undertaken with regard to this project.
-\section{Parallel Execution of Queries}
+\subsection{Parallel Execution of Queries}
 Various Queries especially - Select and Join queries are read only. Moreover in our model, queries like these typically access data belonging to different relations. As such, these queries can easily be executed in parallel fashion. In current implementation we often determine multiple set of results and then take Intersection (AND operator) or Union (OR operator) to obtain the final result. During Intersection we choose the size of minimum set and iterate over it to check if it belongs to all the other sets. Such operations are embarrassingly parallel. We can fetch different set of results on different threads. \par
 We can use pthreads or openmp for the said purpose. We can use General Purpose Graphic Processing Unit(GPGPU) Libraries like Cuda or OpenCL to create large number of threads which may perform better.
-\section{Hybrid Adapting Model}
+\subsection{Hybrid Adapting Model}
 There is obviously no solution optimized for each situation. Relational Database might still be better than our proposed model in many cases. For example, if most of the records in a relation are unique, then the overhead of storing pointers is more than the gain due to redundancy in our proposed model. Again, if most of the queries performed do not require index lookups and are purely aggregate in nature pure graph databases might perform much better than the proposed model as well as relational databases. As such the most optimized method seems to be the one where an appropriate storage module is adapted based on the frequency of the queries being executed on the system. \par
 When database is newly created and number of records are growing at a fast rate relational databases should be used. When the system is saturated with data and uses the database only for reading / updating, the proposed model might be optimal. The switch-over between the models will be determined by a number of parameters like database design, storage overhead, data redundancy, query etc. One can also use Machine Learning methods to train the system to select best model based on the type of most frequent queries and the corresponding query plan.
-\section{Optimal Data Structures}
-\subsection{Nodes}
+\subsection{Optimal Data Structures}
+\subsubsection{Nodes}
 Currently Attribute Nodes and Main Nodes are stored as a Linked List in corresponding table or domain. Main Nodes are stored as a doubly linked list, while attribute node is a singly linked list. However, this might not be the most optimized data structures for every situation. For Example, if the frequency of delete operation is low then an extra reverse pointers in doubly linked list node (main node) is an overhead in the long-run. If the number of new attribute nodes inserted in the domain falls over time i.e., new values are rare and all new records uses existing values, then a sorted list of attribute nodes will be more efficient as aggregate queries can be performed much faster. All the choices of data structures to be used for internal implementation mostly depends on the type of queries performed. The system can be tuned to perform only a particular type of query optimally while still supporting other types of queries.
-\subsection{Indexing}
+\subsubsection{Indexing}
 The data structure used for indexing in the current implementation is trie - which is known for its storage overheads. Moreover, all the data types are stored as strings in the attribute node - including the integers and floating point values. The performance can be drastically improved in terms of both storage overheads and query execution time if all data is stored in its native format and an optimal indexing is used for each data type. For Example, any Balanced Binary Search Tree will perform much better than trie for looking up integral and floating point values. They even have less storage overhead. However, handling different data structures for different data types might be tedious task for the developers. The foremost optimization would be the use of compressed trie data structure which improves the storage overhead of the existing normal trie. \\ \par
 The switch over between different data structures has its own overhead and might require inputs from DB Administrator. Query service might also be unavailable during the switch over.
-\subsection{Constraints}
+\subsubsection{Constraints}
 The model to handle foreign-key can also be adapted to suit a particular application. However, this might be one of the most difficult adaption to implement as the method to handle foreign-keys is tightly coupled with the storage model. If the type of queries are known before the database is created, we might still be able to choose the best model.
-\section{Query Optimization}
+\subsection{Query Optimization}
 In current implementation, all the select and join queries are executed in a generic fashion. However it is very intuitive to observe that using a bit of estimation, statistics and relational algebra we can re-arrange the expressions in the where clause such that we take least time to execute the query. There should be a query plan for each query which specifies the best route to be taken while traversing the graph nodes and edges. A lot of research has been done in this area already and an existing query optimizer from relational database can be used for our proposed storage model.
 
 \pagebreak
