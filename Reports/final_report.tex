@@ -487,10 +487,10 @@ The Maximum length of string data type was specified and a random length was use
    \caption{Comparison of Size of 100 records}
    \label{fig:100result}
 \end{figure}
-We created an equivalent table in both traditional Relational DBMS and our model. We measured the size occupied by both the models. We have plotted several graphs. Numbers of records are increasing along X axis, while space occupied by the model is increasing along Y axis.
+We created an equivalent table in both traditional Relational DBMS and our model. We measured the size occupied by both the models. We have plotted several graphs. Numbers of records are increasing along X axis, while space occupied (measured in Bytes) by the model is increasing along Y axis. The dashed line represents the relational database and the continuous line represents the proposed model.
 \begin{enumerate}
- \item \textbf{100 Records} - Number of records was varied between 1 to 100. Observations were made after every record. The graph obtained is shown in figure ~\ref{fig:100result}
-  \item \textbf{1000 Records} - Number of records was varied between 1 to 1000. Observations were made after every 10 record. The graph obtained is shown in figure ~\ref{fig:1000result}
+ \item \textbf{100 Records} - Number of records was varied between 1 to 100. Observations were made after every record. The graph obtained is shown in figure ~\ref{fig:100result}. It was observed that the traditional database was more efficient in terms of storage until the database had around 22 records, beyond which the proposed graph based model occupied lesser main memory than the relational databases. When the database is saturated with 100 records, a difference of around 2000 bytes was noticed between the size of both the database. This roughly means that the proposed model is 17\% more efficient than the relational database.
+  \item \textbf{1000 Records} - Number of records was varied between 1 to 1000. Observations were made after every 10 record. The graph obtained is shown in figure ~\ref{fig:1000result}. The cross-over point in terms of storage requirement was observed to be around 200 records, beyond which the proposed graph based model occupied lesser main memory than the relational databases. When the database is saturated with 1000 records, a difference of around 19000 bytes was noticed between the size of both the database. This roughly means that the proposed model is 16\% more efficient than the relational database.
  \begin{figure}[H]
   \begin{center}
    \includegraphics[width=\textwidth]{pics/1000.pdf}[H]
@@ -498,7 +498,7 @@ We created an equivalent table in both traditional Relational DBMS and our model
    \label{fig:1000result}
   \end{center}
  \end{figure}
-  \item \textbf{10000 Records} - Number of records was varied from 1 to 10000. Observations were made after every 100 record. The graph obtained is shown in figure ~\ref{fig:10000result}
+  \item \textbf{10000 Records} - Number of records was varied from 1 to 10000. Observations were made after every 100 record. The graph obtained is shown in figure ~\ref{fig:10000result}. The cross-over point in terms of storage requirement was observed to be around 3000 records, beyond which the proposed graph based model occupied lesser main memory than the relational databases. When the database is saturated with 10000 records, a difference of around 190000 bytes was noticed between the size of both the database. This roughly means that the proposed model is 17\% more efficient than the relational database. When this result is compared with the previous result, we can safely conclude that if the amount of redundancy is kept constant then the efficiency factor also remains constant. Also the break-even point between our proposed model and traditional relational databases scales linearly with the number of records, if the redundancy is kept constant. Both of these observations comply to the theoretical analysis that was shown in the previous chapter.
  \begin{figure}[H]
   \begin{center}
    \includegraphics[width=\textwidth]{pics/10000.pdf}
@@ -506,7 +506,7 @@ We created an equivalent table in both traditional Relational DBMS and our model
    \label{fig:10000result}
   \end{center}
  \end{figure}
- \item \textbf{90000 Records} - Number of records was varied from 1 to 90000. Observations were made after every 900 record. The graph obtained is shown in figure ~\ref{fig:90000result}
+ \item \textbf{90000 Records} - Number of records was varied from 1 to 90000. Observations were made after every 900 record. The graph obtained is shown in figure ~\ref{fig:90000result}. Given the hardware limitations, this was the largest database we could create to benchmark our proposed model. Again the efficiency was observed to be constant $\sim16\%$.
  \begin{figure}[ht]
   \begin{center}
    \includegraphics[width=\textwidth]{pics/90000.pdf}
@@ -516,7 +516,7 @@ We created an equivalent table in both traditional Relational DBMS and our model
  \end{figure}
 \end{enumerate}
 \par
-It is clearly evident from these plots that traditional RDBMS increases their storage linearly. Our proposed model also scales linearly. The initial size occupied by our proposed model is more but the slope of our model is smaller than that of relational database storage. In the long run, our graph based model performs better. \par
+It is clearly evident from these plots that traditional RDBMS increases their storage linearly. Our proposed model also scales linearly. The initial size occupied by our proposed model is more but the slope of our model is smaller than that of relational database storage. In the long run, our graph based model performs better. In all the 4 scales of testing, the proposed model was found to be superior. \par 
 However, several factors were not accounted while making these observations - which makes these observations a little less reliable. Owing to limitations of the physical resources available with us, we were unable to test the system for larger dataset. We intend to perform a more vigorous analysis of the storage requirement in future.
 \subsection{Practical Observation of Time}
 We chose to measure the time taken to execute the most expensive query - Join. The exact query that we executed was : \\
