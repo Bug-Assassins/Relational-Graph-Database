@@ -208,10 +208,6 @@ Graph Databases seems like a promising model to solve all the problems that exis
 However, Graph databases have their own overheads and drawbacks. Sometimes it is very difficult or even impossible to construct the equivalent relational database from a graph database. Moreover, graph databases don't use SQL and as such it is very difficult for the programmers to realize the query they want to perform. Even if the developers are able to realize the query, the existing queries in the system has to be changed which will take a lot of resources. Organizations which have made huge investments on their database system might not be willing to switch to graph databases. Vicknair et. al have drawn a good comparison between graph based databases and traditional relational databases in terms of performance and storage requirements \cite{graph_relational_comparison}. \\ \par
 Owing to these reasons, the use of graph database is currently limited. We were motivated to resolve this problem by taking a middle path between graph and relational databases. We wanted to explore the various ways to optimize the query execution time as well as the storage of the currently popular relational databases. We also wanted to eliminate all the redundancy in a typical relational database.
 
-\section{Problem Description}
-In this project we concentrate on 2 major problems of relational database - the data redundancy and expensive join queries.
-\subsection{Data Redundancy}
-To demonstrate this problem let us consider a typical Employee table in a relational database ~\ref{tab:employee_demo}. Each Employee record has all the typical attributes associated with it like \emph{id} (primary or identifying attribute), \emph{name}, \emph{department}, \emph{salary}, etc. 
 \begin{table}[h]
 \begin{center}
     \begin{tabular}{| m{0.01\textwidth} | m{0.05\textwidth} | m{0.15\textwidth} | m{0.01\textwidth} | m{0.01\textwidth} | m{0.01\textwidth} | m{0.01\textwidth} | @{}m{0pt}@{}}
@@ -234,7 +230,11 @@ To demonstrate this problem let us consider a typical Employee table in a relati
     \caption{A sample Employee Table with redundant data}
     \label{tab:employee_demo}
 \end{table}
-As we can observe that each department is uniquely associated with a product and is located in a particular city. The same triplet of values - Information Technology, Firefox and Mumbai - is stored for each of the 9 employees working with that product. This wastes a lot of space. This type of redundancy is known an strong redundancy \cite{redundancy}. It is caused when the table is in a de-normalized state. The traditional way to reduce such redundancy is to decompose this table into multiple tables. One way in which this table can be decomposed in demonstrated in table ~\ref{tab:emp_normal} and table ~\ref{tab:product}. The product details is stored in a separate table and the Employee table refers to the product table as foreign key.
+\section{Problem Description}
+In this project we concentrate on 2 major problems of relational database - the data redundancy and expensive join queries.
+\subsection{Data Redundancy}
+To demonstrate this problem let us consider a typical Employee table in a relational database ~\ref{tab:employee_demo}. Each Employee record has all the typical attributes associated with it like \emph{id} (primary or identifying attribute), \emph{name}, \emph{department}, \emph{salary}, etc. \\
+As we can observe that each department is uniquely associated with a product and is located in a particular city. The same triplet of values - Information Technology, Firefox and Mumbai - is stored for each of the 9 employees working with that product. This wastes a lot of space. This type of redundancy is known an strong redundancy \cite{redundancy}. It is caused when the table is in a de-normalized state. The traditional way to reduce such redundancy is to decompose this table into multiple tables. One way in which this table can be decomposed in demonstrated in Table ~\ref{tab:emp_normal} and Table ~\ref{tab:product}. The product details is stored in a separate table and the Employee table refers to the product table as foreign key.
 
 \begin{table}
     \centering
@@ -282,7 +282,7 @@ Relational Databases are a common choice for primary data storage structure in b
 \section{Graph Model}
 In recent years, software developers have been investigating storage alternatives to relational databases. BigTable, Cassandra, CouchDB, Project Voldemort, and Dynamo are all NoSQL projects, as they are all high-volume data stores that actively reject the relational model. In the graph model, nodes represent entities. Properties are pertinent information that relate to nodes. Edges are the lines that connect nodes to nodes or nodes to properties and they represent the relationship between the two. Compared with relational databases, graph databases are often faster for associative data sets and map more directly to the structure of object-oriented applications \cite{object_graph}. Graph based databases can scale more naturally to large data sets as they do not typically require expensive join operations. As they depend less on a rigid schema, they are more suitable to manage ad hoc and changing data with evolving schema. Graph databases are a powerful tool for graph-like queries, for example computing the shortest path between two nodes in the graph.\\
 \par
-However, relational databases are typically faster at performing the same operation on large numbers of data elements. A relational database is much faster when operating on huge numbers of records. In a graph database, each record has to be examined individually during a query in order to determine the structure of the data, while this is known ahead of time in a relational database. Relational databases use less storage space, because they don't have to store all of those relationships.
+However, relational databases are typically faster at performing the same operation on large numbers of data elements. A relational database is much faster when operating on huge numbers of records. In a graph database, each record has to be examined individually during a query in order to determine the structure of the data, while this is known ahead of time in a relational database. Relational databases use less storage space, because they don't have to store all of those relationships \cite{graph_relational_comparison}.
 
 \section{Problem Statement}
 To develop a data management system based on graph structure in order to optimize the query execution time especially join and aggregate queries and eliminate data redundancy in a relational model to some extent while retaining other advantages of relational database system in terms of performance of other queries.  
@@ -308,14 +308,14 @@ A single relation(table) can be represented a set of nodes and edges in our prop
 \end{enumerate}
 
 \section{Overall Structure}
-A database consists of multiple tables. Each table is a collection of domains (one domain corresponding to each attribute) and a list of main node records. Each Domain is a collection of attribute nodes. Each attribute node contains the actual data elements. Nodes are connected to each other by edges (using pointers). A brief overview of the model has been illustrated in figure ~\ref{fig:overview}
+A database consists of multiple tables. Each table is a collection of domains (one domain corresponding to each attribute) and a list of main node records. Each Domain is a collection of attribute nodes. Each attribute node contains the actual data elements. Nodes are connected to each other by edges (using pointers). A brief overview of the model has been illustrated in figure ~\ref{fig:overview}. \\
 \begin{figure}[t]
  \centering
  \includegraphics[width=0.8\textwidth]{pics/model.pdf}
  \caption{Overview of Proposed Model}
  \label{fig:overview}
 \end{figure}
-
+Graph Databases provides index-free adjacency. However, an indexing mechanism will make look-ups in search query very fast. It will also facilitate subgraph isomorphism and similarity queries \cite{indexing}. As such we propose use of an independent indexing in each of the domains - which given a value can return the actual node where the value is stored.
 \section{Constraints}
 In this section, we will discuss about the constraints that are added to the relations in a traditional RDBMS to ensure data integrity and logical consistency.
 \subsection{Primary Key}
