@@ -38,7 +38,7 @@
 \rfoot{\thepage}
 \raggedbottom
 \renewcommand{\bibname}{References}
-\newcommand{\project}{Graph Based Storage for Relational Databases}
+\newcommand{\project}{Graph Based Representation of Relational Databases}
 \addtocontents{toc}{\protect\setcounter{tocdepth}{1}}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
@@ -181,7 +181,7 @@ Date: \today
 	\textbf{ \huge Abstract}
 \end{center}
 \vspace{1cm}
-Relational Database Management Systems has been there for quite a few decades. They are still the most popular means of storing huge amount of data on disk. Relational databases are efficient in most cases, however in certain types of queries (Join) they fail to compute the result efficiently. In recent times quite a bit of research has been done on Graph Databases - which seems like  a promising solution to the bottleneck. Many implementation of such databases have come up - Google's Cayley, Neo4j, etc. However even these graph databases suffer from several overheads.
+Relational Database Management Systems has been there for quite a few decades. They are still the most popular means of storing huge amount of data on disk. Relational databases are efficient in most cases, however in certain types of queries (Join) they fail to compute the result efficiently. In recent times, quite a bit of research has been done on Graph Databases - which seems like  a promising solution to the bottleneck. Many implementation of such databases have come up - Google's Cayley, Neo4j, etc. However even these graph databases suffer from several overheads.
 \par
 This project aims at exploring the various ways of using a graph-like storage model for traditional Relational Databases and optimize it to perform Inner Join and Aggregate Queries efficiently.
 \par
@@ -204,8 +204,8 @@ In the world of computer science, a graph database is a database that uses graph
  \end{center}
 \end{figure}
 \section{Motivation}
-Graph Databases seems like a promising model to solve all the problems the exist with the current relational databases. They provide an optimal may to compute the equivalent of the join query in a relational database. They can also scale very well and can handle large volume of data. Several Load Balancing Techniques can also be used to optimize queries during large scale Graph Processing \cite{load_balancing}. Because of these reasons Graph Database is being widely used. Angles et. al have surveyed the most popular graph based model \cite{graph_database_survey}. \\ \par
-However, Graph databases have their own overheads and drawbacks. Sometimes it is very difficult or even impossible to construct the equivalent relational database from a graph database. Moreover graph databases don't use SQL and as such it is very difficult for the programmers to realize the query they want to perform. Even if the developers are able to realize the query, the existing queries in the system has to be changed which will take a lot of resources. Organizations which have made huge investments on their database system might not be willing to switch to graph databases. Vicknair et. al have drawn a good comparison between graph based databases and traditional relational databases in terms of performance and storage requirements \cite{graph_relational_comparison}. \\ \par
+Graph Databases seems like a promising model to solve all the problems that exist with the current relational databases. They provide an optimal way to compute the equivalent of the join query in a relational database. They can also scale very well and can handle large volume of data. Several Load Balancing Techniques can also be used to optimize queries during large scale Graph Processing \cite{load_balancing}. Because of these reasons Graph Database is being widely used. Angles et. al have surveyed the most popular graph based model \cite{graph_database_survey}. \\ \par
+However, Graph databases have their own overheads and drawbacks. Sometimes it is very difficult or even impossible to construct the equivalent relational database from a graph database. Moreover, graph databases don't use SQL and as such it is very difficult for the programmers to realize the query they want to perform. Even if the developers are able to realize the query, the existing queries in the system has to be changed which will take a lot of resources. Organizations which have made huge investments on their database system might not be willing to switch to graph databases. Vicknair et. al have drawn a good comparison between graph based databases and traditional relational databases in terms of performance and storage requirements \cite{graph_relational_comparison}. \\ \par
 Owing to these reasons, the use of graph database is currently limited. We were motivated to resolve this problem by taking a middle path between graph and relational databases. We wanted to explore the various ways to optimize the query execution time as well as the storage of the currently popular relational databases. We also wanted to eliminate all the redundancy in a typical relational database.
 
 \section{Problem Description}
@@ -417,7 +417,7 @@ Each of the record in the proposed graph based storage has following extra data 
 \end{itemize}
 Thus the size occupied by a table in the graph model can be equated using the following equation :
 \begin{equation}
-  Size\_Graph = (n * x * (rs + (attr  * ptr)) ) + (n * ptr * (2 * attr + 1))
+  Size\_Graph = (n \times x \times (rs + (attr \times ptr)) ) + (n \times ptr \times (2 \times attr + 1))
   \label{grsize}
 \end{equation}
 where, \\
@@ -430,7 +430,7 @@ $ptr$ = Size of a pointer variable \\
 
 The above equation illustrates the growth of database on the proposed graph storage engine. For a traditional Relational Database the space occupied by the data in the memory can be arrived at using the following equations :
 \begin{equation}
- Size\_RDBMS = n * rs
+ Size\_RDBMS = n \times rs
  \label{rdbmssize}
 \end{equation}
 where, \\
