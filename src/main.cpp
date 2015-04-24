@@ -22,13 +22,13 @@ int print_table_details(database *main_database)
         printf("Enter the table you want\n");
         for (i = 0; i < main_database->get_tables_size(); i++)
         {
-            printf("%d : %s\n", i + 1, main_database->get_tables_index(i)->get_table_name().c_str());
+            printf("%d : %s\n", i + 1, main_database->get_table(i)->get_table_name().c_str());
         }
     }
     scanf("%d", &index);
     printf("\n");
 
-    temp_table = main_database->get_tables_index(index - 1);
+    temp_table = main_database->get_table(index - 1);
     att_count = temp_table->get_attribute_count();
 
     if (VERBOSE)
@@ -140,7 +140,7 @@ void create_table(database *main_database)
     {
         table_index = print_table_details(main_database);
         fk_list.clear();
-        temp_table2 =  main_database->get_tables_index(table_index);
+        temp_table2 =  main_database->get_table(table_index);
 
         for (j = 0; j <  temp_table2->get_primary_key_size(); j++)
         {
@@ -164,6 +164,7 @@ void create_table(database *main_database)
 
     delete[] ins_check;
     fk_list.clear();
+    temp_table->add_to_size(sizeof(*temp_table));
     main_database->add_table(temp_table);
 
     return;
@@ -186,7 +187,7 @@ void insert_to_table(database *main_database)
         printf("Wrong table name\n");
         return;
     }
-    temp_table = main_database->get_tables_index(index);
+    temp_table = main_database->get_table(index);
 
     std::vector< std::string > values(temp_table->get_attribute_count());
 
@@ -224,13 +225,14 @@ void insert_to_table(database *main_database)
         printf("Integrity Violation\n");
     }
     values.clear();
+
 }
 
 void print_table(database *main_database)
 {
     int attribute_count, i, index;
     table *temp_table;
-    main_node *temp_main_node;
+    main_node *temp_main_node, *next_node;
     char temp_char_arr[100];
     std::string temp_string;
 
@@ -246,7 +248,7 @@ void print_table(database *main_database)
         return;
     }
 
-    temp_table = main_database->get_tables_index(index);
+    temp_table = main_database->get_table(index);
     temp_main_node = temp_table->get_main_node_head();
     attribute_count = temp_table->get_attribute_count();
 
@@ -257,16 +259,42 @@ void print_table(database *main_database)
     }
     printf("\n--------------------------------------------------------------------------------\n");
 
-    while (temp_main_node != NULL)
+    while(temp_main_node && temp_main_node->lazy_delete())
     {
-        for (i = 0; i < attribute_count; i++)
-        {
-            printf("%s\t",temp_main_node->get_attribute_list_index(i)->get_value().c_str());
-        }
-        printf("\n");
+        next_node = temp_main_node;
         temp_main_node = temp_main_node->get_next();
+        delete next_node;
     }
 
+    temp_table->set_main_node_head(temp_main_node);
+
+    if(temp_main_node == NULL) return;
+
+    for (i = 0; i < attribute_count; i++)
+    {
+        printf("%s\t", temp_main_node->get_attribute_list_index(i)->get_value().c_str());
+    }
+    printf("\n");
+
+    next_node = temp_main_node->get_next();
+    while (next_node)
+    {
+        if(next_node->lazy_delete())
+        {
+            temp_main_node->delete_next();
+        }
+
+        else
+        {
+            for (i = 0; i < attribute_count; i++)
+            {
+                printf("%s\t", next_node->get_attribute_list_index(i)->get_value().c_str());
+            }
+            printf("\n");
+            temp_main_node = next_node;
+        }
+        next_node = temp_main_node->get_next();
+    }
     printf("\n--------------------------------------------------------------------------------\n");
 }
 
@@ -278,6 +306,7 @@ void query(database *main_database, int check)
         1 : update
         2 : delete
     */
+
     std::vector< int > col_list, attributes, ops;
     std::vector< value_expression > expression;
     std::vector< std::string > values, update_values;
@@ -285,14 +314,14 @@ void query(database *main_database, int check)
 
     std::set< main_node * > result;
 
-    int col_count, temp_int, expr_count, join_operator, i, start, stop;
+    int col_count, temp_int, expr_count = 0, join_operator, i;
     char rhs[100], lhs[100], op_string[100];
     std::string temp_string;
     value_expression temp_exp;
     char t_name[100], col_name[100], temp_char_arr[100];
-    double result_time;
 
-    printf("\nEnter the table name:");
+
+    printf("\nEnter the table name: ");
     fflush(stdout);
     scanf("%s", t_name);
     temp_string.assign(t_name);
@@ -302,16 +331,16 @@ void query(database *main_database, int check)
         printf("Wrong table name\n");
         return;
     }
-    table *selected_table = main_database->get_tables_index(table_index);
+    table *selected_table = main_database->get_table(table_index);
     printf("\n");
     if(check < 2)
     {
         if (VERBOSE)
         {
             if(check == 1)
-                printf("Enter the number of columns you want to update:");
+                printf("Enter the number of columns you want to update: ");
             else if(check == 0)
-                printf("Enter the number of columns you want to select:");
+                printf("Enter the number of columns you want to select: ");
             fflush(stdout);
         }
 
@@ -322,7 +351,7 @@ void query(database *main_database, int check)
             printf("Enter the column name(s)");
             if(check == 1)
                 printf(" and their corresponding value(s)");
-            printf("\n");
+            printf(":\n");
         }
 
         for (i = 0; i < col_count; i++)
@@ -345,7 +374,7 @@ void query(database *main_database, int check)
     }
 
     if (VERBOSE)
-        printf("\nEnter the number of expressions:");
+        printf("\nEnter the number of conditions:");
     fflush(stdout);
 
     scanf("%d", &expr_count);
@@ -354,7 +383,7 @@ void query(database *main_database, int check)
     {
         if (VERBOSE)
         {
-            printf("Enter expression no. %d:", i + 1);
+            printf("Enter condition no. %d:", i + 1);
             fflush(stdout);
         }
         scanf("%s %s %s", lhs, op_string, rhs);
@@ -415,15 +444,34 @@ void query(database *main_database, int check)
             }
         }
     }
-    expression_vec.push_back(expression);
-    expression.clear();
-    start = clock();
-        result = selected_table->select_single_table(expression_vec);
-    stop = clock();
-    result_time = (stop - start) / double(CLOCKS_PER_SEC);
-    FILE *fp = fopen("Time.txt", "a");
-    fprintf(fp, "%lf\n", result_time);
-    fclose(fp);
+
+    if(expr_count)
+    {
+        expression_vec.push_back(expression);
+        expression.clear();
+    }
+
+    else
+    {
+        switch(check)
+        {
+            case 0:
+                selected_table->select_all(col_list);
+                break;
+            case 1:
+                selected_table->update_all(col_list, update_values);
+                break;
+            case 2:
+                selected_table->delete_all();
+                break;
+            default:
+                printf("Wrong query condition\n");
+        }
+        return;
+    }
+
+    result = selected_table->select_single_table(expression_vec);
+
     if(check == 0)
     {
         print_record_list(selected_table, result, col_list);
@@ -450,7 +498,7 @@ void print_main_node(main_node *result, std::vector< int > &col_list)
 void join_tables(database *main_database)
 {
     table *j_table[2], *temp_table;
-    int j_index[2], table_span, i, foreign_key_index, expr_count, j, col_index, tab, op_type, j_type, t_index, col_count, start, stop;
+    int j_index[2], table_span, i, foreign_key_index, expr_count, j, col_index, tab, op_type, j_type, t_index, col_count;
     struct value_expression temp_expression;
     std::vector< std::vector< value_expression > > expression_vec;
     std::vector< value_expression > temp_expr_vect;
@@ -461,7 +509,6 @@ void join_tables(database *main_database)
     std::string temp_string;
     char t_name[100], col_name[100], temp_char_arr[500];
     char lhs[100], op_string[4], rhs[100];
-    double result_time;
 
     printf("\nEnter the child table name:");
     fflush(stdout);
@@ -474,7 +521,7 @@ void join_tables(database *main_database)
         return;
     }
 
-    j_table[0] = main_database->get_tables_index(j_index[0]);
+    j_table[0] = main_database->get_table(j_index[0]);
     table_span = j_table[0]->get_foreign_key_count();
 
     printf("Enter the parent table name:");
@@ -488,7 +535,7 @@ void join_tables(database *main_database)
         return;
     }
     j_index[1] = main_database->get_index_table(j_table[0]->get_parent_table(foreign_key_index));
-    j_table[1] = main_database->get_tables_index(j_index[1]);
+    j_table[1] = main_database->get_table(j_index[1]);
 
     printf("\nEnter the number of columns you want to select:");
     fflush(stdout);
@@ -531,7 +578,7 @@ void join_tables(database *main_database)
         col_list[t_index].push_back(col_index);
     }
 
-    printf("\nEnter the number of expressions:");
+    printf("\nEnter the number of conditions:");
     fflush(stdout);
     scanf("%d", &expr_count);
 
@@ -539,7 +586,7 @@ void join_tables(database *main_database)
     for (i = 0; i < expr_count; i++)
     {
 
-        printf("\nExpression:");
+        printf("\nCondition:");
         fflush(stdout);
         scanf("%s %s %s", lhs, op_string, rhs);
         temp_string.assign(lhs);
@@ -628,13 +675,7 @@ void join_tables(database *main_database)
     }
     expression_vec.push_back(temp_expr_vect);
     temp_expr_vect.clear();
-    start = clock();
-        result = j_table[0]->join(foreign_key_index, expression_vec);
-    stop = clock();
-    result_time = (stop - start)/double(CLOCKS_PER_SEC);
-    FILE *fp = fopen("Time.txt", "a");
-    fprintf(fp, "%lf\n", result_time);
-    fclose(fp);
+    result = j_table[0]->join(foreign_key_index, expression_vec);
     for (i = 0; i < col_list[0].size(); i++)
     {
         printf("%s.", j_table[0]->get_table_name().c_str());
@@ -683,9 +724,6 @@ int main()
     create_emp(main_database);
 	insert_dept(main_database);
 	insert_emp(main_database);
-	/*main_database->clear();
-    delete main_database;
-    return 0;*/
 #endif
 
 
