@@ -1,9 +1,57 @@
 #ifndef SELECT_INCLUDED
 #define SELECT_INCLUDED 1
 
-class table;
+//Funtion to select all records
+void table::select_all(std::vector< int > &col_list)
+{
+    int i;
+    printf("\n--------------------------------------------------------------------------------\n");
+    for(i = 0; i < col_list.size(); i++)
+    {
+        printf("%s\t", get_attribute_name(col_list[i]).c_str());
+    }
+    printf("\n--------------------------------------------------------------------------------\n");
 
-#include "table.h"
+    main_node *temp, *temp_main;
+
+    while(head && head->lazy_delete())
+    {
+        temp = head;
+        head = head->get_next();
+        delete temp;
+    }
+
+    if(head == NULL) return;
+
+    for(i = 0; i < col_list.size(); i++)
+    {
+        printf("%s\t", head->get_attribute_list_index(col_list[i])->get_value().c_str());
+    }
+    printf("\n");
+
+    temp_main = head;
+    temp = head->get_next();
+
+    while(temp)
+    {
+        if(temp->lazy_delete())
+        {
+            temp_main->delete_next();
+        }
+
+        else
+        {
+            for (i = 0; i < col_list.size(); i++)
+            {
+                printf("%s\t", temp->get_attribute_list_index(col_list[i])->get_value().c_str());
+            }
+            printf("\n");
+            temp_main = temp;
+        }
+        temp = temp_main->get_next();
+    }
+    printf("\n--------------------------------------------------------------------------------\n");
+}
 
 //Function to select record from the table given that all logical operators used are AND
 std::vector< main_node * > table::select_via_and(std::vector< value_expression > &expression_list)
@@ -18,25 +66,14 @@ std::vector< main_node * > table::select_via_and(std::vector< value_expression >
 
     unsigned int i, node_count, min_node_count = INT_MAX;
     int min_index = -1;
-    main_node *head;
+    main_node *temp_main, *temp;
     std::vector< main_node * > *main_node_list, *min_main_node_list, result;
-
-    #ifdef DEBUG_SELECT
-        printf("Selecting from table %s. %d conditions\n", get_table_name().c_str(),
-                                                                    (int) expression_list.size());
-        fflush(stdout);
-    #endif
 
     for(i = 0; i < expression_list.size(); i++)
     {
         //Searching for only EQUAL operators
         if(expression_list[i].op == 0)
         {
-            #ifdef DEBUG_SELECT
-                printf("Found an Equal Operator Condition at %d", i);
-                fflush(stdout);
-            #endif // DEBUG
-
             main_node_list = get_records_with_val(expression_list[i].attribute, expression_list[i].value);
 
             if(main_node_list == NULL)
@@ -55,25 +92,46 @@ std::vector< main_node * > table::select_via_and(std::vector< value_expression >
         }
     }
 
-    #ifdef DEBUG_SELECT
-        printf("min_index = %d count = %d\n", min_index, min_node_count);
-        fflush(stdout);
-    #endif // DEBUG
-
     if(min_index == -1)
     {
         /*
             This signifies that there was no EQUAL operator in the ops.
             Brute Force is the only way to get all nodes
+            Check for marked nodes for lazy delete
         */
-        head = get_main_node_head();
-        while (head != NULL)
+        while(head && head->lazy_delete())
         {
-            if(compare_record(head, expression_list))
-            {
-                result.push_back(head);
-            }
+            temp = head;
             head = head->get_next();
+            delete temp;
+        }
+
+        if(head == NULL) return result;
+
+        if(compare_record(head, expression_list))
+        {
+            result.push_back(head);
+        }
+
+        temp_main = head;
+        temp = head->get_next();
+
+        while (temp)
+        {
+            if(temp->lazy_delete())
+            {
+                temp_main->delete_next();
+            }
+
+            else
+            {
+                if(compare_record(temp, expression_list))
+                {
+                    result.push_back(temp);
+                }
+                temp_main = temp;
+            }
+            temp = temp_main->get_next();
         }
 
         //Returning the list of matched records from brute search
@@ -89,11 +147,6 @@ std::vector< main_node * > table::select_via_and(std::vector< value_expression >
             result.push_back((*min_main_node_list)[i]);
         }
     }
-
-    #ifdef DEBUG_SELECT
-        printf("Number of records selected = %d\n", (int) result.size());
-        fflush(stdout);
-    #endif //DEBUG
 
     //Returning Shortlisted main-nodes that match record
     return result;
@@ -112,21 +165,6 @@ std::set< main_node * > table::select_single_table(std::vector< std::vector< val
     main_node *head;
     std::set< main_node * > result;
     std::vector< main_node * > temp_result;
-
-    if(expression_vec.size() == 0)
-    {
-        //Get the head of the main node linked list
-        head = get_main_node_head();
-
-        //Iterate all records and add it to the set
-        while(head != NULL)
-        {
-            result.insert(head);
-            head = head->get_next();
-        }
-
-        return result;
-    }
 
     for(i = 0; i < expression_vec.size(); i++)
     {
@@ -255,21 +293,6 @@ std::set< main_node *> table::join(int foreign_key_index, std::vector< std::vect
     main_node *head;
     std::set< main_node * > result;
     std::vector< main_node *> temp_result;
-
-    if(expression_vec.size() == 0)
-    {
-        //Get the head of the main node linked list
-        head = get_main_node_head();
-
-        //Iterate all records and add it to the set
-        while(head != NULL)
-        {
-            result.insert(head);
-            head = head->get_next();
-        }
-
-        return result;
-    }
 
     for(i = 0; i < expression_vec.size(); i++)
     {

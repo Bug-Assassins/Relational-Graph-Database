@@ -558,9 +558,9 @@ Our proposed model is successfully able to represent any relational database. Al
  If indexing is present in the attribute nodes then we can access the attribute node representing a constant in $\mathcal{O}(C)$, where C is equal to the length 
  of the constant when represented as a string. Given this attribute node
  we can get the list of main nodes having this constant as the attribute value. For other logical operators like $ <, >, \leq, \geq, \neq$,  require $\mathcal{O}(n)$ for all cases.
- Since there can be multiple Select operations joined using conjunctions, all the individual condtions are combined using Intersection or Union of the individual result sets as reqired.
+ Since there can be multiple Select operations joined using conjunctions, all the individual conditions are combined using Intersection or Union of the individual result sets as reqired.
  \item \textbf{Natural Join} - The model initially operates on the parent relation and gets the result set by using the Select operation. The parent nodes will have a list of child main nodes pointing to it.
- Through this lists, we get a list of child nodes corresponding to the filtered parent nodes. Next the model operates on the child table and gets the result set by using the Select operation.
+ Through this list, we get a list of child nodes corresponding to the filtered parent nodes. Next the model operates on the child table and gets the result set by using the Select operation.
  Then Intersection or Union of the two sets is performed depending on the given propositional formula. Traditional relational databases take $\mathcal{O}(m * n)$ time complexity for a join query, where $m$ and $n$
  are the number of tuples in the parent and child table. The model proposed does the same operation in $\mathcal{O}(max(m, n))$ time complexity.
  \end{itemize}

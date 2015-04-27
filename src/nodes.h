@@ -52,7 +52,6 @@ class attribute_node {
     }
 
     //Function to add details of connected record of a given table
-    //Index number follows from the domain class
     void connect_main_record(main_node *node, int tab_index)
     {
         nodes[tab_index].push_back(node);
@@ -99,20 +98,16 @@ class main_node {
 
   private:
     std::vector< attribute_node * > attribute_list;
-    main_node *next, *pre;
+    main_node *next;
     std::vector< main_node * > parent_table_list;
+    bool marked;
 
   public:
-    //constructor
+
     main_node()
     {
-        next = pre = NULL;
-    }
-
-    size_t get_size()
-    {
-        return  sizeof(main_node *) + (sizeof(attribute_node *) * attribute_list.size())
-                + (sizeof(main_node *) * parent_table_list.size());
+        next = NULL;
+        marked = false;
     }
 
     //Getter and Setter for next node
@@ -121,24 +116,26 @@ class main_node {
         next = next_node;
     }
 
-    void set_pre(main_node* pre_node)
-    {
-        pre = pre_node;
-    }
-
     main_node* get_next()
     {
         return next;
     }
+
     main_node *get_parent_node(int fk_index)
     {
         return parent_table_list[fk_index];
     }
 
+    size_t get_size()
+    {
+        return  sizeof(main_node *) + (sizeof(attribute_node *) * attribute_list.size())
+                + (sizeof(main_node *) * parent_table_list.size());
+    }
+
     //Function to return the corresponding connected attribute node
     attribute_node *get_attribute_list_index(unsigned int attribute_index)
     {
-        if(attribute_index > attribute_list.size())
+        if(attribute_index < 0 || attribute_index > attribute_list.size())
         {
             printf("Passed attribute index %d do not exist !!\nAborting!!", attribute_index);
             fflush(stdout);
@@ -180,18 +177,22 @@ class main_node {
         parent_table_list.push_back(fk);
     }
 
+    bool lazy_delete()
+    {
+        return marked;
+    }
+
+    void delete_next()
+    {
+        main_node *temp;
+        temp = next;
+        next = temp->get_next();
+        delete temp;
+    }
+
     void del_node()
     {
-        if(pre)
-        {
-            pre->next = next;
-        }
-
-        if(next)
-        {
-            next->pre = pre;
-        }
-
+        marked = true;
         clear();
     }
 

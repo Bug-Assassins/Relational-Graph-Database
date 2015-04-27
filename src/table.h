@@ -82,7 +82,7 @@ class table {
   private:
     std::string name; //Name of the Table
     main_node *head; //Head to the main list of the table
-    int record_count; //Number of attributes
+    int record_count; //Number of records
     size_t total_size;
     std::vector< domain * > normal;
     std::vector< std::string > attribute_names;
@@ -119,15 +119,18 @@ class table {
         return normal.size();
     }
 
+    //Function to set main node head
+    void set_main_node_head(main_node *new_head)
+    {
+        head = new_head;
+    }
     //Function that adds an attribute to the table
     void add_attribute(int type, std::string name, int index)
     {
         int tab_index;
         domain *temp_domain;
-
         temp_domain = new domain(type);
         tab_index = temp_domain->insert_table_pointer(this);
-        //add_to_size(sizeof(*temp_domain) + name.length());
         normal[index] = temp_domain;
         attribute_names[index] = name;
         index_in_domain[index] = tab_index;
@@ -298,18 +301,12 @@ class table {
         size_t node_size;
         for(i = 0; i < values.size(); i++)
         {
-            //add_to_size(normal[i]->add_get_new_value(values[i], new_main, index_in_domain[i]));
             node_size = sizeof(main_node *);
             normal[i]->add_get_new_value(values[i], new_main, index_in_domain[i], true, node_size);
             total_size += node_size;
         }
 
         new_main->set_next(head);
-        if(head)
-        {
-            head->set_pre(new_main);
-        }
-
         head = new_main;
         total_size += head->get_size();
         record_count++;
@@ -353,10 +350,10 @@ class table {
 
     void update(std::set< main_node * > &nodes,  std::vector< int > &index, std::vector< std::string > &values)
     {
-        size_t temp_size;
         std::set< main_node * >::iterator it;
         unsigned int j;
         attribute_node *old_node;
+        size_t temp_size;
         for(it = nodes.begin(); it != nodes.end(); it++)
         {
             for(j = 0; j < index.size(); j++)
@@ -373,6 +370,65 @@ class table {
         }
     }
 
+
+    void update_all(std::vector< int > &index, std::vector< std::string > &values)
+    {
+        unsigned int j;
+        attribute_node *old_node;
+        size_t temp_size;
+        main_node *temp, *temp_main;
+
+        while(head && head->lazy_delete())
+        {
+            temp = head;
+            head = head->get_next();
+            delete temp;
+        }
+
+        if(head == NULL) return;
+
+        for(j = 0; j < index.size(); j++)
+        {
+            old_node = head->get_attribute_list_index(index[j]);
+            if(values[j].compare(old_node->get_value()))
+            {
+                old_node->delete_edge(head, index_in_domain[index[j]]);
+                attribute_node *new_attribute_node = normal[index[j]]->add_get_new_value(values[j],
+                                                                head, index_in_domain[index[j]], false, temp_size);
+                head->update_attribute(index[j], new_attribute_node);
+            }
+        }
+
+        temp_main = head;
+        temp = head->get_next();
+
+        while(temp)
+        {
+            if(temp->lazy_delete())
+            {
+                temp_main->delete_next();
+            }
+
+            else
+            {
+                for(j = 0; j < index.size(); j++)
+                {
+                    old_node = temp->get_attribute_list_index(index[j]);
+                    if(values[j].compare(old_node->get_value()))
+                    {
+                        old_node->delete_edge(temp, index_in_domain[index[j]]);
+                        attribute_node *new_attribute_node = normal[index[j]]->add_get_new_value(values[j],
+                                                                    temp, index_in_domain[index[j]], false, temp_size);
+                        temp->update_attribute(index[j], new_attribute_node);
+                    }
+                }
+                temp_main = temp;
+            }
+            temp = temp_main->get_next();
+        }
+
+   }
+
     void del(std::set< main_node * > &nodes)
     {
         std::set< main_node * >::iterator it;
@@ -386,13 +442,32 @@ class table {
                  (*old_nodes)[i]->delete_edge((*it), index_in_domain[i]);
             }
 
-            if(head == (*it))
-            {
-                head = (*it)->get_next();
-            }
-
             (*it)->del_node();
-            delete (*it);
+
+        }
+
+    }
+
+    void delete_all()
+    {
+        unsigned int i;
+        std::vector< attribute_node * > *old_nodes;
+        main_node *temp;
+        temp = head;
+        while(head)
+        {
+            if(head->lazy_delete() == false)
+            {
+                old_nodes = head->get_attribute_list();
+                for(i = 0; i < old_nodes->size(); i++)
+                {
+                    (*old_nodes)[i]->delete_edge(head, index_in_domain[i]);
+                }
+                head->del_node();
+            }
+            temp = head;
+            head = head->get_next();
+            delete temp;
         }
 
     }
@@ -557,7 +632,7 @@ class table {
     std::vector< main_node *> get_all_records_as_child(int foreign_key_index, std::vector< value_expression > &expression_list);
     std::vector< main_node * > join_via_and(int foreign_key_index, std::vector< value_expression > &expression_list);
     std::set< main_node *> join(int foreign_key_index, std::vector< std::vector< value_expression > > &expression_vec);
-
+    void select_all(std::vector< int > &col_list);
 };
 
 #endif // TABLE_INCLUDED

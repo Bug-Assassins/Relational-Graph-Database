@@ -23,11 +23,11 @@ class database {
         tables.push_back(tab);
     }
 
-    table *get_tables_index(unsigned int i)
+    table *get_table(unsigned int i)
     {
         if (i > tables.size())
             return NULL;
-        
+
         return tables[i];
     }
 
