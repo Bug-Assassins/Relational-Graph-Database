@@ -524,7 +524,7 @@ We chose to measure the time taken to execute the most expensive query - Join. T
  \textbf{Select $*$ from employee, department where employee.id $>$ 10 AND \\
  department.id $<$ 50 AND employee.dept\_id = department.id}
 \end{center}
-We measured the time taken with different number of records in the child relation i.e., Employee relation. The number of records in the parent relation (Department) was kept constant i.e, 100. The points of observation in child relation were - 100, 1000, 10000, 20000, 40000, 60000, 80000 and 90000. The results have been illustrated in figure ~\ref{fig:timeresult}. \par
+We measured the time taken with different number of records in the child relation i.e., Employee relation. The number of records in the parent relation (Department) was kept constant i.e, 100. The points of observation in child relation were - 100, 1000, 10000, 20000, 40000, 60000, 80000 and 90000. The results have been illustrated in figure ~\ref{fig:timeresult}. The numbers in bracket indicate the number of records in the parent table. \par
 \begin{figure}[ht]
  \centering
  \includegraphics[width=\textwidth]{pics/time.pdf}
