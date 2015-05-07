@@ -364,8 +364,8 @@ We propose use of linked list to store all the main nodes. The nature of linked 
 \subsection{Modeling Associated Values - Attribute Node}
 Each column in a table of a relational database has its own domain and it contains a list of values. The list may be singly linked list or doubly linked list depending on the requirement. The same argument as section ~\ref{sec:tuple} applies here. Each node which contains the actual record is not of fixed size. Size of an attribute node is dynamic - it depends on size of the value unlike traditional relational databases where the size of an attribute is fixed and specified at the time of creating table. An attribute node will be bidirectionally connected with all the main nodes in all the tables (in case of shared domains) that contains this value. This means aggregate queries can be performed much faster. As an example, let us assume that in a relation containing 50,000 records about the employees of an organization, we intend to find all employees with a given salary say \$100. Now, let us assume that there are only 10 such employees. Then we can find all those 10 tuples with at max 10 record access in worst case i.e., $\mathcal{O}(k)$, where $k = 10$ is the size of the result. In traditional databases if there is no indexing on the salary attribute then the same query may take $\mathcal{O}(n)$, where $n = 50000$ is the number of records in the table.
 
-\section{Query Execution}
-Our proposed model can handle all the queries that a traditional relation database can handle. In this section we will discuss the methodology of executing the major queries offered by relational database.
+\section{Query Execution and Analysis}
+Our proposed model can handle all the queries that a traditional relation database can handle. In this section we will discuss the methodology of executing the major queries offered by relational database. We will also discuss the theoretical complexity associated with each of these query.
 \subsection{Insert Query}
 Insert Query is used to add new tuple to the database. Following are the steps to execute Insert Query :
 \begin{itemize}
@@ -374,6 +374,8 @@ Insert Query is used to add new tuple to the database. Following are the steps t
  \item \textbf{Create Main Node} - A new main node is created to represent the new tuple and added to the list of main nodes for the relation.
  \item \textbf{Establishing Edges} - Lastly, all the attribute nodes from each field is connected to the main node. This concludes the insertion process.
 \end{itemize}
+ \par \textbf{Theoretical Analysis} - Insertion of a new record requires creation or searching of $K$ attribute nodes where $K$ is the number of attributes in the relation. Once all the attribute nodes are available creating a new main node and establishing edges between main nodes are corresponding attribute nodes takes constant amount of time. However, $K$ is the number of the attributes and remains constant for a given table. Thus, the overall complexity is a constant.
+
 \subsection{Select Query}
 Select Query is the most frequent of all the queries in a traditional database. It only reads and presents the data in an appropriate format.
  \begin{itemize}
@@ -382,6 +384,11 @@ Select Query is the most frequent of all the queries in a traditional database. 
   \item \textbf{Union or Intersection} - The list of main nodes obtained in the previous obtained has to be merged into a single list. Thus, Union or Intersection operation is performed as required to obtain the final consolidated main node list.
   \item \textbf{Projection} - The resultant list of tuples have to projected to print the result in a format as required.
  \end{itemize}
+ \par \textbf{Theoretical Analysis} - The model proposed is able to handle the application of propositional formula.
+ The performance of the select operation is dependent on the order in which the formula are applied along with the logical operators.
+ Our model is able to handle the binary operation "=" very effectively due to the indexing option given to the user. 
+ If indexing is present in the attribute nodes then we can access the attribute node representing a constant in $\mathcal{O}(C)$, where C is equal to the length of the constant when represented as a string. Given this attribute node
+ we can get the list of main nodes having this constant as the attribute value. For other logical operators like $ <, >, \leq, \geq, \neq$, select query require $\mathcal{O}(n)$ for all cases, where $n$ is the number records in the relation. Since there can be multiple Select operations joined using conjunctions, all the individual conditions are combined using Intersection or Union of the individual result sets as required - which is also bounded by $\mathcal{O}(n)$, where $n$ is the number records in the relation.
 \subsection{Update and Delete Query}
 Both Update and Delete queries modify or delete tuples stored in the database. The major procedure to execute both the query is mostly similar.
 \begin{itemize}
@@ -391,6 +398,7 @@ Both Update and Delete queries modify or delete tuples stored in the database. T
   \item \textbf{Updating Edges} - In this step main node are connect or disconnect with attribute nodes if required
   \item \textbf{Soft Delete} - Last step is to mark main node for soft delete if required. The main nodes are physically deleted whenever the main node list is accessed in a sequential fashion.
  \end{itemize}
+ \par \textbf{Theoretical Analysis} - As we can observe, Update and Delete Query is theoretically bounded by the selection of the appropriate tuples. Once the appropriate tuples are selected, the values of each tuple can be updated in constant time. Thus the theoretical complexity of Update and Delete Query is same as that of Select Query i.e., $\mathcal{O}(C)$ (for "=" operator) and $\mathcal{O}(n)$ (for other operators).
 \subsection{Join Query}
 This is the main query which is much optimized in our proposed model.
 \begin{itemize}
@@ -400,7 +408,12 @@ This is the main query which is much optimized in our proposed model.
   \item \textbf{Intersection or Union} - We obtain 2 main nodes list from each of child and parent's proposition formula. We have to merge both the list to obtain a consolidated list of child relation's main node. This is done by performing intersection or union as required
   \item \textbf{Projection} - The resultant list of tuples have to projected to print the result in a format as required.
  \end{itemize}
-
+ \par \textbf{Theoretical Analysis} - The model initially operates on the parent relation and gets the result set by using the Select operation. The parent nodes will have a list of child main nodes pointing to it. Through this list, we get a list of child nodes corresponding to the filtered parent nodes. Next the model operates on the child table and gets the result set by using the Select operation. Then Intersection or Union of the two sets is performed depending on the given propositional formula. Traditional relational databases take $\mathcal{O}(m * n)$ time complexity for a join query, where $m$ and $n$ are the number of tuples in the parent and child table. The model proposed does the same operation in $\mathcal{O}(max(m, n))$ time complexity.
+ \subsection{Project Query}
+ This type to query is used to simple print the selected attributes of all the required tuples. This essentially selects all the nodes. \\
+ The model that we propose handles projection very easily. Each main node has links pointing to it's corresponding attribute nodes. Given a Tuple, to apply the Projection operation we go to it's Main node and only access those attributes that the projection operation demands. This accessing is done through the links.
+ \par \textbf{Theoretical Analysis} - The list of main node is iterated only once and thus the theoretical complexity of this query is $\mathcal{O}(n)$, where $n$ is the number of tuples in the table.
+ 
 \chapter{Work Done}
 As of now, we have been able to implement a basic version of the proposed graph like storage model which supports all the queries of a traditional relational database. The whole graph storage model has been implemented using C\verb!++!. We chose to go with C\verb!++! owing to its speed, object oriented nature and the powerful Standard Template Library. STL containers like \emph{vectors}, \emph{string} and \emph{set} are used throughout the source code. We have also used methods provided by STL to handle data. The user input is taken via standard input stream i.e., command line. Similarly all output is printed on standard output stream. No GUI has been provided as of now. All data is stored in main memory.
 \section{Implementation}
@@ -594,25 +607,6 @@ We were able to get more insights about the graph based storage and the storage 
  \item Theoretically the time bound for any type of query is same in the proposed model and is less than or equal to that of the traditional relational database storage. This means that the proposed model is much faster in terms of time taken. Our model is better in performing the Inner Join Queries which have a theoretical upper bound of $\mathcal{O}(max(m, n))$ where, $m, n$ is the number of records in the two relations being joined. It can be further reduced to $\mathcal{O}(min(m,n))$ if the query algorithm is most optimal.
  \item The growth stage of the database i.e., when the number of records is steadily rising in database the graph based storage might seem to be slower despite same time complexity owing to large constant. However, once the database is stable and select queries become the most frequent one, then proposed graph model performs much faster. Also the proposed model requires periodic deletion of invalid (soft deleted) records.
 \end{itemize}
-\subsubsection{Relational Algebraic Operations}
-Our proposed model is successfully able to represent any relational database. All the relational algebraic operations are supported by our model.
-\begin{itemize}
- \item \textbf{Project} - The model that we propose handles projection very easily. Each main node has links pointing to it's corresponding attribute nodes.
- Given a Tuple, to apply the Projection operation we go to it's Main node and only access those attributes that the projection operation demands. This accessing is done through
- the links.
- \item \textbf{Select} - The model proposed is able to handle the application of propositional formula.
- The performance of the select operation is dependent on the order in which the formula are applied along with the logical operators.
- Our model is able to handle the binary operation "=" very effectively due to the indexing option given to the user. 
- If indexing is present in the attribute nodes then we can access the attribute node representing a constant in $\mathcal{O}(C)$, where C is equal to the length 
- of the constant when represented as a string. Given this attribute node
- we can get the list of main nodes having this constant as the attribute value. For other logical operators like $ <, >, \leq, \geq, \neq$,  require $\mathcal{O}(n)$ for all cases.
- Since there can be multiple Select operations joined using conjunctions, all the individual conditions are combined using Intersection or Union of the individual result sets as reqired.
- \item \textbf{Natural Join} - The model initially operates on the parent relation and gets the result set by using the Select operation. The parent nodes will have a list of child main nodes pointing to it.
- Through this list, we get a list of child nodes corresponding to the filtered parent nodes. Next the model operates on the child table and gets the result set by using the Select operation.
- Then Intersection or Union of the two sets is performed depending on the given propositional formula. Traditional relational databases take $\mathcal{O}(m * n)$ time complexity for a join query, where $m$ and $n$
- are the number of tuples in the parent and child table. The model proposed does the same operation in $\mathcal{O}(max(m, n))$ time complexity.
- \end{itemize}
-
 
 \section{Future Work}
 There are various optimizations and techniques that couldn't be implemented in the current version of source code owing to shortage of time. In this chapter we will discuss the major future works that can be undertaken with regard to this project.
