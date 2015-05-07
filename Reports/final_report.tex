@@ -1,6 +1,6 @@
 \documentclass[12pt, oneside]{book}
 \usepackage[top=0.9in, bottom=0.8in, left=1in, right=0.7in, a4paper]{geometry}
-\title{Graph Based Representation of Relational Databases}
+\title{Efficient Representation of Relational Databases using Graph Based Approach}
 \author{Adarsh Mohata, Ajith P S, Ashish Kedia, Sourabh Suman}
 
  \ifx\pdftexversion\undefined
@@ -38,7 +38,7 @@
 \rfoot{\thepage}
 \raggedbottom
 \renewcommand{\bibname}{References}
-\newcommand{\project}{Graph Based Representation of Relational Databases}
+\newcommand{\project}{Efficient Representation of Relational Databases using Graph Based Approach}
 \addtocontents{toc}{\protect\setcounter{tocdepth}{1}}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
@@ -137,7 +137,7 @@
 \end{center}
 Course Code : IT 399 \\
 Course Title : Minor Project \\
-Title of the Project : Graph based storage for Relational Databases \\
+Project Title : \project \\
 Details of Project Group : \\
 \vspace{5mm}
 \\
@@ -196,11 +196,12 @@ This project aims at exploring the various ways of using a graph-like storage mo
 \pagenumbering{arabic}
 
 \chapter{Introduction}
-In the world of computer science, a graph database is a database that uses graph structures for semantic queries with nodes, edges, and properties to represent and store data. A graph database is any storage system that provides index-free adjacency. This means that every element contains a direct pointer to its adjacent elements and no index lookups are necessary. Graph Databases is being extensively researched upon in recent years. There are are several implementation of graph databases available like Neo4j \cite{neo4j}, Titan \cite{titan} and OrientDB \cite{orientdb} all of which is based the same principle.
+In the world of computer science, a graph database is a database that uses graph structures for semantic queries with nodes, edges, and properties to represent and store data. A graph database is any storage system that provides index-free adjacency. This means that every element contains a direct pointer to its adjacent elements and no index lookups are necessary. Graph Databases is being extensively researched upon in recent years. There are are several implementation of graph databases available like Neo4j \cite{neo4j}, Titan \cite{titan} and OrientDB \cite{orientdb} all of which is based the same principle. A representation of a sample graph database is shown in Figure ~\ref{fig:sample_graph}
 \begin{figure}[h]
  \begin{center}
   \includegraphics[width=0.7\textwidth]{pics/graph.png}
   \caption{A Graph Database}
+ \label{fig:sample_graph}
  \end{center}
 \end{figure}
 \section{Motivation}
@@ -233,8 +234,8 @@ Owing to these reasons, the use of graph database is currently limited. We were 
 \section{Problem Description}
 In this project we concentrate on 2 major problems of relational database - the data redundancy and expensive join queries.
 \subsection{Data Redundancy}
-To demonstrate this problem let us consider a typical Employee table in a relational database ~\ref{tab:employee_demo}. Each Employee record has all the typical attributes associated with it like \emph{id} (primary or identifying attribute), \emph{name}, \emph{department}, \emph{salary}, etc. \\
-As we can observe that each department is uniquely associated with a product and is located in a particular city. The same triplet of values - Information Technology, Firefox and Mumbai - is stored for each of the 9 employees working with that product. This wastes a lot of space. This type of redundancy is known an strong redundancy \cite{redundancy}. It is caused when the table is in a de-normalized state. The traditional way to reduce such redundancy is to decompose this table into multiple tables. One way in which this table can be decomposed in demonstrated in Table ~\ref{tab:emp_normal} and Table ~\ref{tab:product}. The product details is stored in a separate table and the Employee table refers to the product table as foreign key.
+To demonstrate this problem let us consider a typical Employee table as in Table ~\ref{tab:employee_demo}. Each Employee record has all the typical attributes associated with it like \emph{id} (primary or identifying attribute), \emph{name}, \emph{department}, \emph{salary}, etc. \\
+As we can observe that each department is uniquely associated with a product and is located in a particular city. The same triplet of values - Information Technology, Firefox and Mumbai - is stored for each of the 9 employees working with that product. This wastes a lot of space. This type of redundancy is known an strong redundancy \cite{redundancy}. It is caused when the table is in a de-normalized state. The traditional way to reduce such redundancy is to decompose this table into multiple tables. One way in which this table can be decomposed is demonstrated in Table ~\ref{tab:emp_normal} and Table ~\ref{tab:product}. The product details is stored in a separate table and the Employee table refers to the product table as foreign key.
 
 \begin{table}
     \centering
@@ -285,13 +286,13 @@ In recent years, software developers have been investigating storage alternative
 However, relational databases are typically faster at performing the same operation on large numbers of data elements. A relational database is much faster when operating on huge numbers of records. In a graph database, each record has to be examined individually during a query in order to determine the structure of the data, while this is known ahead of time in a relational database. Relational databases use less storage space, because they don't have to store all of those relationships \cite{graph_relational_comparison}.
 
 \section{Problem Statement}
-To develop a data management system based on graph structure in order to optimize the query execution time especially join and aggregate queries and eliminate data redundancy in a relational model to some extent while retaining other advantages of relational database system in terms of performance of other queries.  
+To develop a data management system based on graph structure to optimize the query execution time of join and aggregate queries and eliminate data redundancy in a relational model.  
 
-\section{Research Objectives}
+\section{Objectives}
 \begin{itemize}
  \item To compare the relational model with the existing graph models.
  \item To develop a model which can represent relational database.
- \item To define relational algebraic operations on the model such that it has most of the advantages of both the models.
+ \item To define elational algebraic operations on the model such that it has most of the advantages of both the models.
  \item To understand the differences of the proposed model with the graph model.
  \item To realize the limitations of the proposed model.
 \end{itemize}
@@ -299,18 +300,17 @@ To develop a data management system based on graph structure in order to optimiz
 \chapter{Methodology}
 In this chapter we will discuss our proposed model in detail. We will describe how the data is handled and manipulated.
 Relational database performs inefficiently in a join type query. Graph database is able to perform join type queries quite fast because it stores the data using a graph structure. But because of the model used, it is sometimes unable to represent all kinds of relational databases. Realizing that the problem lies with the model of the graph used, we came up with our own model to represent relational databases, using graphs.\\ \par
-\section{Definitions}
-A single relation(table) can be represented a set of nodes and edges in our proposed graph storage, Before we discuss the model in detail, we define certain terminology used in the context of this project.
+\section{Definitins}
+A single relation(table) can be represented a set of nodes and edges in our proposed graph storage, Before we discuss the model in detail, we define certain terminology used n the context of this project.
 \begin{enumerate}
- \item \textbf{Domain} - Each attribute of a relation is a domain in our model. For Example, for an employee table, the relevant domains are \emph{Name}, \emph{Salary}, \emph{Age}, etc. Unlike traditional relational databases two relation can share same domain i.e., a domain can belong to multiple tables. For example, in Employee-Product example (\ref{tab:employee_demo}) \emph{Pr.Id} belongs to both Employee table and Product table. Each table can have separate attribute names for the domain. A domain is nothing but a list of unique Attribute Nodes.
- \item \textbf{Attribute Node} - Attribute Node is a graph node which contains actual data. Each Attribute Node contains only one value. An attribute node also has a list of pointers to the records that have its stored value in corresponding domain.
- \item \textbf{Main Node} - Each main node represents a record in the table. Main node do not contain values - rather they point to $n$ different attribute nodes (one each in $n$ domains) where $n$ is the number of attributes. Main Node of a table may also point to the main node of any other table in case of foreign key i.e., parent-child relationship.
+ \item \textbf{Domain} - Each attribute of a relation is a domain in our model. For Example, for an employee table, the relevant domains are \emph{Name}, \emph{Salary}, \emph{Age}, etc. Unlike traditional relational databases two relation can share same domain i.e., a domain can belong to multiple tables. For example, in Employee-Product example (Table \ref{tab:employee_demo}) \emph{Pr.Id} belongs to both Employee table and Product table. Each table can have separate attribute names for the domain. A domain is nothing but a list of unique Attribute Nodes.
+ \item \textbf{Attribute Node} - Attribute Node is a graph node which contains actual data. Each Attribute Node contains only one value. An attribute node also has a list of pointersto the records that have its stored value in corresponding domain.
+ \item \textbf{Man Node} - Each main node represents a record in the table. Main node do not contain values - rather they point to $n$ different attribute nodes (one each in $n$ domans) where $n$ is the number of attributes. Main Node of a table may also point to the main node of any other table in case of foreign key i.e., parent-child relationship.
 \end{enumerate}
 
 \section{Overall Structure}
-A database consists of multiple tables. Each table is a collection of domains (one domain corresponding to each attribute) and a list of main node records. Each Domain is a collection of attribute nodes. Each attribute node contains the actual data elements. Nodes are connected to each other by edges (using pointers). A brief overview of the model has been illustrated in figure ~\ref{fig:overview}. \\
-\begin{figure}[t]
- \centering
+A database consists of multiple tables. Each table is a collection of domains (one domain corresponding to each attribute) and a list of main node records. Each Domain is a collection of attribute nodes. Each attribute node contains the actual data elements. Nodes are connected to each other by edges (using pointers). A brief overview of the model has been illustrated in Figure ~\ref{fig:overview}. \\
+\begin{figure}[t] \centering
  \includegraphics[width=0.8\textwidth]{pics/model.pdf}
  \caption{Overview of Proposed Model}
  \label{fig:overview}
@@ -319,7 +319,7 @@ Graph Databases provides index-free adjacency. However, an indexing mechanism wi
 \section{Constraints}
 In this section, we will discuss about the constraints that are added to the relations in a traditional RDBMS to ensure data integrity and logical consistency.
 \subsection{Primary Key}
-In a Relational Database, Primary Key is a collection of one or more attributes of a relation which uniquely identifies a tuple i.e., each record will have a different value of primary key. The main thing to note here is that Primary Key can span over multiple attributes i.e., a collection of attributes together may uniquely identify a primary key. While performing an insertion operation, it is essential to check that no previous record has the same value for the primary key. When primary key spans over multiple attributes (or domains in our proposed model) one has to check if the combination of values being inserted is unique. The primary key constraint has been illustrated in figure ~\ref{fig:primary_key}. A record (in a relation storing data about engineering institutes) is uniquely determined by combination of department and institute.
+In a Relational Database, Primary Key is a collection of one or more attributes of a relation which uniquely identifies a tuple i.e., each record will have a different value of primary key. The main thing to note here is that Primary Key can span over multiple attributes i.e., a collection of attributes together may uniquely identify a primary key. While performing an insertion operation, it is essential to check that no previous record has the same value for the primary key. When primary key spans over multiple attributes (or domains in our proposed model) one has to check if the combination of values being inserted is unique. The primary key constraint has been illustrated in Figure ~\ref{fig:primary_key}. A record (in a relation storing data about engineering institutes) is uniquely determined by combination of department and institute.
 \begin{figure}
  \centering
  \includegraphics[width=0.8\textwidth]{pics/primary_key.pdf}
@@ -328,7 +328,7 @@ In a Relational Database, Primary Key is a collection of one or more attributes 
 \end{figure}
 
 \subsection{Foreign Key}
-When multiple relations are involved with some of them having foreign key relation, then our proposed model is extended to accommodate those constraints. Storage of foreign key in our proposed model has been illustrated in figure ~\ref{fig:foreign_key}.
+When multiple relations are involved with some of them having foreign key relation, then our proposed model is extended to accommodate those constraints. Storage of foreign key in our proposed model has been illustrated in Figure ~\ref{fig:foreign_key}.
 \begin{figure}[h]
  \centering
  \includegraphics[width=0.6\textwidth]{pics/foreign_key.pdf}
@@ -380,7 +380,7 @@ We have implemented the following core functionalities which the user can choose
 \end{multicols}
 
 \subsection{Indexing}
-Trie is the optimal indexing methodology that maps a string to its corresponding node in the graph. The algorithmic complexity of inserting and querying a string in trie is $\mathcal{O} \left( d\right)$ where, $d$ is the length of the string mapped. The data structure can be further optimized in terms of storage requirements by using a compressed trie or a Radix tree. The \emph{trie} data structure has been illustrated in figure ~\ref{fig:trie}.
+Trie is the optimal indexing methodology that maps a string to its corresponding node in the graph. The algorithmic complexity of inserting and querying a string in trie is $\mathcal{O} \left( d\right)$ where, $d$ is the length of the string mapped. The data structure can be further optimized in terms of storage requirements by using a compressed trie or a Radix tree. The \emph{trie} data structure has been illustrated in Figure ~\ref{fig:trie}.
 \begin{figure}
  \centering
  \includegraphics[width=0.5\textwidth]{pics/trie.pdf}
@@ -489,8 +489,8 @@ The Maximum length of string data type was specified and a random length was use
 \end{figure}
 To benchmark the size occupied we created an equivalent table in both traditional Relational DBMS and our proposed model. We measured the size occupied by both the models. Following is a series of graphs the depicts sizes ocuupied for varying number of tuples in both the model. Numbers of records are increasing along X axis, while space occupied (measured in Bytes) by the model is increasing along Y axis. The dashed line represents the relational database and the continuous line represents the proposed model.
 \begin{enumerate}
- \item \textbf{100 Records} - Number of records was varied between 1 to 100. Observations were made after every record. The graph obtained is shown in figure ~\ref{fig:100result}. It was observed that the traditional database was more efficient in terms of storage until the database had around 22 records, beyond which the proposed graph based model occupied lesser main memory than the relational databases. When the database is saturated with 100 records, a difference of around 2000 bytes was noticed between the size of both the database. This roughly means that the proposed model is 17\% more efficient than the relational database.
-  \item \textbf{1000 Records} - Number of records was varied between 1 to 1000. Observations were made after every 10 record. The graph obtained is shown in figure ~\ref{fig:1000result}. The cross-over point in terms of storage requirement was observed to be around 200 records, beyond which the proposed graph based model occupied lesser main memory than the relational databases. When the database is saturated with 1000 records, a difference of around 19000 bytes was noticed between the size of both the database. This roughly means that the proposed model is 16\% more efficient than the relational database.
+ \item \textbf{100 Records} - Number of records was varied between 1 to 100. Observations were made after every record. The graph obtained is shown in Figure ~\ref{fig:100result}. It was observed that the traditional database was more efficient in terms of storage until the database had around 22 records, beyond which the proposed graph based model occupied lesser main memory than the relational databases. When the database is saturated with 100 records, a difference of around 2000 bytes was noticed between the size of both the database. This roughly means that the proposed model is 17\% more efficient than the relational database.
+  \item \textbf{1000 Records} - Number of records was varied between 1 to 1000. Observations were made after every 10 record. The graph obtained is shown in Figure ~\ref{fig:1000result}. The cross-over point in terms of storage requirement was observed to be around 200 records, beyond which the proposed graph based model occupied lesser main memory than the relational databases. When the database is saturated with 1000 records, a difference of around 19000 bytes was noticed between the size of both the database. This roughly means that the proposed model is 16\% more efficient than the relational database.
  \begin{figure}[H]
   \begin{center}
    \includegraphics[width=\textwidth]{pics/1000.pdf}[H]
@@ -498,7 +498,7 @@ To benchmark the size occupied we created an equivalent table in both traditiona
    \label{fig:1000result}
   \end{center}
  \end{figure}
-  \item \textbf{10000 Records} - Number of records was varied from 1 to 10000. Observations were made after every 100 record. The graph obtained is shown in figure ~\ref{fig:10000result}. The cross-over point in terms of storage requirement was observed to be around 3000 records, beyond which the proposed graph based model occupied lesser main memory than the relational databases. When the database is saturated with 10000 records, a difference of around 190000 bytes was noticed between the size of both the database. This roughly means that the proposed model is 17\% more efficient than the relational database. When this result is compared with the previous result, we can safely conclude that if the amount of redundancy is kept constant then the efficiency factor also remains constant. Also the break-even point between our proposed model and traditional relational databases scales linearly with the number of records, if the redundancy is kept constant. Both of these observations comply to the theoretical analysis that was shown in the previous chapter.
+  \item \textbf{10000 Records} - Number of records was varied from 1 to 10000. Observations were made after every 100 record. The graph obtained is shown in Figure ~\ref{fig:10000result}. The cross-over point in terms of storage requirement was observed to be around 3000 records, beyond which the proposed graph based model occupied lesser main memory than the relational databases. When the database is saturated with 10000 records, a difference of around 190000 bytes was noticed between the size of both the database. This roughly means that the proposed model is 17\% more efficient than the relational database. When this result is compared with the previous result, we can safely conclude that if the amount of redundancy is kept constant then the efficiency factor also remains constant. Also the break-even point between our proposed model and traditional relational databases scales linearly with the number of records, if the redundancy is kept constant. Both of these observations comply to the theoretical analysis that was shown in the previous chapter.
  \begin{figure}[H]
   \begin{center}
    \includegraphics[width=\textwidth]{pics/10000.pdf}
@@ -506,7 +506,7 @@ To benchmark the size occupied we created an equivalent table in both traditiona
    \label{fig:10000result}
   \end{center}
  \end{figure}
- \item \textbf{90000 Records} - Number of records was varied from 1 to 90000. Observations were made after every 900 record. The graph obtained is shown in figure ~\ref{fig:90000result}. Given the hardware limitations, this was the largest database we could create to benchmark our proposed model. Again the efficiency was observed to be constant $\sim16\%$.
+ \item \textbf{90000 Records} - Number of records was varied from 1 to 90000. Observations were made after every 900 record. The graph obtained is shown in Figure ~\ref{fig:90000result}. Given the hardware limitations, this was the largest database we could create to benchmark our proposed model. Again the efficiency was observed to be constant $\sim16\%$.
  \begin{figure}[ht]
   \begin{center}
    \includegraphics[width=\textwidth]{pics/90000.pdf}
@@ -525,7 +525,7 @@ We chose to measure the time taken to execute the most expensive query - Join. T
  \textbf{Select $*$ from employee, department where employee.id $>$ 10 AND \\
  department.id $<$ 50 AND employee.dept\_id = department.id}
 \end{center}
-Time taken to execute a query is a constant multiple of the number of dick access required to fetch the result. The constant is determined by the time taken for a single disk access. We measured the number of disk access required to compute the result of the join query with different number of records in the child (Department) relation and the parent (Employee) relation. The results have been illustrated in figure ~\ref{fig:timeresult}.
+Time taken to execute a query is a constant multiple of the number of dick access required to fetch the result. The constant is determined by the time taken for a single disk access. We measured the number of disk access required to compute the result of the join query with different number of records in the child (Department) relation and the parent (Employee) relation. The results have been illustrated in Figure ~\ref{fig:timeresult}.
 \begin{figure}[ht]
  \centering
  \includegraphics[width=\textwidth]{pics/time.pdf}
