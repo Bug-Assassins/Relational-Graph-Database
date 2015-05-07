@@ -82,7 +82,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.94"
-     inkscape:cx="54.246408"
+     inkscape:cx="334.92072"
      inkscape:cy="318.60295"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -256,7 +256,7 @@
          sodipodi:role="line"
          id="tspan3836"
          x="138.93617"
-         y="261.10721">Domain</tspan></text>
+         y="261.10721">Field</tspan></text>
     <rect
        style="fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect3832-6"
@@ -274,7 +274,7 @@
          sodipodi:role="line"
          id="tspan3836-2"
          x="597.70215"
-         y="261.10687">Domain</tspan></text>
+         y="261.10687">Field</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
        d="M 304.8244,210.32389 202.6647,234.87645"

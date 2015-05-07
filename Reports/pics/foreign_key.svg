@@ -124,7 +124,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.02"
-     inkscape:cx="52.063888"
+     inkscape:cx="295.18265"
      inkscape:cy="318.17647"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -482,7 +482,7 @@
          x="619.72638"
          y="593.93079"
          id="tspan7401"
-         style="font-size:16px;text-align:center;text-anchor:middle">Domain</tspan></text>
+         style="font-size:16px;text-align:center;text-anchor:middle">Field</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
@@ -641,7 +641,7 @@
          x="557.47412"
          y="923.44061"
          id="tspan8500"
-         style="font-size:20px;text-align:center;text-anchor:middle">ID Domain</tspan></text>
+         style="font-size:20px;text-align:center;text-anchor:middle">ID Field</tspan></text>
     <path
        sodipodi:type="arc"
        style="fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -720,7 +720,7 @@
          sodipodi:role="line"
          x="396.11765"
          y="348.77393"
-         id="tspan10102">Type Domain</tspan></text>
+         id="tspan10102">Type Field</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:url(#marker5766)"
        d="m 216.16401,476.47931 19.85083,-86.83814"

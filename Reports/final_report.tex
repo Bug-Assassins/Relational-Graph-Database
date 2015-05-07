@@ -309,17 +309,19 @@ A single relation(table) can be represented a set of nodes and edges in our prop
 \end{enumerate}
 
 \section{Overall Structure}
-A database consists of multiple tables. Each table is a collection of domains (one domain corresponding to each attribute) and a list of main node records. Each Domain is a collection of attribute nodes. Each attribute node contains the actual data elements. Nodes are connected to each other by edges (using pointers). A brief overview of the model has been illustrated in Figure ~\ref{fig:overview}. \\
-\begin{figure}[t] \centering
+A database consists of multiple tables. A brief overview of the model has been illustrated in Figure ~\ref{fig:overview}. \\
+\begin{figure}[t]
+ \centering
  \includegraphics[width=0.8\textwidth]{pics/model.pdf}
  \caption{Overview of Proposed Model}
  \label{fig:overview}
 \end{figure}
+In the Figure ~\ref{fig:overview}, there is a central database, which has multiple tables - as represented by the labeled rectangles. The dotted connection between different table represent the foreign key constraint that can be imposed between 2 relations. Each table is a collection of domains (one domain corresponding to each column or attribute) and a list of main node records. Main nodes have been represented using unfilled circles with non-continuous circumference. Domain is a collection of attribute nodes. Each attribute node contains the actual data elements. Attribute nodes have been represented using filled circles. Nodes are connected to each other by edges (using pointers). The connection between different nodes have been illustrated using unidirectional and bidirectional arrows. \\ \par
 Graph Databases provides index-free adjacency. However, an indexing mechanism will make look-ups in search query very fast. It will also facilitate subgraph isomorphism and similarity queries \cite{indexing}. As such we propose use of an independent indexing in each of the domains - which given a value can return the actual node where the value is stored.
 \section{Constraints}
 In this section, we will discuss about the constraints that are added to the relations in a traditional RDBMS to ensure data integrity and logical consistency.
 \subsection{Primary Key}
-In a Relational Database, Primary Key is a collection of one or more attributes of a relation which uniquely identifies a tuple i.e., each record will have a different value of primary key. The main thing to note here is that Primary Key can span over multiple attributes i.e., a collection of attributes together may uniquely identify a primary key. While performing an insertion operation, it is essential to check that no previous record has the same value for the primary key. When primary key spans over multiple attributes (or domains in our proposed model) one has to check if the combination of values being inserted is unique. The primary key constraint has been illustrated in Figure ~\ref{fig:primary_key}. A record (in a relation storing data about engineering institutes) is uniquely determined by combination of department and institute.
+In a Relational Database, Primary Key is a collection of one or more attributes of a relation which uniquely identifies a tuple i.e., each tuple will have a different value of primary key. The main thing to note here is that Primary Key can span over multiple attributes i.e., a collection of attributes together may uniquely identify a primary key. While performing an insertion operation, it is essential to check that no previous tuple has the same value for the primary key. When primary key spans over multiple attributes (or domains in our proposed model) one has to check if the combination of values being inserted is unique. The primary key constraint has been illustrated in Figure ~\ref{fig:primary_key} where a tuple (in a relation storing data about engineering institutes) is uniquely determined by combination of department and institute. Institute and Department are two different attribute of a relation and a primary key spans over both the attributes. The unfilled ellipses in the figure represents the domain and the attribute nodes in each domain is represent by filled ellipses with their corresponding value. Each tuple is uniquely determined by a combination of values corresponding each of the 2 attribute spanned by primary key. For example, {NITKS, IT} and {NITKS, CS} are two different valid tuples. However, there can be only one tuple with values as {NITKS, IT} and {NITKS, CS} each.
 \begin{figure}
  \centering
  \includegraphics[width=0.8\textwidth]{pics/primary_key.pdf}
@@ -328,7 +330,7 @@ In a Relational Database, Primary Key is a collection of one or more attributes 
 \end{figure}
 
 \subsection{Foreign Key}
-When multiple relations are involved with some of them having foreign key relation, then our proposed model is extended to accommodate those constraints. Storage of foreign key in our proposed model has been illustrated in Figure ~\ref{fig:foreign_key}.
+When multiple relations are involved with some of them having foreign key relation, then our proposed model is extended to accommodate those constraints.
 \begin{figure}[h]
  \centering
  \includegraphics[width=0.6\textwidth]{pics/foreign_key.pdf}
@@ -345,6 +347,7 @@ Major points to observe are as follows :
  \item A child relation will always refer to the primary key in the parent relation. Thus, if the primary key in parent relation spans over multiple domains, the foreign key in child relation also spans over multiple domains and each domain is shared between parent and child.
  \item A relation can have multiple foreign key constraint each referring to a different relation in the database.
 \end{itemize}
+Storage of foreign key in our proposed model has been illustrated in figure ~\ref{fig:foreign_key}. Here, Employee is the child relation and Department is the parent relation. Department ID domain is the primary key of the Department relation. It is shared between Department domain as well as the Employee relation. Both the Employee relation and Department relation has other independent domains like Department Type (in Department Relation) and Employee Id (in Employee Relation). The unfilled ellipses represent the domain and the filled ellipses with values inside them represent the attribute nodes contained in the particular domain. Main nodes of each relation is represented by circles with discontinuous circumference. Main nodes of both Employee and Domain are connected to the attribute nodes of the shared domain i.e., Department Id. All the connections / edges have been shown with the aid of unidirectional and bidirectional arrows. \\ \par
 There are 3 other ways in which the foreign key constraint can be handled. We came up with these methods during our research however we chose to implement the model that has been described above. The methods are described as follows :
 \begin{enumerate}
  \item \textbf{Direct Connection Model} - Each Domain will belong to a single table. Whenever a child refers to the parent table, only the main node of record in the child relation is bidirectionally connected to the main node of the corresponding record in parent relation. Further the meta-data about the foreign key is stored separately in database. This model requires 2 edges between each foreign key connection and it is very efficient when corresponding tuples in child relation are to be fetched given a tuple in parent relation. However, queries which involves accessing the attribute nodes of the foreign key domain will be expensive as the only path between the shared domain's attribute nodes and main nodes of child relation is via parent table.
