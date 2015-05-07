@@ -292,7 +292,7 @@ To develop a data management system based on graph structure to optimize the que
 \begin{itemize}
  \item To compare the relational model with the existing graph models.
  \item To develop a model which can represent relational database.
- \item To define elational algebraic operations on the model such that it has most of the advantages of both the models.
+ \item To define relational algebraic operations on the model such that it has most of the advantages of both the models.
  \item To understand the differences of the proposed model with the graph model.
  \item To realize the limitations of the proposed model.
 \end{itemize}
@@ -300,12 +300,12 @@ To develop a data management system based on graph structure to optimize the que
 \chapter{Methodology}
 In this chapter we will discuss our proposed model in detail. We will describe how the data is handled and manipulated.
 Relational database performs inefficiently in a join type query. Graph database is able to perform join type queries quite fast because it stores the data using a graph structure. But because of the model used, it is sometimes unable to represent all kinds of relational databases. Realizing that the problem lies with the model of the graph used, we came up with our own model to represent relational databases, using graphs.\\ \par
-\section{Definitins}
-A single relation(table) can be represented a set of nodes and edges in our proposed graph storage, Before we discuss the model in detail, we define certain terminology used n the context of this project.
+\section{Definitions}
+A single relation(table) can be represented a set of nodes and edges in our proposed graph storage, Before we discuss the model in detail, we define certain terminology used in the context of this project.
 \begin{enumerate}
  \item \textbf{Domain} - Each attribute of a relation is a domain in our model. For Example, for an employee table, the relevant domains are \emph{Name}, \emph{Salary}, \emph{Age}, etc. Unlike traditional relational databases two relation can share same domain i.e., a domain can belong to multiple tables. For example, in Employee-Product example (Table \ref{tab:employee_demo}) \emph{Pr.Id} belongs to both Employee table and Product table. Each table can have separate attribute names for the domain. A domain is nothing but a list of unique Attribute Nodes.
- \item \textbf{Attribute Node} - Attribute Node is a graph node which contains actual data. Each Attribute Node contains only one value. An attribute node also has a list of pointersto the records that have its stored value in corresponding domain.
- \item \textbf{Man Node} - Each main node represents a record in the table. Main node do not contain values - rather they point to $n$ different attribute nodes (one each in $n$ domans) where $n$ is the number of attributes. Main Node of a table may also point to the main node of any other table in case of foreign key i.e., parent-child relationship.
+ \item \textbf{Attribute Node} - Attribute Node is a graph node which contains actual data. Each Attribute Node contains only one value. An attribute node also has a list of pointers to the records that have its stored value in corresponding domain.
+ \item \textbf{Main Node} - Each main node represents a record in the table. Main node do not contain values - rather they point to $n$ different attribute nodes (one each in $n$ domans) where $n$ is the number of attributes. Main Node of a table may also point to the main node of any other table in case of foreign key i.e., parent-child relationship.
 \end{enumerate}
 
 \section{Overall Structure}
