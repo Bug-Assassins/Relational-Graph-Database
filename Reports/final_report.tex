@@ -487,7 +487,7 @@ The Maximum length of string data type was specified and a random length was use
    \caption{Comparison of Size of 100 records}
    \label{fig:100result}
 \end{figure}
-We created an equivalent table in both traditional Relational DBMS and our model. We measured the size occupied by both the models. We have plotted several graphs. Numbers of records are increasing along X axis, while space occupied (measured in Bytes) by the model is increasing along Y axis. The dashed line represents the relational database and the continuous line represents the proposed model.
+To benchmark the size occupied we created an equivalent table in both traditional Relational DBMS and our proposed model. We measured the size occupied by both the models. Following is a series of graphs the depicts sizes ocuupied for varying number of tuples in both the model. Numbers of records are increasing along X axis, while space occupied (measured in Bytes) by the model is increasing along Y axis. The dashed line represents the relational database and the continuous line represents the proposed model.
 \begin{enumerate}
  \item \textbf{100 Records} - Number of records was varied between 1 to 100. Observations were made after every record. The graph obtained is shown in figure ~\ref{fig:100result}. It was observed that the traditional database was more efficient in terms of storage until the database had around 22 records, beyond which the proposed graph based model occupied lesser main memory than the relational databases. When the database is saturated with 100 records, a difference of around 2000 bytes was noticed between the size of both the database. This roughly means that the proposed model is 17\% more efficient than the relational database.
   \item \textbf{1000 Records} - Number of records was varied between 1 to 1000. Observations were made after every 10 record. The graph obtained is shown in figure ~\ref{fig:1000result}. The cross-over point in terms of storage requirement was observed to be around 200 records, beyond which the proposed graph based model occupied lesser main memory than the relational databases. When the database is saturated with 1000 records, a difference of around 19000 bytes was noticed between the size of both the database. This roughly means that the proposed model is 16\% more efficient than the relational database.
@@ -518,21 +518,28 @@ We created an equivalent table in both traditional Relational DBMS and our model
 \par
 It is clearly evident from these plots that traditional RDBMS increases their storage linearly. Our proposed model also scales linearly. The initial size occupied by our proposed model is more but the slope of our model is smaller than that of relational database storage. In the long run, our graph based model performs better. In all the 4 scales of testing, the proposed model was found to be superior. \par 
 However, several factors were not accounted while making these observations - which makes these observations a little less reliable. Owing to limitations of the physical resources available with us, we were unable to test the system for larger dataset. We intend to perform a more vigorous analysis of the storage requirement in future.
+
 \subsection{Practical Observation of Time}
 We chose to measure the time taken to execute the most expensive query - Join. The exact query that we executed was : \\
 \begin{center}
  \textbf{Select $*$ from employee, department where employee.id $>$ 10 AND \\
  department.id $<$ 50 AND employee.dept\_id = department.id}
 \end{center}
-We measured the time taken with different number of records in the child relation i.e., Employee relation. The number of records in the parent relation (Department) was kept constant i.e, 100. The points of observation in child relation were - 100, 1000, 10000, 20000, 40000, 60000, 80000 and 90000. The results have been illustrated in figure ~\ref{fig:timeresult}. The numbers in bracket indicate the number of records in the parent table. \par
+Time taken to execute a query is a constant multiple of the number of dick access required to fetch the result. The constant is determined by the time taken for a single disk access. We measured the number of disk access required to compute the result of the join query with different number of records in the child (Department) relation and the parent (Employee) relation. The results have been illustrated in figure ~\ref{fig:timeresult}.
 \begin{figure}[ht]
  \centering
  \includegraphics[width=\textwidth]{pics/time.pdf}
  \caption{Time Taken for Join Query}
  \label{fig:timeresult}
 \end{figure}
-A linear relation was observed to exist between the number of records and time taken for join query.
-
+We conducted 4 experiments. The number of tuples in parent relation was kept constant for each experiment and the number of tuples in child relation was varied between 0 to 1000. The number of tuples in child relation increases along X-axis. The number of record access required to compute the result increases along Y-axis. The experimental conditions were as follows :
+\begin{itemize}
+ \item Relational Database was used and the number of records in parent relation was kept 25
+ \item Relational Database was used and the number of records in parent relation was kept 50
+ \item Relational Database was used and the number of records in parent relation was kept 100
+ \item Proposed Model was used and the number of records in the parent table was kept 100
+\end{itemize}
+In the graph (Figure ~\ref{fig:timeresult}), the number in bracket following the legend represents the number of tuples in parent relation. Note that the number of record access required by the proposed model is independent of the number of records in the parent relation. It only increases linearly with the number of records in the child relation. For traditional relational database, the number of record access required increases linearly with both the increase in number of tuples in child relation and the number of tuples in parent relation.
 
 \chapter{Conclusion and Future Work}
 This chapter discusses about the conclusion and the objectives achieved by us during the course of this project. It also discusses some ideas which could be included in the project in the near future.   
